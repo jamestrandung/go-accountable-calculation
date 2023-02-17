@@ -6,9 +6,9 @@ var FormulaBuilder IFormulaBuilder = formulaBuilderImpl{}
 // IFormulaBuilder ...
 //go:generate mockery --name=IFormulaBuilder --case underscore --inpackage
 type IFormulaBuilder interface {
-	// NewFormulaFunctionCall returns a new acal.SyntaxNode representing a function call taking in the provided arguments.
+	// NewFormulaFunctionCall returns a new SyntaxNode representing a function call taking in the provided arguments.
 	NewFormulaFunctionCall(fnName string, arguments ...any) *SyntaxNode
-	// NewFormulaTwoValMiddleOp returns a new acal.SyntaxNode representing a binary operation that has an operator in the middle of two operands.
+	// NewFormulaTwoValMiddleOp returns a new SyntaxNode representing a binary operation that has an operator in the middle of two operands.
 	NewFormulaTwoValMiddleOp(v1 Value, v2 Value, op Op, opDesc string) *SyntaxNode
 }
 

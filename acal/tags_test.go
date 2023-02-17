@@ -7,7 +7,7 @@ import (
 )
 
 func TestTags_AddTags(t *testing.T) {
-	testNameValuePairs := []NameValuePair{&MockNameValuePair{}, &MockNameValuePair{}}
+	testTags := []Tag{{Name: "TestTag1"}, {Name: "TestTag2"}}
 
 	scenarios := []struct {
 		desc string
@@ -17,17 +17,17 @@ func TestTags_AddTags(t *testing.T) {
 		{
 			desc: "nil tags",
 			tags: nil,
-			want: Tags{&MockNameValuePair{}, &MockNameValuePair{}},
+			want: testTags,
 		},
 		{
 			desc: "no existing tags",
 			tags: Tags{},
-			want: Tags{&MockNameValuePair{}, &MockNameValuePair{}},
+			want: testTags,
 		},
 		{
 			desc: "has existing tags",
-			tags: Tags{&MockNameValuePair{}},
-			want: Tags{&MockNameValuePair{}, &MockNameValuePair{}, &MockNameValuePair{}},
+			tags: Tags{{Name: "TestTag3"}},
+			want: Tags{{Name: "TestTag3"}, {Name: "TestTag1"}, {Name: "TestTag2"}},
 		},
 	}
 
@@ -35,7 +35,7 @@ func TestTags_AddTags(t *testing.T) {
 		sc := scenario
 		t.Run(
 			sc.desc, func(t *testing.T) {
-				actual := sc.tags.AddTags(testNameValuePairs...)
+				actual := sc.tags.AddTags(testTags...)
 
 				assert.Equal(t, sc.want, actual)
 			},
@@ -44,15 +44,15 @@ func TestTags_AddTags(t *testing.T) {
 }
 
 func TestTags_Tag(t *testing.T) {
-	mockNameValuePair := &MockNameValuePair{}
+	tag := Tag{Name: "TestTag"}
 
 	mockTagger1 := &MockTagger{}
-	mockTagger1.On("Tag", mockNameValuePair).Once()
+	mockTagger1.On("Tag", tag).Once()
 
 	mockTagger2 := &MockTagger{}
-	mockTagger2.On("Tag", mockNameValuePair).Once()
+	mockTagger2.On("Tag", tag).Once()
 
-	tags := Tags{mockNameValuePair}
+	tags := Tags{tag}
 
 	tags.Tag(mockTagger1, mockTagger2)
 
@@ -60,17 +60,13 @@ func TestTags_Tag(t *testing.T) {
 }
 
 func TestTags_MarshalJSON(t *testing.T) {
-	mockNameValuePair1 := &MockNameValuePair{}
-	mockNameValuePair1.On("GetName").Return("TestName1").Once()
-	mockNameValuePair1.On("GetValue").Return(5).Once()
+	tag1 := Tag{Name: "TestName1", Value: 5}
+	tag2 := Tag{Name: "TestName2", Value: true}
+	tag3 := Tag{Name: "TestName3", Value: 6.5, aVal: &MockValue{}}
 
-	mockNameValuePair2 := &MockNameValuePair{}
-	mockNameValuePair2.On("GetName").Return("TestName2").Once()
-	mockNameValuePair2.On("GetValue").Return(true).Once()
+	wantedJSON := "{\"TestName1\":{\"Value\":\"5\"},\"TestName2\":{\"Value\":\"true\"},\"TestName3\":{\"Value\":\"6.5\",\"IsValue\":true}}"
 
-	wantedJSON := "{\"TestName1\":{\"Value\":\"5\"},\"TestName2\":{\"Value\":\"true\"}}"
-
-	tags := Tags{mockNameValuePair1, mockNameValuePair2}
+	tags := Tags{tag1, tag2, tag3}
 
 	actualJSON, err := tags.MarshalJSON()
 	assert.Equal(t, wantedJSON, string(actualJSON), "marshal result should be %v", wantedJSON)
@@ -97,15 +93,15 @@ func TestAppendTags(t *testing.T) {
 			setup: func() {
 				mockTagger.On("GetTags").Return(nil).Once()
 			},
-			want: Tags{&MockNameValuePair{}},
+			want: Tags{Tag{Name: "TestName2", Value: true}},
 		},
 		{
 			desc:   "Tagger has existing tags",
 			tagger: mockTagger,
 			setup: func() {
-				mockTagger.On("GetTags").Return(Tags{&MockNameValuePair{}}).Twice()
+				mockTagger.On("GetTags").Return(Tags{Tag{Name: "TestName1", Value: 5}}).Twice()
 			},
-			want: Tags{&MockNameValuePair{}, &MockNameValuePair{}},
+			want: Tags{Tag{Name: "TestName1", Value: 5}, Tag{Name: "TestName2", Value: true}},
 		},
 	}
 
@@ -117,7 +113,7 @@ func TestAppendTags(t *testing.T) {
 					sc.setup()
 				}
 
-				actual := AppendTags(sc.tagger, &MockNameValuePair{})
+				actual := AppendTags(sc.tagger, Tag{Name: "TestName2", Value: true})
 
 				assert.Equal(t, sc.want, actual)
 			},

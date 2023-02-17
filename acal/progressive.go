@@ -57,12 +57,12 @@ func (p *Progressive[T]) GetValue() any {
 	return p.GetTypedValue()
 }
 
-// ToSyntaxOperand returns the acal.SyntaxOperand representation of this Progressive.
+// ToSyntaxOperand returns the SyntaxOperand representation of this Progressive.
 func (p *Progressive[T]) ToSyntaxOperand(nextOp Op) *SyntaxOperand {
 	return NewSyntaxOperandWithStageIdx(p, p.getCurrentStageIdx())
 }
 
-// ExtractValues extracts this Progressive and all acal.Value that were used to calculate it.
+// ExtractValues extracts this Progressive and all Value that were used to calculate it.
 func (p *Progressive[T]) ExtractValues(cache IValueCache) IValueCache {
 	if p.IsNil() || !cache.Take(p) {
 		return cache
@@ -94,7 +94,7 @@ func (p *Progressive[T]) ExtractValues(cache IValueCache) IValueCache {
 // SelfReplaceIfNil returns the replacement to represent this Progressive if it is nil.
 func (p *Progressive[T]) SelfReplaceIfNil() Value {
 	if p.IsNil() {
-		return ZeroAny[T]("NilProgressive")
+		return ZeroSimple[T]("NilProgressive")
 	}
 
 	return p
@@ -105,7 +105,7 @@ func (p *Progressive[T]) GetTags() Tags {
 	return p.tags
 }
 
-// Tag append the given acal.NameValuePair to the existing tags of this Progressive.
+// Tag append the given Tag to the existing tags of this Progressive.
 func (p *Progressive[T]) Tag(tags ...Tag) {
 	p.tags = AppendTags(p, tags...)
 }
@@ -127,11 +127,11 @@ func (p *Progressive[T]) AddCondition(criteria TypedValue[bool]) CloseIfFunc {
 	}
 }
 
-//// Anchor returns a new Simple initialized to the current value of this Progressive
-//// and anchored with the given name.
-//func (p *Progressive[T]) Anchor(name string) *Simple[T] {
-//	return p.ToSimple().Anchor(name)
-//}
+// Anchor returns a new Simple initialized to the current value of this Progressive
+// and anchored with the given name.
+func (p *Progressive[T]) Anchor(name string) *Simple[T] {
+	return p.ToSimple().Anchor(name)
+}
 
 // ToSimple returns a new Simple initialized to the current value of this Progressive.
 func (p *Progressive[T]) ToSimple() *Simple[T] {
@@ -169,7 +169,7 @@ func (p *Progressive[T]) GetSnapshot() *Stage[T] {
 	}
 
 	if p.curStage == nil {
-		p.Update(ZeroAny[T]("Default"))
+		p.Update(ZeroSimple[T]("Default"))
 	}
 
 	return p.curStage

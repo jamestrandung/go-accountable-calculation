@@ -47,12 +47,12 @@ func (s *Stage[T]) GetValue() any {
 	return s.GetTypedValue()
 }
 
-// ToSyntaxOperand returns the acal.SyntaxOperand representation of this Stage.
+// ToSyntaxOperand returns the SyntaxOperand representation of this Stage.
 func (s *Stage[T]) ToSyntaxOperand(nextOp Op) *SyntaxOperand {
 	return NewSyntaxOperandWithStageIdx(s, s.idx)
 }
 
-// ExtractValues extracts this Stage and all acal.Value that were used to calculate it.
+// ExtractValues extracts this Stage and all Value that were used to calculate it.
 func (s *Stage[T]) ExtractValues(cache IValueCache) IValueCache {
 	return s.self.ExtractValues(cache)
 }
@@ -60,7 +60,7 @@ func (s *Stage[T]) ExtractValues(cache IValueCache) IValueCache {
 // SelfReplaceIfNil returns the replacement to represent this Stage if it is nil.
 func (s *Stage[T]) SelfReplaceIfNil() Value {
 	if s.IsNil() {
-		return ZeroAny[T]("NilStage")
+		return ZeroSimple[T]("NilStage")
 	}
 
 	return s

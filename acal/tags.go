@@ -27,7 +27,7 @@ func (t Tag) GetName() string {
 	return t.Name
 }
 
-// GetValue returns the value of this Tag.
+// GetValue returns the untyped value this Tag contains.
 func (t Tag) GetValue() any {
 	return t.Value
 }
@@ -44,7 +44,7 @@ type Tagger interface {
 // Tags is the collection of tags that was applied on a Value.
 type Tags []Tag
 
-// AddTags adds the provided NameValuePair to this Tags.
+// AddTags adds the provided Tag to this Tags.
 func (t Tags) AddTags(tags ...Tag) Tags {
 	if t == nil {
 		return tags
@@ -82,7 +82,7 @@ func (t Tags) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&tags)
 }
 
-// AppendTags appends the provided NameValuePair to collection of
+// AppendTags appends the provided Tag to collection of
 // tags of the given Tagger.
 var AppendTags = func(t Tagger, tags ...Tag) Tags {
 	if t == nil {

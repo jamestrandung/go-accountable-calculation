@@ -53,7 +53,7 @@ func (c *Constant[T]) GetValue() any {
 	return c.GetTypedValue()
 }
 
-// ToSyntaxOperand returns the acal.SyntaxOperand representation of this Constant.
+// ToSyntaxOperand returns the SyntaxOperand representation of this Constant.
 func (c *Constant[T]) ToSyntaxOperand(nextOp Op) *SyntaxOperand {
 	return NewSyntaxOperandWithStaticValue(fmt.Sprintf("%v", c.GetTypedValue()))
 }
@@ -78,7 +78,7 @@ func (c *Constant[T]) ExtractValues(cache IValueCache) IValueCache {
 // SelfReplaceIfNil returns the replacement to represent this Constant if it is nil.
 func (c *Constant[T]) SelfReplaceIfNil() Value {
 	if c.IsNil() {
-		return ZeroAny[T]("NilConstant")
+		return ZeroSimple[T]("NilConstant")
 	}
 
 	return c
