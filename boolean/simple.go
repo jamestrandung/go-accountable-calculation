@@ -1,6 +1,8 @@
 package boolean
 
-import "github.com/jamestrandung/go-accountable-calculation/acal"
+import (
+	"github.com/jamestrandung/go-accountable-calculation/acal"
+)
 
 // Simple ...
 type Simple struct {
