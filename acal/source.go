@@ -1,10 +1,13 @@
 package acal
 
 // sourcer represents any struct that can have a source.
+//
 //go:generate mockery --name=sourcer --case underscore --inpackage
 type sourcer interface {
 	// From updates the source of this sourcer to the provided Source.
 	From(Source)
+	// GetSource returns the source of this sourcer.
+	GetSource() Source
 }
 
 // Source represents where a Value comes from.

@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/jamestrandung/go-accountable-calculation/acal"
+	"github.com/jamestrandung/go-accountable-calculation/boolean"
 )
 
 type RawInterface interface {
@@ -49,13 +51,20 @@ func (Bool) GetTypedValue() bool {
 }
 
 func main() {
-	b := Bool{}
-	fmt.Println(b.GetTypedValue())
-	b.Print()
+	var t1 acal.Value
+	var t2 acal.TypedValue[bool]
 
-	b2 := Implementation[bool]{}
-	fmt.Println(b2.GetTypedValue())
-	b2.Print()
+	fmt.Println(acal.IsNilValue(t1))
+	fmt.Println(acal.IsNilValue(t2))
 
-	var b3 Implementation[bool] = b
+	b1 := boolean.NewSimpleFrom(acal.NewConstant(true))
+	b1.Anchor("Bool")
+
+	fmt.Print(acal.ToString(b1))
+
+	t1 = acal.NewProgressive[int]("something")
+	t2 = acal.NewProgressive[bool]("something")
+
+	p, ok := t2.(*acal.Progressive[bool])
+	fmt.Println(p, ok)
 }

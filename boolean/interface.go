@@ -3,6 +3,8 @@ package boolean
 import "github.com/jamestrandung/go-accountable-calculation/acal"
 
 // Value represents an acal.Value of any kinds.
+//
+//go:generate mockery --name=Value --case underscore --inpackage
 type Value interface {
 	acal.Value
 	// Bool returns the value of this Value as a bool.
@@ -10,8 +12,9 @@ type Value interface {
 	Bool() bool
 }
 
-//go:generate mockery --name=Interface --case underscore --inpkg
 // Interface governs the methods that Value should provide.
+//
+//go:generate mockery --name=Interface --case underscore --inpackage
 type Interface interface {
 	Value
 	// And applies AND operation on the value of this Interface and the given acal.TypedValue.

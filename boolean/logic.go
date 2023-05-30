@@ -1,8 +1,7 @@
-package op
+package boolean
 
 import (
 	"github.com/jamestrandung/go-accountable-calculation/acal"
-	"github.com/jamestrandung/go-accountable-calculation/boolean"
 )
 
 // PerformUnaryLogicOp returns a boolean.Simple to represent the result of
@@ -11,12 +10,12 @@ func PerformUnaryLogicOp[T any](
 	tv acal.TypedValue[T],
 	fnName string,
 	unaryOpFn func(v T) bool,
-) *boolean.Simple {
+) *Simple {
 	if acal.IsNilValue(tv) {
 		return nil
 	}
 
-	return boolean.NewSimpleWithFormula(
+	return NewSimpleWithFormula(
 		unaryOpFn(tv.GetTypedValue()), func() *acal.SyntaxNode {
 			return acal.FormulaBuilder.NewFormulaFunctionCall(fnName, tv)
 		},
@@ -31,12 +30,12 @@ func PerformBinaryLogicOp[T any](
 	op acal.Op,
 	opDesc string,
 	binaryOpFn func(a, b T) bool,
-) *boolean.Simple {
+) *Simple {
 	if acal.IsNilValue(tv1) && acal.IsNilValue(tv2) {
 		return nil
 	}
 
-	return boolean.NewSimpleWithFormula(
+	return NewSimpleWithFormula(
 		binaryOpFn(tv1.GetTypedValue(), tv2.GetTypedValue()), func() *acal.SyntaxNode {
 			return acal.FormulaBuilder.NewFormulaTwoValMiddleOp(tv1, tv2, op, opDesc)
 		},

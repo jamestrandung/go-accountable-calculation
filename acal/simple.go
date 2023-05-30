@@ -34,6 +34,24 @@ func NewSimpleWithFormula[T any](value T, formulaFn func() *SyntaxNode) *Simple[
 	}
 }
 
+// NewSimpleFrom returns a new Simple using the given value as formula.
+func NewSimpleFrom[T any](value TypedValue[T]) *Simple[T] {
+	p, ok := value.(*Progressive[T])
+	if ok {
+		snapshot := p.GetSnapshot()
+
+		return &Simple[T]{
+			value:     snapshot.GetTypedValue(),
+			formulaFn: DescribeValueAsFormula(snapshot),
+		}
+	}
+
+	return &Simple[T]{
+		value:     value.GetTypedValue(),
+		formulaFn: DescribeValueAsFormula(value),
+	}
+}
+
 // ZeroSimple ...
 func ZeroSimple[T any](name string) *Simple[T] {
 	var temp T
@@ -111,21 +129,24 @@ func (s *Simple[T]) From(source Source) {
 	s.source = source
 }
 
-// Anchor updates the name of this Simple to the provided string.
-func (s *Simple[T]) Anchor(name string) *Simple[T] {
-	if s.IsNil() {
-		var temp T
-		return NewSimple(name, temp)
-	}
+// GetSource returns the source of this Simple.
+func (s *Simple[T]) GetSource() Source {
+	return s.source
+}
 
+// DoAnchor updates the name of this Simple to the provided string.
+func (s *Simple[T]) DoAnchor(name string) (*Simple[T], bool) {
 	toAnchor := s
+	isNew := false
+
 	if IsAnchored(s) {
 		toAnchor = NewSimpleWithFormula(s.GetTypedValue(), DescribeValueAsFormula(s))
+		isNew = true
 	}
 
 	toAnchor.name = name
 
-	return toAnchor
+	return toAnchor, isNew
 }
 
 // GetTags returns the current tags of this Simple.
@@ -160,10 +181,6 @@ func (s *Simple[T]) GetCondition() *Condition {
 
 // AddCondition attaches the given Condition to this Simple.
 func (s *Simple[T]) AddCondition(condition *Condition) {
-	if s.IsNil() {
-		return
-	}
-
 	s.condition = condition
 }
 

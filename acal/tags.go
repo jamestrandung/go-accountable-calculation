@@ -13,8 +13,8 @@ type Tag struct {
 	aVal  Value
 }
 
-// FromValue returns a Tag from the given Value.
-func FromValue(v Value) Tag {
+// NewTagFrom returns a Tag from the given Value.
+func NewTagFrom(v Value) Tag {
 	return Tag{
 		Name:  v.GetName(),
 		Value: v.GetValue(),
@@ -33,6 +33,7 @@ func (t Tag) GetValue() any {
 }
 
 // Tagger represents any struct that can have tags attached to it.
+//
 //go:generate mockery --name=Tagger --case underscore --inpackage
 type Tagger interface {
 	// Tag append the given Tag to the existing tags of this Tagger.

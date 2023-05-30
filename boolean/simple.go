@@ -9,8 +9,8 @@ type Simple struct {
 	*acal.Simple[bool]
 }
 
-// Bool ...
-func New(name string, value bool) *Simple {
+// NewSimple ...
+func NewSimple(name string, value bool) *Simple {
 	return &Simple{
 		Simple: acal.NewSimple(name, value),
 	}
@@ -23,14 +23,30 @@ func NewSimpleWithFormula(value bool, formulaFn func() *acal.SyntaxNode) *Simple
 	}
 }
 
+// NewSimpleFrom returns a new Simple using the given value as formula.
+func NewSimpleFrom(value acal.TypedValue[bool]) *Simple {
+	return &Simple{
+		Simple: acal.NewSimpleFrom(value),
+	}
+}
+
+// IsNil returns whether this Simple is nil.
+func (s *Simple) IsNil() bool {
+	return s == nil || s.Simple.IsNil()
+}
+
 // GetTypedValue returns the typed value this Simple contains.
 func (s *Simple) GetTypedValue() bool {
+	if s == nil || s.IsNil() {
+		return false
+	}
+
 	return s.Simple.GetTypedValue()
 }
 
 // ToSyntaxOperand returns the acal.SyntaxOperand representation of this Simple.
 func (s *Simple) ToSyntaxOperand(nextOp acal.Op) *acal.SyntaxOperand {
-	if result := s.Simple.ToSyntaxOperand(nextOp); result != nil {
+	if result := toBaseSyntaxOperand(s, nextOp); result != nil {
 		return result
 	}
 
@@ -43,13 +59,33 @@ func (s *Simple) ToSyntaxOperand(nextOp acal.Op) *acal.SyntaxOperand {
 	)
 }
 
+var toBaseSyntaxOperand = func(s *Simple, nextOp acal.Op) *acal.SyntaxOperand {
+	return s.Simple.ToSyntaxOperand(nextOp)
+}
+
 // SelfReplaceIfNil returns the replacement to represent this Simple if it is nil.
 func (s *Simple) SelfReplaceIfNil() acal.Value {
-	if s.IsNil() {
-		return acal.ZeroSimple[bool]("NilBool")
+	if s == nil || s.IsNil() {
+		return NilBool
 	}
 
 	return s
+}
+
+// Anchor updates the name of this Simple to the provided string.
+func (s *Simple) Anchor(name string) *Simple {
+	if s.IsNil() {
+		return NewSimple(name, false)
+	}
+
+	anchored, isNew := s.Simple.DoAnchor(name)
+	if !isNew {
+		return s
+	}
+
+	return &Simple{
+		Simple: anchored,
+	}
 }
 
 // Bool returns the value of this Simple as a bool.

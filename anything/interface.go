@@ -6,6 +6,8 @@ import (
 )
 
 // Value represents an acal.Value of any kinds.
+//
+//go:generate mockery --name=Value --case underscore --inpackage
 type Value interface {
 	acal.Value
 	// String returns the value of this Value as a string.
@@ -13,8 +15,9 @@ type Value interface {
 	String() string
 }
 
-//go:generate mockery --name=Interface --case underscore --inpkg
 // Interface governs the methods that Value should provide.
+//
+//go:generate mockery --name=Interface --case underscore --inpackage
 type Interface[T any] interface {
 	Value
 	// EqualsRaw returns whether the value of this Interface equals to the raw input value.

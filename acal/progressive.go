@@ -110,14 +110,15 @@ func (p *Progressive[T]) Tag(tags ...Tag) {
 	p.tags = AppendTags(p, tags...)
 }
 
+// AsTag returns a Tag represented by this Progressive.
+func (p *Progressive[T]) AsTag() Tag {
+	return NewTagFrom(p.GetSnapshot())
+}
+
 // AddCondition attaches the given condition to this Progressive, returning
 // a  CloseIfFunc that must be triggered when an if clause ends so that the
 // framework can record at which stage this condition ends.
 func (p *Progressive[T]) AddCondition(criteria TypedValue[bool]) CloseIfFunc {
-	if p.IsNil() {
-		return DoNothingCloseIfFunc
-	}
-
 	condition := NewProgressiveCondition(criteria, p.curCondition, p.getCurrentStageIdx()+1)
 
 	p.curCondition = condition
@@ -127,15 +128,13 @@ func (p *Progressive[T]) AddCondition(criteria TypedValue[bool]) CloseIfFunc {
 	}
 }
 
-// Anchor returns a new Simple initialized to the current value of this Progressive
-// and anchored with the given name.
-func (p *Progressive[T]) Anchor(name string) *Simple[T] {
-	return p.ToSimple().Anchor(name)
-}
+// DoAnchor returns a new Simple initialized to the current value of this
+// Progressive and anchored with the given name.
+func (p *Progressive[T]) DoAnchor(name string) *Simple[T] {
+	s := NewSimpleFrom[T](p)
+	s.DoAnchor(name)
 
-// ToSimple returns a new Simple initialized to the current value of this Progressive.
-func (p *Progressive[T]) ToSimple() *Simple[T] {
-	return NewSimpleWithFormula(p.GetTypedValue(), DescribeValueAsFormula(p.GetSnapshot()))
+	return s
 }
 
 // Update adds a new Stage to this Progressive to record its new value.
