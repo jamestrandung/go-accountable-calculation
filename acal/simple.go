@@ -7,20 +7,22 @@ import (
 
 // Simple ...
 type Simple[T any] struct {
-	name  string
-	alias string
-	value T
+	namedValue
+	tagger
+	staticConditioner
+	iValueFormatter[T]
 
+	value     T
 	source    Source
-	tags      Tags
-	condition *Condition
 	formulaFn func() *SyntaxNode
 }
 
 // NewSimple ...
 func NewSimple[T any](name string, value T) *Simple[T] {
 	return &Simple[T]{
-		name:   name,
+		namedValue: namedValue{
+			name: name,
+		},
 		value:  value,
 		source: SourceUnknown,
 	}
@@ -56,7 +58,9 @@ func NewSimpleFrom[T any](value TypedValue[T]) *Simple[T] {
 func ZeroSimple[T any](name string) *Simple[T] {
 	var temp T
 	return &Simple[T]{
-		name:   name,
+		namedValue: namedValue{
+			name: name,
+		},
 		value:  temp,
 		source: SourceHardcode,
 	}
@@ -65,21 +69,6 @@ func ZeroSimple[T any](name string) *Simple[T] {
 // IsNil returns whether this Simple is nil.
 func (s *Simple[T]) IsNil() bool {
 	return s == nil
-}
-
-// GetName returns the name of this Simple.
-func (s *Simple[T]) GetName() string {
-	return s.name
-}
-
-// GetAlias returns the alias of this Simple.
-func (s *Simple[T]) GetAlias() string {
-	return s.alias
-}
-
-// SetAlias updates the alias of this Simple to the provided string.
-func (s *Simple[T]) SetAlias(alias string) {
-	s.alias = alias
 }
 
 // GetTypedValue returns the typed value this Simple contains.
@@ -149,16 +138,6 @@ func (s *Simple[T]) DoAnchor(name string) (*Simple[T], bool) {
 	return toAnchor, isNew
 }
 
-// GetTags returns the current tags of this Simple.
-func (s *Simple[T]) GetTags() Tags {
-	return s.tags
-}
-
-// Tag append the given Tag to the existing tags of this Simple.
-func (s *Simple[T]) Tag(tags ...Tag) {
-	s.tags = AppendTags(s, tags...)
-}
-
 // HasFormula returns whether this Simple has a formula.
 func (s *Simple[T]) HasFormula() bool {
 	return s.formulaFn != nil
@@ -169,26 +148,19 @@ func (s *Simple[T]) GetFormulaFn() func() *SyntaxNode {
 	return s.formulaFn
 }
 
-// IsConditional returns whether a Condition is attached to this Simple.
-func (s *Simple[T]) IsConditional() bool {
-	return s.condition != nil
-}
-
-// GetCondition returns the Condition attached to this Simple.
-func (s *Simple[T]) GetCondition() *Condition {
-	return s.condition
-}
-
-// AddCondition attaches the given Condition to this Simple.
-func (s *Simple[T]) AddCondition(condition *Condition) {
-	s.condition = condition
-}
-
 // MarshalJSON returns the JSON encoding of this Simple.
 func (s *Simple[T]) MarshalJSON() ([]byte, error) {
 	if s.IsNil() {
 		return nil, nil
 	}
+
+	v := func() string {
+		if s.iValueFormatter != nil {
+			return s.formatValue(s.value)
+		}
+
+		return fmt.Sprintf("%v", s.value)
+	}()
 
 	if s.HasFormula() {
 		return json.Marshal(
@@ -199,7 +171,7 @@ func (s *Simple[T]) MarshalJSON() ([]byte, error) {
 				Condition *Condition `json:",omitempty"`
 				Formula   *SyntaxNode
 			}{
-				Value:     fmt.Sprintf("%v", s.value),
+				Value:     v,
 				Source:    sourceStaticCalculation.String(),
 				Tags:      s.tags,
 				Condition: s.condition,
@@ -215,7 +187,7 @@ func (s *Simple[T]) MarshalJSON() ([]byte, error) {
 			Tags      Tags       `json:",omitempty"`
 			Condition *Condition `json:",omitempty"`
 		}{
-			Value:     fmt.Sprintf("%v", s.value),
+			Value:     v,
 			Source:    string(s.source),
 			Tags:      s.tags,
 			Condition: s.condition,

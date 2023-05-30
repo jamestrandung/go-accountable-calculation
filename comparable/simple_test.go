@@ -1,4 +1,4 @@
-package anything
+package comparable
 
 import (
 	"github.com/jamestrandung/go-accountable-calculation/acal"
@@ -16,7 +16,7 @@ func TestSimple_IsNil(t *testing.T) {
 
 func TestSimple_SelfReplaceIfNil(t *testing.T) {
 	var nilSimple *Simple[int]
-	assert.Equal(t, acal.ZeroSimple[int]("NilAny"), nilSimple.SelfReplaceIfNil())
+	assert.Equal(t, acal.ZeroSimple[int]("NilComparable"), nilSimple.SelfReplaceIfNil())
 
 	simple := NewSimple("Simple", 1)
 	assert.Equal(t, simple, simple.SelfReplaceIfNil())

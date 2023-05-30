@@ -7,39 +7,26 @@ import (
 
 // Progressive ...
 type Progressive[T any] struct {
-	name  string
-	alias string
+	namedValue
+	tagger
+	iValueFormatter[T]
 
 	curStage     *Stage[T]
 	curCondition *Condition
-	tags         Tags
 }
 
 // NewProgressive ...
 func NewProgressive[T any](name string) *Progressive[T] {
 	return &Progressive[T]{
-		name: name,
+		namedValue: namedValue{
+			name: name,
+		},
 	}
 }
 
 // IsNil returns whether this Progressive is nil.
 func (p *Progressive[T]) IsNil() bool {
 	return p == nil
-}
-
-// GetName returns the name of this Progressive.
-func (p *Progressive[T]) GetName() string {
-	return p.name
-}
-
-// GetAlias returns the alias of this Progressive.
-func (p *Progressive[T]) GetAlias() string {
-	return p.alias
-}
-
-// SetAlias updates the alias of this Progressive to the provided string.
-func (p *Progressive[T]) SetAlias(alias string) {
-	p.alias = alias
 }
 
 // GetTypedValue returns the typed value this Progressive contains.
@@ -98,16 +85,6 @@ func (p *Progressive[T]) SelfReplaceIfNil() Value {
 	}
 
 	return p
-}
-
-// GetTags returns the current tags of this Progressive.
-func (p *Progressive[T]) GetTags() Tags {
-	return p.tags
-}
-
-// Tag append the given Tag to the existing tags of this Progressive.
-func (p *Progressive[T]) Tag(tags ...Tag) {
-	p.tags = AppendTags(p, tags...)
 }
 
 // AsTag returns a Tag represented by this Progressive.
@@ -216,9 +193,17 @@ func (p *Progressive[T]) MarshalJSON() ([]byte, error) {
 
 	curStage := p.curStage
 	for curStage != nil {
+		v := func() string {
+			if p.iValueFormatter != nil {
+				return p.formatValue(curStage.value)
+			}
+
+			return fmt.Sprintf("%v", curStage.value)
+		}()
+
 		if fp, ok := curStage.source.(*Progressive[T]); ok {
 			stages[curStage.idx] = jsonStage{
-				Value:   fmt.Sprintf("%v", curStage.value),
+				Value:   v,
 				Formula: DescribeValueAsFormula(fp.getStage(curStage.sourceStageIdx))(),
 			}
 
@@ -228,7 +213,7 @@ func (p *Progressive[T]) MarshalJSON() ([]byte, error) {
 		}
 
 		stages[curStage.idx] = jsonStage{
-			Value:   fmt.Sprintf("%v", curStage.value),
+			Value:   v,
 			Formula: DescribeValueAsFormula(curStage.source)(),
 		}
 

@@ -2,7 +2,6 @@ package acal
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"testing"
 )
 
@@ -46,17 +45,15 @@ func TestTags_AddTags(t *testing.T) {
 func TestTags_Tag(t *testing.T) {
 	tag := Tag{Name: "TestTag"}
 
-	mockTagger1 := &MockTagger{}
+	mockTagger1 := NewMockITagger(t)
 	mockTagger1.On("Tag", tag).Once()
 
-	mockTagger2 := &MockTagger{}
+	mockTagger2 := NewMockITagger(t)
 	mockTagger2.On("Tag", tag).Once()
 
 	tags := Tags{tag}
 
 	tags.Tag(mockTagger1, mockTagger2)
-
-	mock.AssertExpectationsForObjects(t, mockTagger1, mockTagger2)
 }
 
 func TestTags_MarshalJSON(t *testing.T) {
@@ -74,32 +71,35 @@ func TestTags_MarshalJSON(t *testing.T) {
 }
 
 func TestAppendTags(t *testing.T) {
-	mockTagger := &MockTagger{}
-
 	scenarios := []struct {
-		desc   string
-		tagger Tagger
-		setup  func()
-		want   Tags
+		desc  string
+		setup func() ITagger
+		want  Tags
 	}{
 		{
-			desc:   "nil Tagger",
-			tagger: nil,
-			want:   nil,
+			desc: "nil ITagger",
+			setup: func() ITagger {
+				return nil
+			},
+			want: nil,
 		},
 		{
-			desc:   "Tagger has no existing tags",
-			tagger: mockTagger,
-			setup: func() {
+			desc: "ITagger has no existing tags",
+			setup: func() ITagger {
+				mockTagger := NewMockITagger(t)
 				mockTagger.On("GetTags").Return(nil).Once()
+
+				return mockTagger
 			},
 			want: Tags{Tag{Name: "TestName2", Value: true}},
 		},
 		{
-			desc:   "Tagger has existing tags",
-			tagger: mockTagger,
-			setup: func() {
-				mockTagger.On("GetTags").Return(Tags{Tag{Name: "TestName1", Value: 5}}).Twice()
+			desc: "ITagger has existing tags",
+			setup: func() ITagger {
+				mockTagger := NewMockITagger(t)
+				mockTagger.On("GetTags").Return(Tags{Tag{Name: "TestName1", Value: 5}}).Once()
+
+				return mockTagger
 			},
 			want: Tags{Tag{Name: "TestName1", Value: 5}, Tag{Name: "TestName2", Value: true}},
 		},
@@ -109,11 +109,7 @@ func TestAppendTags(t *testing.T) {
 		sc := scenario
 		t.Run(
 			sc.desc, func(t *testing.T) {
-				if sc.setup != nil {
-					sc.setup()
-				}
-
-				actual := AppendTags(sc.tagger, Tag{Name: "TestName2", Value: true})
+				actual := AppendTags(sc.setup(), Tag{Name: "TestName2", Value: true})
 
 				assert.Equal(t, sc.want, actual)
 			},

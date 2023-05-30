@@ -28,7 +28,7 @@ var PerformStandardValueExtraction = func(v Value, cache IValueCache) IValueCach
 		c.GetCondition().criteria.ExtractValues(cache)
 	}
 
-	if t, ok := v.(Tagger); ok {
+	if t, ok := v.(ITagger); ok {
 		for _, tag := range t.GetTags() {
 			if tag.aVal != nil {
 				tag.aVal.ExtractValues(cache)
@@ -60,4 +60,8 @@ func ToString(aVal ...Value) string {
 	}
 
 	return string(json)
+}
+
+type iValueFormatter[T any] interface {
+	formatValue(T) string
 }

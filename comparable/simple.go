@@ -1,4 +1,4 @@
-package anything
+package comparable
 
 import (
 	"fmt"
@@ -32,7 +32,7 @@ func (s *Simple[T]) IsNil() bool {
 // SelfReplaceIfNil returns the replacement to represent this Simple if it is nil.
 func (s *Simple[T]) SelfReplaceIfNil() acal.Value {
 	if s == nil || s.IsNil() {
-		return acal.ZeroSimple[T]("NilAny")
+		return acal.ZeroSimple[T]("NilComparable")
 	}
 
 	return s

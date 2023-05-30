@@ -13,6 +13,7 @@ var DoNothingCloseIfFunc CloseIfFunc = func() {}
 
 // StaticConditionalValue needs to be implemented by static
 // Value that holds a Condition.
+//
 //go:generate mockery --name=StaticConditionalValue --case underscore --inpackage
 type StaticConditionalValue interface {
 	// IsConditional returns whether a Condition is attached to this StaticConditionalValue.
@@ -25,6 +26,7 @@ type StaticConditionalValue interface {
 
 // ProgressiveConditionalValue needs to be implemented by progressive
 // Value that might involve conditional calculation.
+//
 //go:generate mockery --name=ProgressiveConditionalValue --case underscore --inpackage
 type ProgressiveConditionalValue interface {
 	// AddCondition attaches the given Condition to this ProgressiveConditionalValue
@@ -79,4 +81,23 @@ func (c *Condition) MarshalJSON() ([]byte, error) {
 			CloseIfStageIdx: c.closeIfStageIdx,
 		},
 	)
+}
+
+type staticConditioner struct {
+	condition *Condition
+}
+
+// IsConditional returns whether a Condition is attached to this iStaticConditioner.
+func (c *staticConditioner) IsConditional() bool {
+	return c.condition != nil
+}
+
+// GetCondition returns the Condition attached to this Simple.
+func (c *staticConditioner) GetCondition() *Condition {
+	return c.condition
+}
+
+// AddCondition attaches the given Condition to this Simple.
+func (c *staticConditioner) AddCondition(condition *Condition) {
+	c.condition = condition
 }

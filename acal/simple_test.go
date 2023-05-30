@@ -193,8 +193,9 @@ func TestSimple_MarshallJSON(t *testing.T) {
 				toMarshall := NewSimple("DummyBool", true)
 				toMarshall.Tag(NewTagFrom(dummyInt))
 				toMarshall.From(SourceHardcode)
+				toMarshall.AddCondition(NewCondition(NewSimple("Criteria", true)))
 
-				wanted := `{"Value":"true","Source":"hardcode","Tags":{"DummyInt":{"Value":"1","IsValue":true}}}`
+				wanted := `{"Value":"true","Source":"hardcode","Tags":{"DummyInt":{"Value":"1","IsValue":true}},"Condition":{"Formula":{"Category":"AssignVariable","Operands":[{"Name":"Criteria"}]}}}`
 
 				actual, err := toMarshall.MarshalJSON()
 				assert.Equal(t, wanted, string(actual))

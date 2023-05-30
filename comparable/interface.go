@@ -1,4 +1,4 @@
-package anything
+package comparable
 
 import (
 	"github.com/jamestrandung/go-accountable-calculation/acal"
