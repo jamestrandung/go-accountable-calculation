@@ -1,14 +1,13 @@
 package acal
 
-import "fmt"
-
 // IValueOps ...
+//
 //go:generate mockery --name=IValueOps --case underscore --inpackage
 type IValueOps interface {
 	// IsNilValue ...
 	IsNilValue(v Value) bool
-	// IsAnchored ...
-	IsAnchored(v Value) bool
+	// HasIdentity ...
+	HasIdentity(v Value) bool
 	// Identify ...
 	Identify(v Value) string
 	// Describe ...
@@ -24,13 +23,13 @@ func (valueOpsImpl) IsNilValue(v Value) bool {
 	return v == nil || v.IsNil()
 }
 
-// IsAnchored ...
-func (valueOpsImpl) IsAnchored(v Value) bool {
+// HasIdentity ...
+func (valueOpsImpl) HasIdentity(v Value) bool {
 	if IsNilValue(v) {
 		return false
 	}
 
-	return v.GetName() != "" || v.GetAlias() != ""
+	return v.HasIdentity()
 }
 
 // Identify ...
@@ -39,11 +38,7 @@ func (valueOpsImpl) Identify(v Value) string {
 		return UnknownValueName
 	}
 
-	if v.GetAlias() == "" {
-		return v.GetName()
-	}
-
-	return v.GetAlias()
+	return v.Identify()
 }
 
 // Describe ...
@@ -54,15 +49,15 @@ func (valueOpsImpl) Describe(v Value) string {
 
 	identity := Identify(v)
 	if identity == "" {
-		return "?[" + fmt.Sprintf("%v", v.GetValue()) + "]"
+		return "?[" + v.Stringify() + "]"
 	}
 
-	return identity + "[" + fmt.Sprintf("%v", v.GetValue()) + "]"
+	return identity + "[" + v.Stringify() + "]"
 }
 
 // DescribeValueAsFormula ...
 func (valueOpsImpl) DescribeValueAsFormula(v Value) func() *SyntaxNode {
-	if IsAnchored(v) {
+	if HasIdentity(v) {
 		return func() *SyntaxNode {
 			return &SyntaxNode{
 				category: OpCategoryAssignVariable,
@@ -95,9 +90,9 @@ func IsNilValue(v Value) bool {
 	return valueOps.IsNilValue(v)
 }
 
-// IsAnchored returns whether the given Value is anchored.
-func IsAnchored(v Value) bool {
-	return valueOps.IsAnchored(v)
+// HasIdentity returns whether the given Value is anchored.
+func HasIdentity(v Value) bool {
+	return valueOps.HasIdentity(v)
 }
 
 // Identify returns the identity of the given Value, which is its

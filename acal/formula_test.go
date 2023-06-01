@@ -2,20 +2,19 @@ package acal
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"testing"
 )
 
 func TestFormula_MarshalJSON(t *testing.T) {
-	aValMock1 := &mockValueWithFormula{}
+	aValMock1 := newMockValueWithFormula(t)
 	syntaxOperandMock1 := &SyntaxOperand{Name: "TestOperand1"}
 	aValMock1.On("ToSyntaxOperand", OpTransparent).Return(syntaxOperandMock1).Once()
 
-	aValMock2 := &mockValueWithFormula{}
+	aValMock2 := newMockValueWithFormula(t)
 	syntaxOperandMock2 := &SyntaxOperand{Name: "TestOperand2", StageIdx: 1}
 	aValMock2.On("ToSyntaxOperand", OpTransparent).Return(syntaxOperandMock2).Once()
 
-	aValMock3 := &mockValueWithFormula{}
+	aValMock3 := newMockValueWithFormula(t)
 	innerNode := NewSyntaxNode(OpCategoryTwoValMiddleOp, OpTransparent, "TestInnerOp", []any{"staticValue"})
 	syntaxOperandMock3 := NewSyntaxOperandWithFormula(innerNode, true)
 	aValMock3.On("ToSyntaxOperand", OpTransparent).Return(syntaxOperandMock3).Once()
@@ -30,10 +29,10 @@ func TestFormula_MarshalJSON(t *testing.T) {
 }
 
 func TestNewSyntaxOperand(t *testing.T) {
-	valueOpsMock, cleanup := MockValueOps()
+	valueOpsMock, cleanup := MockValueOps(t)
 	defer cleanup()
 
-	aValMock := &mockValueWithFormula{}
+	aValMock := newMockValueWithFormula(t)
 
 	valueOpsMock.On("Identify", aValMock).Return("TestIdentity").Once()
 
@@ -41,14 +40,13 @@ func TestNewSyntaxOperand(t *testing.T) {
 	wanted := &SyntaxOperand{Name: "TestIdentity"}
 
 	assert.Equal(t, wanted, actual)
-	mock.AssertExpectationsForObjects(t, valueOpsMock)
 }
 
 func TestNewSyntaxOperandWithStageIdx(t *testing.T) {
-	valueOpsMock, cleanup := MockValueOps()
+	valueOpsMock, cleanup := MockValueOps(t)
 	defer cleanup()
 
-	aValMock := &mockValueWithFormula{}
+	aValMock := newMockValueWithFormula(t)
 
 	valueOpsMock.On("Identify", aValMock).Return("TestIdentity").Once()
 
@@ -56,7 +54,6 @@ func TestNewSyntaxOperandWithStageIdx(t *testing.T) {
 	wanted := &SyntaxOperand{Name: "TestIdentity", StageIdx: 5}
 
 	assert.Equal(t, wanted, actual)
-	mock.AssertExpectationsForObjects(t, valueOpsMock)
 }
 
 func TestNewSyntaxOperandWithStaticValue(t *testing.T) {

@@ -32,6 +32,16 @@ func (s *Stage[T]) SetAlias(alias string) {
 	s.self.SetAlias(alias)
 }
 
+// HasIdentity returns whether the underlying Progressive was given an identity.
+func (s *Stage[T]) HasIdentity() bool {
+	return s.self.HasIdentity()
+}
+
+// Identify returns the identity that was given to the underlying Progressive.
+func (s *Stage[T]) Identify() string {
+	return s.self.Identify()
+}
+
 // GetTypedValue returns the typed value this Stage contains.
 func (s *Stage[T]) GetTypedValue() T {
 	if s.IsNil() {
@@ -64,4 +74,9 @@ func (s *Stage[T]) SelfReplaceIfNil() Value {
 	}
 
 	return s
+}
+
+// String returns the value this Stage contains as a string.
+func (s *Stage[T]) Stringify() string {
+	return s.self.formatValue(s.value)
 }

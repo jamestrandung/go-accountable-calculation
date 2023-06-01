@@ -17,7 +17,7 @@ type Tag struct {
 func NewTagFrom(v Value) Tag {
 	return Tag{
 		Name:  v.GetName(),
-		Value: v.GetValue(),
+		Value: v.Stringify(),
 		aVal:  v,
 	}
 }

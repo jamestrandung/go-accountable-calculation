@@ -1,11 +1,10 @@
 package acal
 
-import (
-	"fmt"
-)
-
 // Constant ...
 type Constant[T any] struct {
+	namedValue
+	valueFormatter[T]
+
 	value T
 }
 
@@ -19,18 +18,6 @@ func NewConstant[T any](value T) *Constant[T] {
 // IsNil returns whether this Constant is nil.
 func (c *Constant[T]) IsNil() bool {
 	return c == nil
-}
-
-// GetName always returns empty string for Constant as constant values
-// will be used directly in formula without any reference to name.
-func (c *Constant[T]) GetName() string {
-	return ""
-}
-
-// GetAlias always returns empty string for Constant as constant values
-// will be used directly in formula without any reference to alias.
-func (c *Constant[T]) GetAlias() string {
-	return ""
 }
 
 // SetAlias does nothing for Constant as it's a constant.
@@ -55,7 +42,7 @@ func (c *Constant[T]) GetValue() any {
 
 // ToSyntaxOperand returns the SyntaxOperand representation of this Constant.
 func (c *Constant[T]) ToSyntaxOperand(nextOp Op) *SyntaxOperand {
-	return NewSyntaxOperandWithStaticValue(fmt.Sprintf("%v", c.GetTypedValue()))
+	return NewSyntaxOperandWithStaticValue(c.Stringify())
 }
 
 // HasFormula returns whether this Constant has a formula.
@@ -66,7 +53,7 @@ func (c *Constant[T]) HasFormula() bool {
 // GetFormulaFn returns the function to build a formula of this Constant.
 func (c *Constant[T]) GetFormulaFn() func() *SyntaxNode {
 	return func() *SyntaxNode {
-		return NewSyntaxNode(OpCategoryAssignStatic, OpTransparent, fmt.Sprintf("%v", c.GetTypedValue()), nil)
+		return NewSyntaxNode(OpCategoryAssignStatic, OpTransparent, c.Stringify(), nil)
 	}
 }
 
@@ -82,4 +69,9 @@ func (c *Constant[T]) SelfReplaceIfNil() Value {
 	}
 
 	return c
+}
+
+// Stringify returns the value this Constant contains as a string.
+func (c *Constant[T]) Stringify() string {
+	return c.formatValue(c.value)
 }

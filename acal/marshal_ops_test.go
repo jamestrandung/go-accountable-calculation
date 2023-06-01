@@ -9,9 +9,9 @@ import (
 )
 
 // MockMarshalOps can be used in tests to mock IMarshalOps.
-func MockMarshalOps() (*MockIMarshalOps, func()) {
+func MockMarshalOps(t *testing.T) (*MockIMarshalOps, func()) {
 	old := marshalOps
-	mock := &MockIMarshalOps{}
+	mock := NewMockIMarshalOps(t)
 
 	marshalOps = mock
 	return mock, func() {
@@ -20,7 +20,7 @@ func MockMarshalOps() (*MockIMarshalOps, func()) {
 }
 
 func TestMarshalOpsImpl_MarshalJSON(t *testing.T) {
-	valueOpsMock, cleanup := MockValueOps()
+	valueOpsMock, cleanup := MockValueOps(t)
 	defer cleanup()
 
 	defer func(original func(v any) ([]byte, error)) {
@@ -30,18 +30,18 @@ func TestMarshalOpsImpl_MarshalJSON(t *testing.T) {
 
 	testMap := make(map[string]Value)
 
-	cacheMock := &MockIValueCache{}
+	cacheMock := NewMockIValueCache(t)
 	cacheMock.On("Flatten").Return(testMap).Once()
 
-	anchordedAValMock := &mockValueWithAllFeatures{}
+	anchordedAValMock := newMockValueWithAllFeatures(t)
 	anchordedAValMock.On("SetAlias", UnknownValueName).Maybe()
 	anchordedAValMock.On("ExtractValues", mock.Anything).Return(cacheMock).Once()
 
-	unanchoredAValMock1 := &mockValueWithAllFeatures{}
+	unanchoredAValMock1 := newMockValueWithAllFeatures(t)
 	unanchoredAValMock1.On("SetAlias", UnknownValueName).Once()
 	unanchoredAValMock1.On("ExtractValues", mock.Anything).Return(cacheMock).Once()
 
-	unanchoredAValMock2 := &mockValueWithAllFeatures{}
+	unanchoredAValMock2 := newMockValueWithAllFeatures(t)
 	unanchoredAValMock2.On("SetAlias", UnknownValueName).Once()
 	unanchoredAValMock2.On("ExtractValues", mock.Anything).Return(cacheMock).Once()
 
@@ -50,9 +50,9 @@ func TestMarshalOpsImpl_MarshalJSON(t *testing.T) {
 	valueOpsMock.On("IsNilValue", unanchoredAValMock1).Return(false).Once()
 	valueOpsMock.On("IsNilValue", unanchoredAValMock2).Return(false).Once()
 
-	valueOpsMock.On("IsAnchored", anchordedAValMock).Return(true).Once()
-	valueOpsMock.On("IsAnchored", unanchoredAValMock1).Return(false).Once()
-	valueOpsMock.On("IsAnchored", unanchoredAValMock2).Return(false).Once()
+	valueOpsMock.On("HasIdentity", anchordedAValMock).Return(true).Once()
+	valueOpsMock.On("HasIdentity", unanchoredAValMock1).Return(false).Once()
+	valueOpsMock.On("HasIdentity", unanchoredAValMock2).Return(false).Once()
 
 	jsonMarshalFn = func(v any) ([]byte, error) {
 		assert.Equal(t, testMap, v)
@@ -66,13 +66,9 @@ func TestMarshalOpsImpl_MarshalJSON(t *testing.T) {
 	assert.Nil(t, err, "error should be nil")
 
 	anchordedAValMock.AssertNotCalled(t, "SetAlias", UnknownValueName)
-	mock.AssertExpectationsForObjects(t, cacheMock, anchordedAValMock, unanchoredAValMock1, unanchoredAValMock2, valueOpsMock)
 }
 
 func TestMarshalOpsImpl_MarshalJSONByFields(t *testing.T) {
-	valueOpsMock, cleanup := MockValueOps()
-	defer cleanup()
-
 	defer func(original func(v any) ([]byte, error)) {
 		// restore (after test)
 		jsonMarshalFn = original
@@ -97,9 +93,9 @@ func TestMarshalOpsImpl_MarshalJSONByFields(t *testing.T) {
 		{
 			desc: "data is Value",
 			test: func(t *testing.T) {
-				data := &mockValueWithAllFeatures{}
+				data := newMockValueWithAllFeatures(t)
 
-				marshalOpsMock, cleanup := MockMarshalOps()
+				marshalOpsMock, cleanup := MockMarshalOps(t)
 				defer cleanup()
 
 				marshalOpsMock.On("MarshalJSON", mock.Anything).
@@ -117,7 +113,6 @@ func TestMarshalOpsImpl_MarshalJSONByFields(t *testing.T) {
 				json, err := ops.MarshalJSONByFields(data)
 				assert.Equal(t, []byte(nil), json)
 				assert.Equal(t, fmt.Errorf("dummy marshalJSON was executed"), err)
-				mock.AssertExpectationsForObjects(t, marshalOpsMock)
 			},
 		},
 		{
@@ -137,7 +132,7 @@ func TestMarshalOpsImpl_MarshalJSONByFields(t *testing.T) {
 			test: func(t *testing.T) {
 				data := struct {
 					unexportedField TypedValue[float64]
-				}{&MockTypedValue[float64]{}}
+				}{NewMockTypedValue[float64](t)}
 
 				jsonMarshalFn = func(v any) ([]byte, error) {
 					m, ok := v.(map[string]any)
@@ -192,6 +187,9 @@ func TestMarshalOpsImpl_MarshalJSONByFields(t *testing.T) {
 					return nil, fmt.Errorf("dummy jsonMarshalFn was executed")
 				}
 
+				valueOpsMock, cleanup := MockValueOps(t)
+				defer cleanup()
+
 				valueOpsMock.On("IsNilValue", (*MockTypedValue[float64])(nil)).Return(true).Once()
 
 				ops := marshalOpsImpl{}
@@ -204,10 +202,10 @@ func TestMarshalOpsImpl_MarshalJSONByFields(t *testing.T) {
 		{
 			desc: "data is a struct with an exported field that is a non-nil un-anchored Value",
 			test: func(t *testing.T) {
-				aValMock1 := &mockValueWithAllFeatures{}
-				aValMock2 := &mockValueWithAllFeatures{}
+				aValMock1 := newMockValueWithAllFeatures(t)
+				aValMock2 := newMockValueWithAllFeatures(t)
 
-				cacheMock := &MockIValueCache{}
+				cacheMock := NewMockIValueCache(t)
 				cacheMock.On("Flatten").Return(
 					map[string]Value{
 						"Unknown": aValMock1,
@@ -220,11 +218,14 @@ func TestMarshalOpsImpl_MarshalJSONByFields(t *testing.T) {
 				aValMock2.On("SetAlias", UnknownValueName).Once()
 				aValMock2.On("ExtractValues", mock.Anything).Return(cacheMock).Once()
 
+				valueOpsMock, cleanup := MockValueOps(t)
+				defer cleanup()
+
 				valueOpsMock.On("IsNilValue", aValMock1).Return(false).Once()
-				valueOpsMock.On("IsAnchored", aValMock1).Return(false).Once()
+				valueOpsMock.On("HasIdentity", aValMock1).Return(false).Once()
 
 				valueOpsMock.On("IsNilValue", aValMock2).Return(false).Once()
-				valueOpsMock.On("IsAnchored", aValMock2).Return(false).Once()
+				valueOpsMock.On("HasIdentity", aValMock2).Return(false).Once()
 
 				data := struct {
 					ExportedField1 Value
@@ -245,15 +246,14 @@ func TestMarshalOpsImpl_MarshalJSONByFields(t *testing.T) {
 				json, err := ops.MarshalJSONByFields(data)
 				assert.Equal(t, []byte(nil), json)
 				assert.Equal(t, fmt.Errorf("dummy jsonMarshalFn was executed"), err)
-				mock.AssertExpectationsForObjects(t, cacheMock, aValMock1, aValMock2, valueOpsMock)
 			},
 		},
 		{
 			desc: "data is a struct with an exported field that is a non-nil anchored Value",
 			test: func(t *testing.T) {
-				aValMock := &mockValueWithAllFeatures{}
+				aValMock := newMockValueWithAllFeatures(t)
 
-				cacheMock := &MockIValueCache{}
+				cacheMock := NewMockIValueCache(t)
 				cacheMock.On("Flatten").Return(
 					map[string]Value{
 						"TestName": aValMock,
@@ -263,8 +263,11 @@ func TestMarshalOpsImpl_MarshalJSONByFields(t *testing.T) {
 				aValMock.On("SetAlias", UnknownValueName).Maybe()
 				aValMock.On("ExtractValues", mock.Anything).Return(cacheMock).Once()
 
+				valueOpsMock, cleanup := MockValueOps(t)
+				defer cleanup()
+
 				valueOpsMock.On("IsNilValue", aValMock).Return(false).Once()
-				valueOpsMock.On("IsAnchored", aValMock).Return(true).Once()
+				valueOpsMock.On("HasIdentity", aValMock).Return(true).Once()
 
 				data := struct {
 					ExportedField Value
@@ -285,15 +288,14 @@ func TestMarshalOpsImpl_MarshalJSONByFields(t *testing.T) {
 				assert.Equal(t, []byte(nil), json)
 				assert.Equal(t, fmt.Errorf("dummy jsonMarshalFn was executed"), err)
 				aValMock.AssertNotCalled(t, "SetAlias", UnknownValueName)
-				mock.AssertExpectationsForObjects(t, cacheMock, aValMock, valueOpsMock)
 			},
 		},
 		{
 			desc: "data is a struct with an exported field that is a non-nil anchored Value whose alias is the same with another field in the struct",
 			test: func(t *testing.T) {
-				aValMock := &mockValueWithAllFeatures{}
+				aValMock := newMockValueWithAllFeatures(t)
 
-				cacheMock := &MockIValueCache{}
+				cacheMock := NewMockIValueCache(t)
 				cacheMock.On("Flatten").Return(
 					map[string]Value{
 						"TestName": aValMock,
@@ -303,8 +305,11 @@ func TestMarshalOpsImpl_MarshalJSONByFields(t *testing.T) {
 				aValMock.On("SetAlias", "TestName.2").Once()
 				aValMock.On("ExtractValues", mock.Anything).Return(cacheMock).Once()
 
+				valueOpsMock, cleanup := MockValueOps(t)
+				defer cleanup()
+
 				valueOpsMock.On("IsNilValue", aValMock).Return(false).Once()
-				valueOpsMock.On("IsAnchored", aValMock).Return(true).Once()
+				valueOpsMock.On("HasIdentity", aValMock).Return(true).Once()
 
 				data := struct {
 					TestName      float64
@@ -325,17 +330,11 @@ func TestMarshalOpsImpl_MarshalJSONByFields(t *testing.T) {
 				json, err := ops.MarshalJSONByFields(data)
 				assert.Equal(t, []byte(nil), json)
 				assert.Equal(t, fmt.Errorf("dummy jsonMarshalFn was executed"), err)
-				mock.AssertExpectationsForObjects(t, cacheMock, aValMock, valueOpsMock)
 			},
 		},
 	}
 
-	for _, scenario := range scenarios {
-		sc := scenario
-		t.Run(
-			sc.desc, func(t *testing.T) {
-				sc.test(t)
-			},
-		)
+	for _, sc := range scenarios {
+		t.Run(sc.desc, sc.test)
 	}
 }

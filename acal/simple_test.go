@@ -79,11 +79,7 @@ func TestSimple_ToSyntaxOperand(t *testing.T) {
 	}
 
 	for _, sc := range scenarios {
-		t.Run(
-			sc.desc, func(t *testing.T) {
-				sc.test(t)
-			},
-		)
+		t.Run(sc.desc, sc.test)
 	}
 }
 
@@ -145,11 +141,7 @@ func TestSimple_DoAnchor(t *testing.T) {
 	}
 
 	for _, sc := range scenarios {
-		t.Run(
-			sc.desc, func(t *testing.T) {
-				sc.test(t)
-			},
-		)
+		t.Run(sc.desc, sc.test)
 	}
 }
 
@@ -205,10 +197,6 @@ func TestSimple_MarshallJSON(t *testing.T) {
 	}
 
 	for _, sc := range scenarios {
-		t.Run(
-			sc.desc, func(t *testing.T) {
-				sc.test(t)
-			},
-		)
+		t.Run(sc.desc, sc.test)
 	}
 }

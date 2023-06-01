@@ -1,193 +1,165 @@
 package acal
 
 import (
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"testing"
+    "github.com/stretchr/testify/assert"
+    "github.com/stretchr/testify/mock"
+    "testing"
 )
 
-func TestFormatFloatForMarshalling(t *testing.T) {
-	scenarios := []struct {
-		desc string
-		f    float64
-		want string
-	}{
-		{
-			desc: "small float",
-			f:    24.2,
-			want: "24.2",
-		},
-		{
-			desc: "huge float",
-			f:    17976931348623157000000000000000000000000000000000000000000000000000000000,
-			want: "1.7976931348623158e+73",
-		},
-	}
-
-	for _, scenario := range scenarios {
-		sc := scenario
-		t.Run(
-			sc.desc, func(t *testing.T) {
-				actual := FormatFloatForMarshalling(sc.f)
-
-				assert.Equal(t, sc.want, actual)
-			},
-		)
-	}
-}
-
 func TestPerformStandardValueExtraction(t *testing.T) {
-	valueOpsMock, cleanup := MockValueOps()
-	defer cleanup()
+    scenarios := []struct {
+        desc string
+        test func(t *testing.T)
+    }{
+        {
+            desc: "nil Value",
+            test: func(t *testing.T) {
+                cache := NewMockIValueCache(t)
 
-	scenarios := []struct {
-		desc string
-		test func(t *testing.T)
-	}{
-		{
-			desc: "nil Value",
-			test: func(t *testing.T) {
-				cache := &MockIValueCache{}
+                valueOpsMock, cleanup := MockValueOps(t)
+                defer cleanup()
 
-				valueOpsMock.On("IsNilValue", nil).Return(true).Once()
+                valueOpsMock.On("IsNilValue", nil).Return(true).Once()
 
-				result := PerformStandardValueExtraction(nil, cache)
+                result := PerformStandardValueExtraction(nil, cache)
 
-				assert.Equal(t, cache, result)
-				cache.AssertNotCalled(t, "Take", mock.Anything)
-				mock.AssertExpectationsForObjects(t, valueOpsMock)
-			},
-		},
-		{
-			desc: "already taken anchored Value",
-			test: func(t *testing.T) {
-				cacheMock := &MockIValueCache{}
+                assert.Equal(t, cache, result)
+                cache.AssertNotCalled(t, "Take", mock.Anything)
+            },
+        },
+        {
+            desc: "already taken anchored Value",
+            test: func(t *testing.T) {
+                cacheMock := NewMockIValueCache(t)
 
-				aValMock := &mockValueWithAllFeatures{}
-				aValMock.On("IsConditional").Return(false).Maybe()
-				aValMock.On("HasFormula").Return(false).Maybe()
+                aValMock := newMockValueWithAllFeatures(t)
+                aValMock.On("IsConditional").Return(false).Maybe()
+                aValMock.On("HasFormula").Return(false).Maybe()
 
-				valueOpsMock.On("IsNilValue", aValMock).Return(false).Once()
-				valueOpsMock.On("IsAnchored", aValMock).Return(true).Once()
+                valueOpsMock, cleanup := MockValueOps(t)
+                defer cleanup()
 
-				// Already taken Value
-				cacheMock.On("Take", aValMock).Return(false).Once()
+                valueOpsMock.On("IsNilValue", aValMock).Return(false).Once()
+                valueOpsMock.On("HasIdentity", aValMock).Return(true).Once()
 
-				result := PerformStandardValueExtraction(aValMock, cacheMock)
+                // Already taken Value
+                cacheMock.On("Take", aValMock).Return(false).Once()
 
-				assert.Equal(t, cacheMock, result)
-				aValMock.AssertNotCalled(t, "IsConditional")
-				aValMock.AssertNotCalled(t, "HasFormula")
-				mock.AssertExpectationsForObjects(t, aValMock, valueOpsMock, cacheMock)
-			},
-		},
-		{
-			desc: "unique anchored Value with condition",
-			test: func(t *testing.T) {
-				cacheMock := &MockIValueCache{}
+                result := PerformStandardValueExtraction(aValMock, cacheMock)
 
-				criteriaMock := &MockTypedValue[bool]{}
-				criteriaMock.On("ExtractValues", cacheMock).Return(cacheMock).Once()
+                assert.Equal(t, cacheMock, result)
+                aValMock.AssertNotCalled(t, "IsConditional")
+                aValMock.AssertNotCalled(t, "HasFormula")
+            },
+        },
+        {
+            desc: "unique anchored Value with condition",
+            test: func(t *testing.T) {
+                cacheMock := NewMockIValueCache(t)
 
-				aValMock := &mockValueWithAllFeatures{}
-				aValMock.On("IsConditional").Return(true).Once()
-				aValMock.On("GetCondition").Return(NewCondition(criteriaMock)).Once()
-				aValMock.On("GetTags").Return(nil).Once()
-				aValMock.On("HasFormula").Return(false).Once()
-				aValMock.On("GetFormulaFn").Return(nil).Maybe()
+                criteriaMock := NewMockTypedValue[bool](t)
+                criteriaMock.On("ExtractValues", cacheMock).Return(cacheMock).Once()
 
-				valueOpsMock.On("IsNilValue", aValMock).Return(false).Once()
-				valueOpsMock.On("IsAnchored", aValMock).Return(true).Once()
+                aValMock := newMockValueWithAllFeatures(t)
+                aValMock.On("IsConditional").Return(true).Once()
+                aValMock.On("GetCondition").Return(NewCondition(criteriaMock)).Once()
+                aValMock.On("GetTags").Return(nil).Once()
+                aValMock.On("HasFormula").Return(false).Once()
+                aValMock.On("GetFormulaFn").Return(nil).Maybe()
 
-				// New Value
-				cacheMock.On("Take", aValMock).Return(true).Once()
+                valueOpsMock, cleanup := MockValueOps(t)
+                defer cleanup()
 
-				result := PerformStandardValueExtraction(aValMock, cacheMock)
+                valueOpsMock.On("IsNilValue", aValMock).Return(false).Once()
+                valueOpsMock.On("HasIdentity", aValMock).Return(true).Once()
 
-				assert.Equal(t, cacheMock, result)
-				aValMock.AssertNotCalled(t, "GetFormulaFn")
-				mock.AssertExpectationsForObjects(t, aValMock, valueOpsMock, cacheMock, criteriaMock)
-			},
-		},
-		{
-			desc: "unique anchored Value with formula",
-			test: func(t *testing.T) {
-				cacheMock := &MockIValueCache{}
+                // New Value
+                cacheMock.On("Take", aValMock).Return(true).Once()
 
-				aValMock := &mockValueWithAllFeatures{}
-				aValMock.On("IsConditional").Return(false).Once()
-				aValMock.On("GetCondition").Return(nil).Maybe()
-				aValMock.On("GetTags").Return(nil).Once()
-				aValMock.On("HasFormula").Return(true).Once()
+                result := PerformStandardValueExtraction(aValMock, cacheMock)
 
-				mockOperand1 := &mockValueWithAllFeatures{}
-				mockOperand1.On("ExtractValues", cacheMock).Return(cacheMock).Once()
+                assert.Equal(t, cacheMock, result)
+                aValMock.AssertNotCalled(t, "GetFormulaFn")
+            },
+        },
+        {
+            desc: "unique anchored Value with formula",
+            test: func(t *testing.T) {
+                cacheMock := NewMockIValueCache(t)
 
-				mockOperand2 := &mockValueWithAllFeatures{}
-				mockOperand2.On("ExtractValues", cacheMock).Return(cacheMock).Once()
+                aValMock := newMockValueWithAllFeatures(t)
+                aValMock.On("IsConditional").Return(false).Once()
+                aValMock.On("GetCondition").Return(nil).Maybe()
+                aValMock.On("GetTags").Return(nil).Once()
+                aValMock.On("HasFormula").Return(true).Once()
 
-				var dummyOpCategory OpCategory = 99
+                mockOperand1 := newMockValueWithAllFeatures(t)
+                mockOperand1.On("ExtractValues", cacheMock).Return(cacheMock).Once()
 
-				aValMock.On("GetFormulaFn").Return(
-					func() *SyntaxNode {
-						return NewSyntaxNode(
-							dummyOpCategory, OpTransparent, "TestOpDesc", []any{
-								mockOperand1,
-								mockOperand2,
-								"staticValue",
-							},
-						)
-					},
-				).Maybe()
+                mockOperand2 := newMockValueWithAllFeatures(t)
+                mockOperand2.On("ExtractValues", cacheMock).Return(cacheMock).Once()
 
-				valueOpsMock.On("IsNilValue", aValMock).Return(false).Once()
-				valueOpsMock.On("IsAnchored", aValMock).Return(true).Once()
+                var dummyOpCategory OpCategory = 99
 
-				// New Value
-				cacheMock.On("Take", aValMock).Return(true).Once()
+                aValMock.On("GetFormulaFn").Return(
+                    func() *SyntaxNode {
+                        return NewSyntaxNode(
+                            dummyOpCategory, OpTransparent, "TestOpDesc", []any{
+                                mockOperand1,
+                                mockOperand2,
+                                "staticValue",
+                            },
+                        )
+                    },
+                ).Maybe()
 
-				result := PerformStandardValueExtraction(aValMock, cacheMock)
+                valueOpsMock, cleanup := MockValueOps(t)
+                defer cleanup()
 
-				assert.Equal(t, cacheMock, result)
-				aValMock.AssertNotCalled(t, "GetCondition")
-				mock.AssertExpectationsForObjects(t, aValMock, valueOpsMock, cacheMock, mockOperand1, mockOperand2)
-			},
-		},
-		{
-			desc: "unique anchored Value with tags containing an Value",
-			test: func(t *testing.T) {
-				cacheMock := &MockIValueCache{}
+                valueOpsMock.On("IsNilValue", aValMock).Return(false).Once()
+                valueOpsMock.On("HasIdentity", aValMock).Return(true).Once()
 
-				tag := Tag{Name: "TestName", Value: 5}
+                // New Value
+                cacheMock.On("Take", aValMock).Return(true).Once()
 
-				aValMock := &mockValueWithAllFeatures{}
-				aValMock.On("IsConditional").Return(false).Once()
-				aValMock.On("GetCondition").Return(nil).Maybe()
-				aValMock.On("GetTags").Return(Tags{tag}).Once()
-				aValMock.On("HasFormula").Return(false).Once()
-				aValMock.On("GetFormulaFn").Return(nil).Maybe()
+                result := PerformStandardValueExtraction(aValMock, cacheMock)
 
-				valueOpsMock.On("IsNilValue", aValMock).Return(false).Once()
-				valueOpsMock.On("IsAnchored", aValMock).Return(true).Once()
+                assert.Equal(t, cacheMock, result)
+                aValMock.AssertNotCalled(t, "GetCondition")
+            },
+        },
+        {
+            desc: "unique anchored Value with tags containing an Value",
+            test: func(t *testing.T) {
+                cacheMock := NewMockIValueCache(t)
 
-				// New Value
-				cacheMock.On("Take", aValMock).Return(true).Once()
+                tag := Tag{Name: "TestName", Value: 5}
 
-				result := PerformStandardValueExtraction(aValMock, cacheMock)
+                aValMock := newMockValueWithAllFeatures(t)
+                aValMock.On("IsConditional").Return(false).Once()
+                aValMock.On("GetCondition").Return(nil).Maybe()
+                aValMock.On("GetTags").Return(Tags{tag}).Once()
+                aValMock.On("HasFormula").Return(false).Once()
+                aValMock.On("GetFormulaFn").Return(nil).Maybe()
 
-				assert.Equal(t, cacheMock, result)
-				aValMock.AssertNotCalled(t, "GetCondition")
-				mock.AssertExpectationsForObjects(t, aValMock, valueOpsMock, cacheMock)
-			},
-		},
-	}
+                valueOpsMock, cleanup := MockValueOps(t)
+                defer cleanup()
 
-	for _, scenario := range scenarios {
-		sc := scenario
-		t.Run(
-			sc.desc, func(t *testing.T) {
-				sc.test(t)
-			},
-		)
-	}
+                valueOpsMock.On("IsNilValue", aValMock).Return(false).Once()
+                valueOpsMock.On("HasIdentity", aValMock).Return(true).Once()
+
+                // New Value
+                cacheMock.On("Take", aValMock).Return(true).Once()
+
+                result := PerformStandardValueExtraction(aValMock, cacheMock)
+
+                assert.Equal(t, cacheMock, result)
+                aValMock.AssertNotCalled(t, "GetCondition")
+            },
+        },
+    }
+
+    for _, sc := range scenarios {
+        t.Run(sc.desc, sc.test)
+    }
 }

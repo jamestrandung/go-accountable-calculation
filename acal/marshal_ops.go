@@ -8,6 +8,7 @@ import (
 )
 
 // IMarshalOps ...
+//
 //go:generate mockery --name=IMarshalOps --case underscore --inpackage
 type IMarshalOps interface {
 	// MarshalJSON ...
@@ -29,7 +30,7 @@ func (marshalOpsImpl) MarshalJSON(values ...Value) ([]byte, error) {
 			continue
 		}
 
-		if !IsAnchored(value) {
+		if !HasIdentity(value) {
 			value.SetAlias(UnknownValueName)
 		}
 
@@ -79,7 +80,7 @@ func (marshalOpsImpl) MarshalJSONByFields(data any) ([]byte, error) {
 		}
 
 		if !IsNilValue(v) {
-			if !IsAnchored(v) {
+			if !HasIdentity(v) {
 				v.SetAlias(UnknownValueName)
 			}
 

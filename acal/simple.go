@@ -2,7 +2,6 @@ package acal
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Simple ...
@@ -10,7 +9,7 @@ type Simple[T any] struct {
 	namedValue
 	tagger
 	staticConditioner
-	iValueFormatter[T]
+	valueFormatter[T]
 
 	value     T
 	source    Source
@@ -88,7 +87,7 @@ func (s *Simple[T]) GetValue() any {
 
 // ToSyntaxOperand returns the SyntaxOperand representation of this Simple.
 func (s *Simple[T]) ToSyntaxOperand(nextOp Op) *SyntaxOperand {
-	if IsAnchored(s) {
+	if HasIdentity(s) {
 		return NewSyntaxOperand(s)
 	}
 
@@ -128,7 +127,7 @@ func (s *Simple[T]) DoAnchor(name string) (*Simple[T], bool) {
 	toAnchor := s
 	isNew := false
 
-	if IsAnchored(s) {
+	if HasIdentity(s) {
 		toAnchor = NewSimpleWithFormula(s.GetTypedValue(), DescribeValueAsFormula(s))
 		isNew = true
 	}
@@ -154,14 +153,6 @@ func (s *Simple[T]) MarshalJSON() ([]byte, error) {
 		return nil, nil
 	}
 
-	v := func() string {
-		if s.iValueFormatter != nil {
-			return s.formatValue(s.value)
-		}
-
-		return fmt.Sprintf("%v", s.value)
-	}()
-
 	if s.HasFormula() {
 		return json.Marshal(
 			&struct {
@@ -171,7 +162,7 @@ func (s *Simple[T]) MarshalJSON() ([]byte, error) {
 				Condition *Condition `json:",omitempty"`
 				Formula   *SyntaxNode
 			}{
-				Value:     v,
+				Value:     s.Stringify(),
 				Source:    sourceStaticCalculation.String(),
 				Tags:      s.tags,
 				Condition: s.condition,
@@ -187,10 +178,15 @@ func (s *Simple[T]) MarshalJSON() ([]byte, error) {
 			Tags      Tags       `json:",omitempty"`
 			Condition *Condition `json:",omitempty"`
 		}{
-			Value:     v,
+			Value:     s.Stringify(),
 			Source:    string(s.source),
 			Tags:      s.tags,
 			Condition: s.condition,
 		},
 	)
+}
+
+// Stringify returns the value this Simple contains as a string.
+func (s *Simple[T]) Stringify() string {
+	return s.formatValue(s.value)
 }

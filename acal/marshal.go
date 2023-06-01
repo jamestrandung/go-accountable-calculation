@@ -2,14 +2,7 @@ package acal
 
 import (
 	"fmt"
-	"strconv"
 )
-
-// FormatFloatForMarshalling formats the given float so that it won't cause
-// errors such as "json: unsupported value: +Inf" during marshalling.
-func FormatFloatForMarshalling(f float64) string {
-	return strconv.FormatFloat(f, 'g', -1, 64)
-}
 
 // PerformStandardValueExtraction extracts all Value that were used to calculate
 // the given value and put them in the provided cache.
@@ -18,7 +11,7 @@ var PerformStandardValueExtraction = func(v Value, cache IValueCache) IValueCach
 		return cache
 	}
 
-	if IsAnchored(v) {
+	if HasIdentity(v) {
 		if !cache.Take(v) {
 			return cache
 		}
@@ -62,6 +55,18 @@ func ToString(aVal ...Value) string {
 	return string(json)
 }
 
-type iValueFormatter[T any] interface {
-	formatValue(T) string
+type valueFormatter[T any] struct {
+	formatFn func(T) string
+}
+
+func (f *valueFormatter[T]) formatValue(v T) string {
+	if f.formatFn == nil {
+		return fmt.Sprintf("%v", v)
+	}
+
+	return f.formatFn(v)
+}
+
+func (f *valueFormatter[T]) WithFormatFn(formatFn func(T) string) {
+	f.formatFn = formatFn
 }

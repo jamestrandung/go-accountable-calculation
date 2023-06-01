@@ -55,10 +55,10 @@ func TestCondition_MarshalJSON(t *testing.T) {
 		{
 			desc: "simple condition",
 			test: func(t *testing.T) {
-				valueOpsMock, cleanup := MockValueOps()
+				valueOpsMock, cleanup := MockValueOps(t)
 				defer cleanup()
 
-				criteria := &MockTypedValue[bool]{}
+				criteria := NewMockTypedValue[bool](t)
 				valueOpsMock.On("DescribeValueAsFormula", criteria).
 					Return(
 						func() *SyntaxNode {
@@ -82,10 +82,10 @@ func TestCondition_MarshalJSON(t *testing.T) {
 		{
 			desc: "progressive condition",
 			test: func(t *testing.T) {
-				valueOpsMock, cleanup := MockValueOps()
+				valueOpsMock, cleanup := MockValueOps(t)
 				defer cleanup()
 
-				criteria := &MockTypedValue[bool]{}
+				criteria := NewMockTypedValue[bool](t)
 				valueOpsMock.On("DescribeValueAsFormula", criteria).
 					Return(
 						func() *SyntaxNode {
@@ -109,8 +109,7 @@ func TestCondition_MarshalJSON(t *testing.T) {
 		},
 	}
 
-	for _, scenario := range scenarios {
-		sc := scenario
+	for _, sc := range scenarios {
 		t.Run(sc.desc, sc.test)
 	}
 }

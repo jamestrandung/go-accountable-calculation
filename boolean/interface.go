@@ -2,7 +2,7 @@ package boolean
 
 import "github.com/jamestrandung/go-accountable-calculation/acal"
 
-// Value represents an acal.Value of any kinds.
+// Value represents an acal.Value of boolean kind.
 //
 //go:generate mockery --name=Value --case underscore --inpackage
 type Value interface {

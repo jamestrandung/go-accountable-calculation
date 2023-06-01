@@ -2,7 +2,6 @@ package acal
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Remote ...
@@ -10,7 +9,7 @@ type Remote[T any] struct {
 	namedValue
 	tagger
 	staticConditioner
-	iValueFormatter[T]
+	valueFormatter[T]
 
 	value     T
 	fieldName string
@@ -83,14 +82,6 @@ func (r *Remote[T]) MarshalJSON() ([]byte, error) {
 		return nil, nil
 	}
 
-	v := func() string {
-		if r.iValueFormatter != nil {
-			return r.formatValue(r.GetTypedValue())
-		}
-
-		return fmt.Sprintf("%v", r.GetTypedValue())
-	}()
-
 	return json.Marshal(
 		&struct {
 			Value          string
@@ -100,7 +91,7 @@ func (r *Remote[T]) MarshalJSON() ([]byte, error) {
 			Tags           Tags       `json:",omitempty"`
 			Condition      *Condition `json:",omitempty"`
 		}{
-			Value:          v,
+			Value:          r.Stringify(),
 			Source:         sourceRemoteCalculation.String(),
 			DependentField: r.fieldName,
 			LogKey:         r.logKey,
@@ -108,4 +99,9 @@ func (r *Remote[T]) MarshalJSON() ([]byte, error) {
 			Condition:      r.condition,
 		},
 	)
+}
+
+// Stringify returns the value this Remote contains as a string.
+func (r *Remote[T]) Stringify() string {
+	return r.formatValue(r.GetTypedValue())
 }

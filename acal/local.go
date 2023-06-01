@@ -2,7 +2,6 @@ package acal
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Local ...
@@ -10,7 +9,7 @@ type Local[T any] struct {
 	namedValue
 	tagger
 	staticConditioner
-	iValueFormatter[T]
+	valueFormatter[T]
 
 	original TypedValue[T]
 }
@@ -83,14 +82,6 @@ func (l *Local[T]) MarshalJSON() ([]byte, error) {
 		return nil, nil
 	}
 
-	v := func() string {
-		if l.iValueFormatter != nil {
-			return l.formatValue(l.GetTypedValue())
-		}
-
-		return fmt.Sprintf("%v", l.GetTypedValue())
-	}()
-
 	return json.Marshal(
 		&struct {
 			Value          string
@@ -100,7 +91,7 @@ func (l *Local[T]) MarshalJSON() ([]byte, error) {
 			Tags           Tags       `json:",omitempty"`
 			Condition      *Condition `json:",omitempty"`
 		}{
-			Value:          v,
+			Value:          l.Stringify(),
 			Source:         sourceDependentCalculation.String(),
 			DependentField: l.original.GetName(),
 			Calculation:    l.original.ExtractValues(NewValueCache()).Flatten(),
@@ -108,4 +99,9 @@ func (l *Local[T]) MarshalJSON() ([]byte, error) {
 			Condition:      l.condition,
 		},
 	)
+}
+
+// Stringify returns the value this Local contains as a string.
+func (l *Local[T]) Stringify() string {
+	return l.formatValue(l.GetTypedValue())
 }

@@ -36,7 +36,7 @@ func TestValueCache_Take(t *testing.T) {
 				aValMock.On("GetAlias").Return("").Once()
 				aValMock.On("SetAlias", "TestName2").Once()
 
-				duplicateMock := &mockValueWithFormula{}
+				duplicateMock := newMockValueWithFormula(t)
 				duplicateMock.On("GetName").Return("TestName").Maybe()
 				cache.Take(duplicateMock)
 			},
@@ -51,11 +51,11 @@ func TestValueCache_Take(t *testing.T) {
 				aValMock.On("GetAlias").Return("").Once()
 				aValMock.On("SetAlias", "TestName3").Once()
 
-				duplicateMock := &mockValueWithFormula{}
+				duplicateMock := newMockValueWithFormula(t)
 				duplicateMock.On("GetName").Return("TestName").Maybe()
 				cache.Take(duplicateMock)
 
-				duplicateMock2 := &mockValueWithFormula{}
+				duplicateMock2 := newMockValueWithFormula(t)
 				duplicateMock2.On("GetName").Return("TestName").Maybe()
 				duplicateMock2.On("GetAlias").Return("").Once()
 				duplicateMock2.On("SetAlias", "TestName2").Once()
@@ -72,7 +72,7 @@ func TestValueCache_Take(t *testing.T) {
 				aValMock.On("GetAlias").Return("TestAlias").Once()
 				aValMock.On("SetAlias", "TestName2").Maybe()
 
-				duplicateMock := &mockValueWithFormula{}
+				duplicateMock := newMockValueWithFormula(t)
 				duplicateMock.On("GetName").Return("TestName").Maybe()
 				cache.Take(duplicateMock)
 			},
@@ -90,7 +90,7 @@ func TestValueCache_Take(t *testing.T) {
 			sc.desc, func(t *testing.T) {
 				cache := NewValueCache()
 
-				aValMock := &mockValueWithFormula{}
+				aValMock := newMockValueWithFormula(t)
 				aValMock.On("GetName").Return("TestName").Maybe()
 
 				if sc.setup != nil {
@@ -99,7 +99,6 @@ func TestValueCache_Take(t *testing.T) {
 
 				taken := cache.Take(aValMock)
 				assert.Equal(t, sc.taken, taken, "value should be taken, expectation: %v", sc.taken)
-				mock.AssertExpectationsForObjects(t, aValMock)
 				sc.expect(t, aValMock, cache.(valueCache))
 			},
 		)
@@ -114,11 +113,11 @@ func TestValueCache_Flatten(t *testing.T) {
 		{
 			desc: "Unique identities",
 			test: func(t *testing.T) {
-				valueOpsMock, cleanup := MockValueOps()
+				valueOpsMock, cleanup := MockValueOps(t)
 				defer cleanup()
 
-				aValMock1 := &mockValueWithFormula{}
-				aValMock2 := &mockValueWithFormula{}
+				aValMock1 := newMockValueWithFormula(t)
+				aValMock2 := newMockValueWithFormula(t)
 
 				valueOpsMock.On("Identify", aValMock1).Return("TestIdentity1").Once()
 				valueOpsMock.On("Identify", aValMock2).Return("TestIdentity2").Once()
@@ -138,19 +137,18 @@ func TestValueCache_Flatten(t *testing.T) {
 				actual := cache.Flatten()
 
 				assert.Equal(t, want, actual, "flatten map should meet expectation")
-				mock.AssertExpectationsForObjects(t, aValMock1, aValMock2, valueOpsMock)
 			},
 		},
 		{
 			desc: "Duplicated identities, different names",
 			test: func(t *testing.T) {
-				valueOpsMock, cleanup := MockValueOps()
+				valueOpsMock, cleanup := MockValueOps(t)
 				defer cleanup()
 
-				aValMock1 := &mockValueWithFormula{}
+				aValMock1 := newMockValueWithFormula(t)
 				aValMock1.On("GetName").Return("TestName1").Once()
 
-				aValMock2 := &mockValueWithFormula{}
+				aValMock2 := newMockValueWithFormula(t)
 				aValMock2.On("GetName").Return("TestName2").Once()
 				aValMock2.On("SetAlias", "TestIdentity_2").Once()
 
@@ -171,19 +169,18 @@ func TestValueCache_Flatten(t *testing.T) {
 				actual := cache.Flatten()
 
 				assert.Equal(t, want, actual, "flatten map should meet expectation")
-				mock.AssertExpectationsForObjects(t, aValMock1, aValMock2, valueOpsMock)
 			},
 		},
 		{
 			desc: "Duplicated identities, same name",
 			test: func(t *testing.T) {
-				valueOpsMock, cleanup := MockValueOps()
+				valueOpsMock, cleanup := MockValueOps(t)
 				defer cleanup()
 
-				aValMock1 := &mockValueWithFormula{}
+				aValMock1 := newMockValueWithFormula(t)
 				aValMock1.On("GetName").Return("TestName").Once()
 
-				aValMock2 := &mockValueWithFormula{}
+				aValMock2 := newMockValueWithFormula(t)
 				aValMock2.On("GetName").Return("TestName").Once()
 
 				valueOpsMock.On("Identify", mock.Anything).Return("TestIdentity").Twice()
@@ -202,13 +199,11 @@ func TestValueCache_Flatten(t *testing.T) {
 				actual := cache.Flatten()
 
 				assert.Equal(t, want, actual, "flatten map should meet expectation")
-				mock.AssertExpectationsForObjects(t, aValMock1, aValMock2, valueOpsMock)
 			},
 		},
 	}
 
-	for _, scenario := range scenarios {
-		sc := scenario
+	for _, sc := range scenarios {
 		t.Run(sc.desc, sc.test)
 	}
 }

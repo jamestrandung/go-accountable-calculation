@@ -115,7 +115,7 @@ func TestProgressive_ExtractValues(t *testing.T) {
 				mockTag.On("GetName").
 					Return("Tag").
 					Once()
-				mockTag.On("GetValue").
+				mockTag.On("Stringify").
 					Return("TagContent").
 					Once()
 				mockTag.On("ExtractValues", mockCache).
@@ -139,11 +139,7 @@ func TestProgressive_ExtractValues(t *testing.T) {
 	}
 
 	for _, sc := range scenarios {
-		t.Run(
-			sc.desc, func(t *testing.T) {
-				sc.test(t)
-			},
-		)
+		t.Run(sc.desc, sc.test)
 	}
 }
 
@@ -163,7 +159,7 @@ func TestProgressive_AsTag(t *testing.T) {
 	assert.Equal(
 		t, Tag{
 			Name:  "Progressive",
-			Value: 0,
+			Value: "0",
 			aVal:  progressive.curStage,
 		}, actual,
 	)
@@ -175,7 +171,7 @@ func TestProgressive_AsTag(t *testing.T) {
 	assert.Equal(
 		t, Tag{
 			Name:  "Progressive",
-			Value: 2,
+			Value: "2",
 			aVal:  progressive.curStage,
 		}, actual,
 	)
@@ -380,10 +376,6 @@ func TestProgressive_MarshalJSON(t *testing.T) {
 	}
 
 	for _, sc := range scenarios {
-		t.Run(
-			sc.desc, func(t *testing.T) {
-				sc.test(t)
-			},
-		)
+		t.Run(sc.desc, sc.test)
 	}
 }

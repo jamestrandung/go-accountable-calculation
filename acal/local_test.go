@@ -108,10 +108,6 @@ func TestLocal_MarshallJSON(t *testing.T) {
 	}
 
 	for _, sc := range scenarios {
-		t.Run(
-			sc.desc, func(t *testing.T) {
-				sc.test(t)
-			},
-		)
+		t.Run(sc.desc, sc.test)
 	}
 }

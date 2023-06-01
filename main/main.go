@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/jamestrandung/go-accountable-calculation/acal"
-	"github.com/jamestrandung/go-accountable-calculation/boolean"
+	"github.com/jamestrandung/go-accountable-calculation/float"
+	"math"
 )
 
 type RawInterface interface {
@@ -57,14 +58,15 @@ func main() {
 	fmt.Println(acal.IsNilValue(t1))
 	fmt.Println(acal.IsNilValue(t2))
 
-	b1 := boolean.NewSimpleFrom(acal.NewConstant(true))
-	b1.Anchor("Bool")
+	f := float.NewSimpleFromFloat("Something", math.MaxFloat64)
 
-	fmt.Print(acal.ToString(b1))
+	fmt.Println(acal.ToString(f))
 
-	t1 = acal.NewProgressive[int]("something")
-	t2 = acal.NewProgressive[bool]("something")
+	f = float.NewSimpleFromFloat("Something", 2.123456789)
 
-	p, ok := t2.(*acal.Progressive[bool])
-	fmt.Println(p, ok)
+	fmt.Println(acal.ToString(f))
+
+	f = float.NewSimpleFromFloat("Something", 12345678)
+
+	fmt.Println(acal.ToString(f))
 }

@@ -1,7 +1,6 @@
 package comparable
 
 import (
-	"fmt"
 	"github.com/jamestrandung/go-accountable-calculation/acal"
 )
 
@@ -29,6 +28,16 @@ func (s *Simple[T]) IsNil() bool {
 	return s == nil || s.Simple.IsNil()
 }
 
+// GetTypedValue returns the typed value this Simple contains.
+func (s *Simple[T]) GetTypedValue() T {
+	if s == nil || s.IsNil() {
+		var temp T
+		return temp
+	}
+
+	return s.Simple.GetTypedValue()
+}
+
 // SelfReplaceIfNil returns the replacement to represent this Simple if it is nil.
 func (s *Simple[T]) SelfReplaceIfNil() acal.Value {
 	if s == nil || s.IsNil() {
@@ -53,14 +62,4 @@ func (s *Simple[T]) Anchor(name string) *Simple[T] {
 	return &Simple[T]{
 		Simple: anchored,
 	}
-}
-
-// String returns the value of this Simple as a string.
-// If it's nil, an empty string is returned.
-func (s *Simple[T]) String() string {
-	if s == nil || s.IsNil() {
-		return ""
-	}
-
-	return fmt.Sprintf("%v", s.GetTypedValue())
 }

@@ -2,14 +2,13 @@ package acal
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Progressive ...
 type Progressive[T any] struct {
 	namedValue
 	tagger
-	iValueFormatter[T]
+	valueFormatter[T]
 
 	curStage     *Stage[T]
 	curCondition *Condition
@@ -193,17 +192,9 @@ func (p *Progressive[T]) MarshalJSON() ([]byte, error) {
 
 	curStage := p.curStage
 	for curStage != nil {
-		v := func() string {
-			if p.iValueFormatter != nil {
-				return p.formatValue(curStage.value)
-			}
-
-			return fmt.Sprintf("%v", curStage.value)
-		}()
-
 		if fp, ok := curStage.source.(*Progressive[T]); ok {
 			stages[curStage.idx] = jsonStage{
-				Value:   v,
+				Value:   curStage.Stringify(),
 				Formula: DescribeValueAsFormula(fp.getStage(curStage.sourceStageIdx))(),
 			}
 
@@ -213,7 +204,7 @@ func (p *Progressive[T]) MarshalJSON() ([]byte, error) {
 		}
 
 		stages[curStage.idx] = jsonStage{
-			Value:   v,
+			Value:   curStage.Stringify(),
 			Formula: DescribeValueAsFormula(curStage.source)(),
 		}
 
@@ -254,4 +245,9 @@ func (p *Progressive[T]) MarshalJSON() ([]byte, error) {
 			Tags:       p.tags,
 		},
 	)
+}
+
+// Stringify returns the value this Progressive contains as a string.
+func (p *Progressive[T]) Stringify() string {
+	return p.formatValue(p.curStage.value)
 }

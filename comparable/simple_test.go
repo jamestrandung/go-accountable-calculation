@@ -22,17 +22,6 @@ func TestSimple_SelfReplaceIfNil(t *testing.T) {
 	assert.Equal(t, simple, simple.SelfReplaceIfNil())
 }
 
-func TestSimple_String(t *testing.T) {
-	var nilSimple *Simple[int]
-	assert.Equal(t, "", nilSimple.String())
-
-	tSimple := NewSimple("True", true)
-	assert.Equal(t, "true", tSimple.String())
-
-	fSimple := NewSimple("False", false)
-	assert.Equal(t, "false", fSimple.String())
-}
-
 func TestSimple_Anchor(t *testing.T) {
 	scenarios := []struct {
 		desc string
@@ -46,7 +35,7 @@ func TestSimple_Anchor(t *testing.T) {
 				actual := nilSimple.Anchor("Something")
 
 				assert.Equal(t, "Something", actual.GetName())
-				assert.Equal(t, "0", actual.String())
+				assert.Equal(t, "0", actual.Stringify())
 			},
 		},
 		{
@@ -57,7 +46,7 @@ func TestSimple_Anchor(t *testing.T) {
 				actual := simple.Anchor("Something")
 
 				assert.Equal(t, "Something", actual.GetName())
-				assert.Equal(t, "true", actual.String())
+				assert.Equal(t, "true", actual.Stringify())
 				assert.Equal(t, simple, actual)
 			},
 		},
@@ -69,17 +58,13 @@ func TestSimple_Anchor(t *testing.T) {
 				actual := simple.Anchor("Something")
 
 				assert.Equal(t, "Something", actual.GetName())
-				assert.Equal(t, "true", actual.String())
+				assert.Equal(t, "true", actual.Stringify())
 				assert.NotEqual(t, simple, actual)
 			},
 		},
 	}
 
 	for _, sc := range scenarios {
-		t.Run(
-			sc.desc, func(t *testing.T) {
-				sc.test(t)
-			},
-		)
+		t.Run(sc.desc, sc.test)
 	}
 }

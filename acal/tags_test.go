@@ -59,7 +59,7 @@ func TestTags_Tag(t *testing.T) {
 func TestTags_MarshalJSON(t *testing.T) {
 	tag1 := Tag{Name: "TestName1", Value: 5}
 	tag2 := Tag{Name: "TestName2", Value: true}
-	tag3 := Tag{Name: "TestName3", Value: 6.5, aVal: &MockValue{}}
+	tag3 := Tag{Name: "TestName3", Value: 6.5, aVal: NewMockValue(t)}
 
 	wantedJSON := "{\"TestName1\":{\"Value\":\"5\"},\"TestName2\":{\"Value\":\"true\"},\"TestName3\":{\"Value\":\"6.5\",\"IsValue\":true}}"
 
