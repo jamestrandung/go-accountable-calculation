@@ -112,7 +112,7 @@ func (s *Simple) ToSyntaxOperand(nextOp acal.Op) *acal.SyntaxOperand {
 
 	return acal.NewSyntaxOperandWithFormula(
 		formula,
-		!nextOp.IsTransparent() && !lastOp.IsTransparent() && nextOp != lastOp,
+		!nextOp.IsTransparent() && !lastOp.IsTransparent() && opLevel[lastOp] < opLevel[nextOp],
 	)
 }
 
