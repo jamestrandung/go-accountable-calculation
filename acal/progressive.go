@@ -88,7 +88,7 @@ func (p *Progressive[T]) SelfReplaceIfNil() Value {
 
 // AsTag returns a Tag represented by this Progressive.
 func (p *Progressive[T]) AsTag() Tag {
-	return NewTagFrom(p.GetSnapshot())
+	return NewTagFrom(p)
 }
 
 // AddCondition attaches the given condition to this Progressive, returning
@@ -144,15 +144,25 @@ func (p *Progressive[T]) GetSnapshot() *Stage[T] {
 	}
 
 	if p.curStage == nil {
-		p.Update(ZeroSimple[T]("Default"))
+		p.Update(ZeroSimple[T]("Default" + p.name))
 	}
 
 	return p.curStage
 }
 
+// getSnapshotIdx returns the index of the current Stage.
+func (p *Progressive[T]) getSnapshotIdx() int {
+	snapshot := p.GetSnapshot()
+	if snapshot == nil {
+		return -1
+	}
+
+	return snapshot.idx
+}
+
 // getStage returns the Stage at the given index.
 func (p *Progressive[T]) getStage(stageIdx int) *Stage[T] {
-	if stageIdx > p.curStage.idx {
+	if p.curStage == nil || stageIdx > p.curStage.idx {
 		return nil
 	}
 
@@ -195,7 +205,7 @@ func (p *Progressive[T]) MarshalJSON() ([]byte, error) {
 		if fp, ok := curStage.source.(*Progressive[T]); ok {
 			stages[curStage.idx] = jsonStage{
 				Value:   curStage.Stringify(),
-				Formula: DescribeValueAsFormula(fp.getStage(curStage.sourceStageIdx))(),
+				Formula: DescribeValueAsFormula(fp.getStage(curStage.sourceStageIdx)),
 			}
 
 			curStage = curStage.prevStage
@@ -205,7 +215,7 @@ func (p *Progressive[T]) MarshalJSON() ([]byte, error) {
 
 		stages[curStage.idx] = jsonStage{
 			Value:   curStage.Stringify(),
-			Formula: DescribeValueAsFormula(curStage.source)(),
+			Formula: DescribeValueAsFormula(curStage.source),
 		}
 
 		curStage = curStage.prevStage
@@ -249,5 +259,5 @@ func (p *Progressive[T]) MarshalJSON() ([]byte, error) {
 
 // Stringify returns the value this Progressive contains as a string.
 func (p *Progressive[T]) Stringify() string {
-	return p.formatValue(p.curStage.value)
+	return p.formatValue(p.GetTypedValue())
 }

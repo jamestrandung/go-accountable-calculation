@@ -13,7 +13,7 @@ type IValueOps interface {
 	// Describe ...
 	Describe(v Value) string
 	// DescribeValueAsFormula ...
-	DescribeValueAsFormula(v Value) func() *SyntaxNode
+	DescribeValueAsFormula(v Value) *SyntaxNode
 }
 
 type valueOpsImpl struct{}
@@ -56,30 +56,26 @@ func (valueOpsImpl) Describe(v Value) string {
 }
 
 // DescribeValueAsFormula ...
-func (valueOpsImpl) DescribeValueAsFormula(v Value) func() *SyntaxNode {
+func (valueOpsImpl) DescribeValueAsFormula(v Value) *SyntaxNode {
 	if HasIdentity(v) {
-		return func() *SyntaxNode {
-			return &SyntaxNode{
-				category: OpCategoryAssignVariable,
-				op:       OpTransparent,
-				operands: []any{
-					v,
-				},
-			}
+		return &SyntaxNode{
+			category: OpCategoryAssignVariable,
+			op:       OpTransparent,
+			operands: []any{
+				v,
+			},
 		}
 	}
 
 	fp, ok := v.(FormulaProvider)
 	if ok && fp.HasFormula() {
-		return fp.GetFormulaFn()
+		return fp.GetFormula()
 	}
 
-	return func() *SyntaxNode {
-		return &SyntaxNode{
-			category: OpCategoryAssignStatic,
-			op:       OpTransparent,
-			opDesc:   Describe(v),
-		}
+	return &SyntaxNode{
+		category: OpCategoryAssignStatic,
+		op:       OpTransparent,
+		opDesc:   Describe(v),
 	}
 }
 
@@ -109,6 +105,6 @@ func Describe(v Value) string {
 
 // DescribeValueAsFormula returns a full description of the given Value,
 // in the form of a formula.
-func DescribeValueAsFormula(v Value) func() *SyntaxNode {
+func DescribeValueAsFormula(v Value) *SyntaxNode {
 	return valueOps.DescribeValueAsFormula(v)
 }

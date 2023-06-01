@@ -76,7 +76,7 @@ func (s *Stage[T]) SelfReplaceIfNil() Value {
 	return s
 }
 
-// String returns the value this Stage contains as a string.
+// Stringify returns the value this Stage contains as a string.
 func (s *Stage[T]) Stringify() string {
 	return s.self.formatValue(s.value)
 }

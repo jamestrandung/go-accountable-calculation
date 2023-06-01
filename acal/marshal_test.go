@@ -65,7 +65,7 @@ func TestPerformStandardValueExtraction(t *testing.T) {
 				aValMock.On("GetCondition").Return(NewCondition(criteriaMock)).Once()
 				aValMock.On("GetTags").Return(nil).Once()
 				aValMock.On("HasFormula").Return(false).Once()
-				aValMock.On("GetFormulaFn").Return(nil).Maybe()
+				aValMock.On("GetFormula").Return(nil).Maybe()
 
 				valueOpsMock, cleanup := MockValueOps(t)
 				defer cleanup()
@@ -79,7 +79,7 @@ func TestPerformStandardValueExtraction(t *testing.T) {
 				result := PerformStandardValueExtraction(aValMock, cacheMock)
 
 				assert.Equal(t, cacheMock, result)
-				aValMock.AssertNotCalled(t, "GetFormulaFn")
+				aValMock.AssertNotCalled(t, "GetFormula")
 			},
 		},
 		{
@@ -101,16 +101,14 @@ func TestPerformStandardValueExtraction(t *testing.T) {
 
 				var dummyOpCategory OpCategory = 99
 
-				aValMock.On("GetFormulaFn").Return(
-					func() *SyntaxNode {
-						return NewSyntaxNode(
-							dummyOpCategory, OpTransparent, "TestOpDesc", []any{
-								mockOperand1,
-								mockOperand2,
-								"staticValue",
-							},
-						)
-					},
+				aValMock.On("GetFormula").Return(
+					NewSyntaxNode(
+						dummyOpCategory, OpTransparent, "TestOpDesc", []any{
+							mockOperand1,
+							mockOperand2,
+							"staticValue",
+						},
+					),
 				).Maybe()
 
 				valueOpsMock, cleanup := MockValueOps(t)
@@ -140,7 +138,7 @@ func TestPerformStandardValueExtraction(t *testing.T) {
 				aValMock.On("GetCondition").Return(nil).Maybe()
 				aValMock.On("GetTags").Return(Tags{tag}).Once()
 				aValMock.On("HasFormula").Return(false).Once()
-				aValMock.On("GetFormulaFn").Return(nil).Maybe()
+				aValMock.On("GetFormula").Return(nil).Maybe()
 
 				valueOpsMock, cleanup := MockValueOps(t)
 				defer cleanup()

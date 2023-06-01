@@ -315,11 +315,7 @@ func TestValueOpsImpl_DescribeValueAsFormula(t *testing.T) {
 					Once()
 
 				aValMock.On("HasFormula").Return(true).Once()
-				aValMock.On("GetFormulaFn").Return(
-					func() *SyntaxNode {
-						return dummyFormula
-					},
-				).Once()
+				aValMock.On("GetFormula").Return(dummyFormula).Once()
 			},
 			want: dummyFormula,
 		},
@@ -336,7 +332,7 @@ func TestValueOpsImpl_DescribeValueAsFormula(t *testing.T) {
 				ops := valueOpsImpl{}
 
 				actual := ops.DescribeValueAsFormula(aValMock)
-				assert.Equal(t, sc.want, actual())
+				assert.Equal(t, sc.want, actual)
 			},
 		)
 	}

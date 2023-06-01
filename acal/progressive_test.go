@@ -160,7 +160,7 @@ func TestProgressive_AsTag(t *testing.T) {
 		t, Tag{
 			Name:  "Progressive",
 			Value: "0",
-			aVal:  progressive.curStage,
+			aVal:  progressive,
 		}, actual,
 	)
 
@@ -172,7 +172,7 @@ func TestProgressive_AsTag(t *testing.T) {
 		t, Tag{
 			Name:  "Progressive",
 			Value: "2",
-			aVal:  progressive.curStage,
+			aVal:  progressive,
 		}, actual,
 	)
 }
@@ -288,7 +288,7 @@ func TestProgressive_GetSnapshot(t *testing.T) {
 
 	actual = progressive.GetSnapshot()
 
-	assert.Equal(t, "Default", actual.source.GetName())
+	assert.Equal(t, "DefaultProgressive", actual.source.GetName())
 	assert.Equal(t, 0, actual.value)
 
 	simple := NewSimple("Something", 3)

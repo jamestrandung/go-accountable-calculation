@@ -17,9 +17,9 @@ func NewSimple(name string, value bool) *Simple {
 }
 
 // NewSimpleWithFormula returns a new Simple with the given value and formula.
-func NewSimpleWithFormula(value bool, formulaFn func() *acal.SyntaxNode) *Simple {
+func NewSimpleWithFormula(value bool, formula *acal.SyntaxNode) *Simple {
 	return &Simple{
-		Simple: acal.NewSimpleWithFormula(value, formulaFn),
+		Simple: acal.NewSimpleWithFormula(value, formula),
 	}
 }
 
@@ -50,7 +50,7 @@ func (s *Simple) ToSyntaxOperand(nextOp acal.Op) *acal.SyntaxOperand {
 		return result
 	}
 
-	formula := s.GetFormulaFn()()
+	formula := s.GetFormula()
 	lastOp := formula.GetOp()
 
 	return acal.NewSyntaxOperandWithFormula(

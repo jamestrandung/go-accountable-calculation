@@ -59,7 +59,7 @@ func TestPerformUnaryLogicOp(t *testing.T) {
 
 				assert.True(t, actual.Bool())
 
-				formula := actual.GetFormulaFn()()
+				formula := actual.GetFormula()
 
 				assert.Equal(t, dummyFormula, formula)
 			},
@@ -136,7 +136,7 @@ func TestPerformBinaryLogicOp(t *testing.T) {
 
 				assert.True(t, actual.Bool())
 
-				formula := actual.GetFormulaFn()()
+				formula := actual.GetFormula()
 
 				assert.Equal(t, dummyFormula, formula)
 			},

@@ -34,7 +34,7 @@ var PerformStandardValueExtraction = func(v Value, cache IValueCache) IValueCach
 		return cache
 	}
 
-	formula := fp.GetFormulaFn()()
+	formula := fp.GetFormula()
 
 	for _, operand := range formula.GetOperands() {
 		if aVal, ok := operand.(Value); ok {

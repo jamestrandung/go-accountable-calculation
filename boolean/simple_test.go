@@ -59,11 +59,7 @@ func TestSimple_GetToSyntaxOperand(t *testing.T) {
 				dummySyntaxNode := &acal.SyntaxNode{}
 
 				simple := &Simple{
-					Simple: acal.NewSimpleWithFormula[bool](
-						true, func() *acal.SyntaxNode {
-							return dummySyntaxNode
-						},
-					),
+					Simple: acal.NewSimpleWithFormula[bool](true, dummySyntaxNode),
 				}
 
 				toBaseSyntaxOperand = func(s *Simple, nextOp acal.Op) *acal.SyntaxOperand {
@@ -85,11 +81,7 @@ func TestSimple_GetToSyntaxOperand(t *testing.T) {
 				dummySyntaxNode := acal.NewSyntaxNode(acal.OpCategoryFunctionCall, opOr, "OR", nil)
 
 				simple := &Simple{
-					Simple: acal.NewSimpleWithFormula[bool](
-						true, func() *acal.SyntaxNode {
-							return dummySyntaxNode
-						},
-					),
+					Simple: acal.NewSimpleWithFormula[bool](true, dummySyntaxNode),
 				}
 
 				toBaseSyntaxOperand = func(s *Simple, nextOp acal.Op) *acal.SyntaxOperand {

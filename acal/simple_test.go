@@ -65,11 +65,7 @@ func TestSimple_ToSyntaxOperand(t *testing.T) {
 		{
 			desc: "value with formula",
 			test: func(t *testing.T) {
-				simple := NewSimpleWithFormula(
-					1, func() *SyntaxNode {
-						return &SyntaxNode{}
-					},
-				)
+				simple := NewSimpleWithFormula(1, &SyntaxNode{})
 
 				operand := simple.ToSyntaxOperand(OpTransparent)
 

@@ -79,3 +79,8 @@ type TypedValue[T any] interface {
 	// GetTypedValue returns the typed value this TypedValue contains.
 	GetTypedValue() T
 }
+
+type valueWithStage interface {
+	// getSnapshotIdx returns the index of the current Stage.
+	getSnapshotIdx() int
+}

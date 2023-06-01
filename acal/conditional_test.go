@@ -61,11 +61,9 @@ func TestCondition_MarshalJSON(t *testing.T) {
 				criteria := NewMockTypedValue[bool](t)
 				valueOpsMock.On("DescribeValueAsFormula", criteria).
 					Return(
-						func() *SyntaxNode {
-							return &SyntaxNode{
-								category: OpCategoryAssignVariable,
-								opDesc:   "ABC",
-							}
+						&SyntaxNode{
+							category: OpCategoryAssignVariable,
+							opDesc:   "ABC",
 						},
 					).
 					Once()
@@ -88,11 +86,9 @@ func TestCondition_MarshalJSON(t *testing.T) {
 				criteria := NewMockTypedValue[bool](t)
 				valueOpsMock.On("DescribeValueAsFormula", criteria).
 					Return(
-						func() *SyntaxNode {
-							return &SyntaxNode{
-								category: OpCategoryAssignVariable,
-								opDesc:   "ABC",
-							}
+						&SyntaxNode{
+							category: OpCategoryAssignVariable,
+							opDesc:   "ABC",
 						},
 					).
 					Once()

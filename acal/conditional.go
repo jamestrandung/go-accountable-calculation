@@ -77,7 +77,7 @@ func (c *Condition) MarshalJSON() ([]byte, error) {
 			Formula         *SyntaxNode
 			CloseIfStageIdx int `json:",omitempty"`
 		}{
-			Formula:         DescribeValueAsFormula(c.criteria)(),
+			Formula:         DescribeValueAsFormula(c.criteria),
 			CloseIfStageIdx: c.closeIfStageIdx,
 		},
 	)

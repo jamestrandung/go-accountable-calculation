@@ -11,9 +11,9 @@ type Simple[T any] struct {
 	staticConditioner
 	valueFormatter[T]
 
-	value     T
-	source    Source
-	formulaFn func() *SyntaxNode
+	value   T
+	source  Source
+	formula *SyntaxNode
 }
 
 // NewSimple ...
@@ -28,28 +28,18 @@ func NewSimple[T any](name string, value T) *Simple[T] {
 }
 
 // NewSimpleWithFormula returns a new Simple with the given value and formula.
-func NewSimpleWithFormula[T any](value T, formulaFn func() *SyntaxNode) *Simple[T] {
+func NewSimpleWithFormula[T any](value T, formula *SyntaxNode) *Simple[T] {
 	return &Simple[T]{
-		value:     value,
-		formulaFn: formulaFn,
+		value:   value,
+		formula: formula,
 	}
 }
 
 // NewSimpleFrom returns a new Simple using the given value as formula.
 func NewSimpleFrom[T any](value TypedValue[T]) *Simple[T] {
-	p, ok := value.(*Progressive[T])
-	if ok {
-		snapshot := p.GetSnapshot()
-
-		return &Simple[T]{
-			value:     snapshot.GetTypedValue(),
-			formulaFn: DescribeValueAsFormula(snapshot),
-		}
-	}
-
 	return &Simple[T]{
-		value:     value.GetTypedValue(),
-		formulaFn: DescribeValueAsFormula(value),
+		value:   value.GetTypedValue(),
+		formula: DescribeValueAsFormula(value),
 	}
 }
 
@@ -139,12 +129,12 @@ func (s *Simple[T]) DoAnchor(name string) (*Simple[T], bool) {
 
 // HasFormula returns whether this Simple has a formula.
 func (s *Simple[T]) HasFormula() bool {
-	return s.formulaFn != nil
+	return s.formula != nil
 }
 
-// GetFormulaFn returns the function to build a formula of this Simple.
-func (s *Simple[T]) GetFormulaFn() func() *SyntaxNode {
-	return s.formulaFn
+// GetFormula returns the formula provided by this Simple.
+func (s *Simple[T]) GetFormula() *SyntaxNode {
+	return s.formula
 }
 
 // MarshalJSON returns the JSON encoding of this Simple.
@@ -166,7 +156,7 @@ func (s *Simple[T]) MarshalJSON() ([]byte, error) {
 				Source:    sourceStaticCalculation.String(),
 				Tags:      s.tags,
 				Condition: s.condition,
-				Formula:   s.formulaFn(),
+				Formula:   s.formula,
 			},
 		)
 	}

@@ -66,9 +66,9 @@ func NewSimpleFromDecimal(name string, value decimal.Decimal) *Simple {
 }
 
 // NewSimpleWithFormula returns a new Simple with the given value and formula.
-func NewSimpleWithFormula(value decimal.Decimal, formulaFn func() *acal.SyntaxNode) *Simple {
+func NewSimpleWithFormula(value decimal.Decimal, formula *acal.SyntaxNode) *Simple {
 	s := &Simple{
-		Simple: acal.NewSimpleWithFormula(value, formulaFn),
+		Simple: acal.NewSimpleWithFormula(value, formula),
 	}
 
 	s.WithFormatFn(floatFormatFn)
@@ -107,7 +107,7 @@ func (s *Simple) ToSyntaxOperand(nextOp acal.Op) *acal.SyntaxOperand {
 		return result
 	}
 
-	formula := s.GetFormulaFn()()
+	formula := s.GetFormula()
 	lastOp := formula.GetOp()
 
 	return acal.NewSyntaxOperandWithFormula(

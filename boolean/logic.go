@@ -15,11 +15,7 @@ func PerformUnaryLogicOp[T any](
 		return nil
 	}
 
-	return NewSimpleWithFormula(
-		unaryOpFn(tv.GetTypedValue()), func() *acal.SyntaxNode {
-			return acal.FormulaBuilder.NewFormulaFunctionCall(fnName, tv)
-		},
-	)
+	return NewSimpleWithFormula(unaryOpFn(tv.GetTypedValue()), acal.FormulaBuilder.NewFormulaFunctionCall(fnName, tv))
 }
 
 // PerformBinaryLogicOp returns a boolean.Simple to represent the result of
@@ -36,8 +32,7 @@ func PerformBinaryLogicOp[T any](
 	}
 
 	return NewSimpleWithFormula(
-		binaryOpFn(tv1.GetTypedValue(), tv2.GetTypedValue()), func() *acal.SyntaxNode {
-			return acal.FormulaBuilder.NewFormulaTwoValMiddleOp(tv1, tv2, op, opDesc)
-		},
+		binaryOpFn(tv1.GetTypedValue(), tv2.GetTypedValue()),
+		acal.FormulaBuilder.NewFormulaTwoValMiddleOp(tv1, tv2, op, opDesc),
 	)
 }

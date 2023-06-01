@@ -50,11 +50,9 @@ func (c *Constant[T]) HasFormula() bool {
 	return true
 }
 
-// GetFormulaFn returns the function to build a formula of this Constant.
-func (c *Constant[T]) GetFormulaFn() func() *SyntaxNode {
-	return func() *SyntaxNode {
-		return NewSyntaxNode(OpCategoryAssignStatic, OpTransparent, c.Stringify(), nil)
-	}
+// GetFormula returns the formula provided by this Constant.
+func (c *Constant[T]) GetFormula() *SyntaxNode {
+	return NewSyntaxNode(OpCategoryAssignStatic, OpTransparent, c.Stringify(), nil)
 }
 
 // ExtractValues does nothing for Constant as it's a constant.

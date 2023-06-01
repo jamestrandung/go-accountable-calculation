@@ -39,16 +39,16 @@ func (_m *mockValueWithFormula) GetAlias() string {
 	return r0
 }
 
-// GetFormulaFn provides a mock function with given fields:
-func (_m *mockValueWithFormula) GetFormulaFn() func() *SyntaxNode {
+// GetFormula provides a mock function with given fields:
+func (_m *mockValueWithFormula) GetFormula() *SyntaxNode {
 	ret := _m.Called()
 
-	var r0 func() *SyntaxNode
-	if rf, ok := ret.Get(0).(func() func() *SyntaxNode); ok {
+	var r0 *SyntaxNode
+	if rf, ok := ret.Get(0).(func() *SyntaxNode); ok {
 		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(func() *SyntaxNode)
+			r0 = ret.Get(0).(*SyntaxNode)
 		}
 	}
 

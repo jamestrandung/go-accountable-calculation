@@ -37,11 +37,10 @@ func TestConstant_ToSyntaxOperand(t *testing.T) {
 	)
 }
 
-func TestConstant_GetFormulaFn(t *testing.T) {
+func TestConstant_GetFormula(t *testing.T) {
 	constant := NewConstant(2)
 
-	formulaFn := constant.GetFormulaFn()
-	actual := formulaFn()
+	actual := constant.GetFormula()
 
 	assert.Equal(
 		t, &SyntaxNode{
