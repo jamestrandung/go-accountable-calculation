@@ -15,16 +15,6 @@ func TestConstant_IsNil(t *testing.T) {
 	assert.False(t, constant.IsNil())
 }
 
-func TestConstant_GetTypedValue(t *testing.T) {
-	var nilConstant *Constant[int]
-
-	assert.Equal(t, 0, nilConstant.GetTypedValue())
-
-	constant := NewConstant(2)
-
-	assert.Equal(t, 2, constant.GetTypedValue())
-}
-
 func TestConstant_ToSyntaxOperand(t *testing.T) {
 	constant := NewConstant(2)
 

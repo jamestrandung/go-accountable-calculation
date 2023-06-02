@@ -10,12 +10,14 @@ import (
 //go:generate mockery --name=Interface --case underscore --inpackage
 type Interface[T any] interface {
 	acal.Value
+	// Comparable returns the comparable value this Interface contains.
+	Comparable() T
 	// EqualsRaw returns whether the value of this Interface equals to the raw input value.
-	EqualsRaw(v T) *boolean.Simple
+	EqualsRaw(v T) boolean.Simple
 	// Equals returns whether the value of this Interface equals to the input value.
-	Equals(T) *boolean.Simple
+	Equals(T) boolean.Simple
 	// NotEqualsRaw returns whether the value of this Interface does not equal to the raw input value.
-	NotEqualsRaw(v T) *boolean.Simple
+	NotEqualsRaw(v T) boolean.Simple
 	// NotEquals returns whether the value of this Interface does not equal to the input value.
-	NotEquals(T) *boolean.Simple
+	NotEquals(T) boolean.Simple
 }

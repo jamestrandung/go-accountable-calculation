@@ -13,16 +13,14 @@ type MockInterface struct {
 }
 
 // And provides a mock function with given fields: _a0
-func (_m *MockInterface) And(_a0 acal.TypedValue[bool]) *Simple {
+func (_m *MockInterface) And(_a0 acal.TypedValue[bool]) Simple {
 	ret := _m.Called(_a0)
 
-	var r0 *Simple
-	if rf, ok := ret.Get(0).(func(acal.TypedValue[bool]) *Simple); ok {
+	var r0 Simple
+	if rf, ok := ret.Get(0).(func(acal.TypedValue[bool]) Simple); ok {
 		r0 = rf(_a0)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*Simple)
-		}
+		r0 = ret.Get(0).(Simple)
 	}
 
 	return r0
@@ -145,32 +143,28 @@ func (_m *MockInterface) IsNil() bool {
 }
 
 // Not provides a mock function with given fields:
-func (_m *MockInterface) Not() *Simple {
+func (_m *MockInterface) Not() Simple {
 	ret := _m.Called()
 
-	var r0 *Simple
-	if rf, ok := ret.Get(0).(func() *Simple); ok {
+	var r0 Simple
+	if rf, ok := ret.Get(0).(func() Simple); ok {
 		r0 = rf()
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*Simple)
-		}
+		r0 = ret.Get(0).(Simple)
 	}
 
 	return r0
 }
 
 // Or provides a mock function with given fields: _a0
-func (_m *MockInterface) Or(_a0 acal.TypedValue[bool]) *Simple {
+func (_m *MockInterface) Or(_a0 acal.TypedValue[bool]) Simple {
 	ret := _m.Called(_a0)
 
-	var r0 *Simple
-	if rf, ok := ret.Get(0).(func(acal.TypedValue[bool]) *Simple); ok {
+	var r0 Simple
+	if rf, ok := ret.Get(0).(func(acal.TypedValue[bool]) Simple); ok {
 		r0 = rf(_a0)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*Simple)
-		}
+		r0 = ret.Get(0).(Simple)
 	}
 
 	return r0

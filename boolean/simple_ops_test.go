@@ -7,9 +7,9 @@ import (
 )
 
 func TestSimple_And(t *testing.T) {
-	tSimple1 := NewSimple("True1", true)
-	tSimple2 := NewSimple("True2", true)
-	fSimple := NewSimple("False", false)
+	tSimple1 := MakeSimple("True1", true)
+	tSimple2 := MakeSimple("True2", true)
+	fSimple := MakeSimple("False", false)
 
 	and1 := tSimple1.And(tSimple2)
 
@@ -31,9 +31,9 @@ func TestSimple_And(t *testing.T) {
 }
 
 func TestSimple_Or(t *testing.T) {
-	tSimple1 := NewSimple("True1", true)
-	tSimple2 := NewSimple("True2", true)
-	fSimple := NewSimple("False", false)
+	tSimple1 := MakeSimple("True1", true)
+	tSimple2 := MakeSimple("True2", true)
+	fSimple := MakeSimple("False", false)
 
 	or1 := tSimple1.Or(tSimple2)
 
@@ -55,8 +55,8 @@ func TestSimple_Or(t *testing.T) {
 }
 
 func TestSimple_Not(t *testing.T) {
-	tSimple := NewSimple("True1", true)
-	fSimple := NewSimple("False", false)
+	tSimple := MakeSimple("True1", true)
+	fSimple := MakeSimple("False", false)
 
 	not1 := tSimple.Not()
 

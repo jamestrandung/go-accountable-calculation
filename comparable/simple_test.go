@@ -7,18 +7,18 @@ import (
 )
 
 func TestSimple_IsNil(t *testing.T) {
-	var nilSimple *Simple[int]
+	var nilSimple Simple[int]
 	assert.True(t, nilSimple.IsNil())
 
-	fSimple := NewSimple[bool]("false", false)
+	fSimple := MakeSimple[bool]("false", false)
 	assert.False(t, fSimple.IsNil())
 }
 
 func TestSimple_SelfReplaceIfNil(t *testing.T) {
-	var nilSimple *Simple[int]
+	var nilSimple Simple[int]
 	assert.Equal(t, acal.ZeroSimple[int]("NilComparable"), nilSimple.SelfReplaceIfNil())
 
-	simple := NewSimple("Simple", 1)
+	simple := MakeSimple("Simple", 1)
 	assert.Equal(t, simple, simple.SelfReplaceIfNil())
 }
 
@@ -30,7 +30,7 @@ func TestSimple_Anchor(t *testing.T) {
 		{
 			desc: "nil Simple",
 			test: func(t *testing.T) {
-				var nilSimple *Simple[int]
+				var nilSimple Simple[int]
 
 				actual := nilSimple.Anchor("Something")
 
@@ -41,7 +41,7 @@ func TestSimple_Anchor(t *testing.T) {
 		{
 			desc: "same Simple",
 			test: func(t *testing.T) {
-				simple := NewSimpleFrom[bool](acal.NewConstant(true))
+				simple := MakeSimpleFrom[bool](acal.NewConstant(true))
 
 				actual := simple.Anchor("Something")
 
@@ -53,7 +53,7 @@ func TestSimple_Anchor(t *testing.T) {
 		{
 			desc: "new Simple",
 			test: func(t *testing.T) {
-				simple := NewSimple("AlreadyAnchored", true)
+				simple := MakeSimple("AlreadyAnchored", true)
 
 				actual := simple.Anchor("Something")
 

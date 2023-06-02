@@ -9,38 +9,23 @@ type Simple[T comparable] struct {
 	*acal.Simple[T]
 }
 
-// NewSimple ...
-func NewSimple[T comparable](name string, value T) *Simple[T] {
-	return &Simple[T]{
+// MakeSimple ...
+func MakeSimple[T comparable](name string, value T) Simple[T] {
+	return Simple[T]{
 		Simple: acal.NewSimple(name, value),
 	}
 }
 
-// NewSimpleFrom returns a new Simple using the given value as formula.
-func NewSimpleFrom[T comparable](value acal.TypedValue[T]) *Simple[T] {
-	return &Simple[T]{
+// MakeSimpleFrom returns a new Simple using the given value as formula.
+func MakeSimpleFrom[T comparable](value acal.TypedValue[T]) Simple[T] {
+	return Simple[T]{
 		Simple: acal.NewSimpleFrom(value),
 	}
 }
 
-// IsNil returns whether this Simple is nil.
-func (s *Simple[T]) IsNil() bool {
-	return s == nil || s.Simple.IsNil()
-}
-
-// GetTypedValue returns the typed value this Simple contains.
-func (s *Simple[T]) GetTypedValue() T {
-	if s == nil || s.IsNil() {
-		var temp T
-		return temp
-	}
-
-	return s.Simple.GetTypedValue()
-}
-
 // SelfReplaceIfNil returns the replacement to represent this Simple if it is nil.
-func (s *Simple[T]) SelfReplaceIfNil() acal.Value {
-	if s == nil || s.IsNil() {
+func (s Simple[T]) SelfReplaceIfNil() acal.Value {
+	if s.IsNil() {
 		return acal.ZeroSimple[T]("NilComparable")
 	}
 
@@ -48,10 +33,10 @@ func (s *Simple[T]) SelfReplaceIfNil() acal.Value {
 }
 
 // Anchor updates the name of this Simple to the provided string.
-func (s *Simple[T]) Anchor(name string) *Simple[T] {
+func (s Simple[T]) Anchor(name string) Simple[T] {
 	if s.IsNil() {
 		var temp T
-		return NewSimple(name, temp)
+		return MakeSimple(name, temp)
 	}
 
 	anchored, isNew := s.Simple.DoAnchor(name)
@@ -59,7 +44,12 @@ func (s *Simple[T]) Anchor(name string) *Simple[T] {
 		return s
 	}
 
-	return &Simple[T]{
+	return Simple[T]{
 		Simple: anchored,
 	}
+}
+
+// Comparable returns the comparable value this Simple contains.
+func (s Simple[T]) Comparable() T {
+	return acal.ExtractTypedValue[T](s)
 }

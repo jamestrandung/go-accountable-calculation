@@ -15,18 +15,6 @@ func TestStage_IsNil(t *testing.T) {
 	assert.False(t, stage.IsNil())
 }
 
-func TestStage_GetTypedValue(t *testing.T) {
-	var nilStage *Stage[int]
-
-	assert.Equal(t, 0, nilStage.GetTypedValue())
-
-	stage := &Stage[int]{
-		value: 2,
-	}
-
-	assert.Equal(t, 2, stage.GetTypedValue())
-}
-
 func TestStage_ToSyntaxOperand(t *testing.T) {
 	stage := &Stage[int]{
 		self:  NewProgressive[int]("Something"),

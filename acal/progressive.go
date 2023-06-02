@@ -30,7 +30,7 @@ func (p *Progressive[T]) IsNil() bool {
 
 // GetTypedValue returns the typed value this Progressive contains.
 func (p *Progressive[T]) GetTypedValue() T {
-	if p.IsNil() || p.curStage == nil {
+	if p.curStage == nil {
 		var temp T
 		return temp
 	}
@@ -115,6 +115,10 @@ func (p *Progressive[T]) DoAnchor(name string) *Simple[T] {
 
 // Update adds a new Stage to this Progressive to record its new value.
 func (p *Progressive[T]) Update(value TypedValue[T]) {
+	if IsNilValue(value) {
+		value = ZeroSimple[T]("NilProgressiveUpdate")
+	}
+
 	if fp, ok := value.(*Progressive[T]); ok {
 		p.curStage = &Stage[T]{
 			self:           p,

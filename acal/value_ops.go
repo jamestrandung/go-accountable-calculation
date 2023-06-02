@@ -10,6 +10,8 @@ type IValueOps interface {
 	HasIdentity(v Value) bool
 	// Identify ...
 	Identify(v Value) string
+	// Stringify ...
+	Stringify(v Value) string
 	// Describe ...
 	Describe(v Value) string
 	// DescribeValueAsFormula ...
@@ -39,6 +41,15 @@ func (valueOpsImpl) Identify(v Value) string {
 	}
 
 	return v.Identify()
+}
+
+// Stringify ...
+func (valueOpsImpl) Stringify(v Value) string {
+	if IsNilValue(v) {
+		return ""
+	}
+
+	return v.Stringify()
 }
 
 // Describe ...
@@ -97,6 +108,11 @@ func Identify(v Value) string {
 	return valueOps.Identify(v)
 }
 
+// Stringify returns the value this Value contains as a string.
+func Stringify(v Value) string {
+	return valueOps.Stringify(v)
+}
+
 // Describe returns a full description of the given Value, including
 // its identity and current value in string format.
 func Describe(v Value) string {
@@ -107,4 +123,14 @@ func Describe(v Value) string {
 // in the form of a formula.
 func DescribeValueAsFormula(v Value) *SyntaxNode {
 	return valueOps.DescribeValueAsFormula(v)
+}
+
+// ExtractTypedValue returns the typed value the given TypedValue contains.
+func ExtractTypedValue[T any](tv TypedValue[T]) T {
+	if IsNilValue(tv) {
+		var temp T
+		return temp
+	}
+
+	return tv.GetTypedValue()
 }

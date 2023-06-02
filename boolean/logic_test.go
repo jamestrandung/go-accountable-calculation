@@ -25,7 +25,7 @@ func TestPerformUnaryLogicOp(t *testing.T) {
 					},
 				)
 
-				assert.Nil(t, actual)
+				assert.Equal(t, NilBool, actual)
 			},
 		},
 		{
@@ -95,7 +95,7 @@ func TestPerformBinaryLogicOp(t *testing.T) {
 					},
 				)
 
-				assert.Nil(t, actual)
+				assert.Equal(t, NilBool, actual)
 			},
 		},
 		{
@@ -104,15 +104,12 @@ func TestPerformBinaryLogicOp(t *testing.T) {
 				mockTypedValue1 := acal.NewMockTypedValue[int](t)
 				mockTypedValue1.On("IsNil").
 					Return(true).
-					Once()
-				mockTypedValue1.On("GetTypedValue").
-					Return(0).
-					Once()
+					Twice()
 
 				mockTypedValue2 := acal.NewMockTypedValue[int](t)
 				mockTypedValue2.On("IsNil").
 					Return(false).
-					Once()
+					Twice()
 				mockTypedValue2.On("GetTypedValue").
 					Return(1).
 					Once()

@@ -7,7 +7,7 @@ import (
 )
 
 func TestSimple_EqualsRaw(t *testing.T) {
-	simple := NewSimple("Simple", "string")
+	simple := MakeSimple("Simple", "string")
 
 	e1 := simple.EqualsRaw("string")
 
@@ -29,9 +29,9 @@ func TestSimple_EqualsRaw(t *testing.T) {
 }
 
 func TestSimple_Equals(t *testing.T) {
-	simple := NewSimple("Simple", "string")
+	simple := MakeSimple("Simple", "string")
 
-	e1 := simple.Equals(NewSimple("String", "string"))
+	e1 := simple.Equals(MakeSimple("String", "string"))
 
 	assert.True(t, e1.Bool())
 	assert.Equal(
@@ -40,7 +40,7 @@ func TestSimple_Equals(t *testing.T) {
 		acal.ToString(e1),
 	)
 
-	e2 := simple.Equals(NewSimple("Text", "text"))
+	e2 := simple.Equals(MakeSimple("Text", "text"))
 
 	assert.False(t, e2.Bool())
 	assert.Equal(
@@ -51,7 +51,7 @@ func TestSimple_Equals(t *testing.T) {
 }
 
 func TestSimple_NotEqualsRaw(t *testing.T) {
-	simple := NewSimple("Simple", "string")
+	simple := MakeSimple("Simple", "string")
 
 	e1 := simple.NotEqualsRaw("string")
 
@@ -73,9 +73,9 @@ func TestSimple_NotEqualsRaw(t *testing.T) {
 }
 
 func TestSimple_NotEquals(t *testing.T) {
-	simple := NewSimple("Simple", "string")
+	simple := MakeSimple("Simple", "string")
 
-	e1 := simple.NotEquals(NewSimple("String", "string"))
+	e1 := simple.NotEquals(MakeSimple("String", "string"))
 
 	assert.False(t, e1.Bool())
 	assert.Equal(
@@ -84,7 +84,7 @@ func TestSimple_NotEquals(t *testing.T) {
 		acal.ToString(e1),
 	)
 
-	e2 := simple.NotEquals(NewSimple("Text", "text"))
+	e2 := simple.NotEquals(MakeSimple("Text", "text"))
 
 	assert.True(t, e2.Bool())
 	assert.Equal(

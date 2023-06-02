@@ -44,11 +44,6 @@ func (s *Stage[T]) Identify() string {
 
 // GetTypedValue returns the typed value this Stage contains.
 func (s *Stage[T]) GetTypedValue() T {
-	if s.IsNil() {
-		var temp T
-		return temp
-	}
-
 	return s.value
 }
 

@@ -17,7 +17,7 @@ type Local[T any] struct {
 // NewLocal ...
 func NewLocal[T any](name string, original TypedValue[T]) *Local[T] {
 	if original.IsNil() {
-		original = ZeroSimple[T]("NilOriginal")
+		original = ZeroSimple[T]("NilLocalOriginal")
 	}
 
 	return &Local[T]{
@@ -35,11 +35,6 @@ func (l *Local[T]) IsNil() bool {
 
 // GetTypedValue returns the typed value this Local contains.
 func (l *Local[T]) GetTypedValue() T {
-	if l.IsNil() {
-		var temp T
-		return temp
-	}
-
 	return l.original.GetTypedValue()
 }
 

@@ -7,26 +7,26 @@ import (
 )
 
 func TestSimple_IsNil(t *testing.T) {
-	var nilSimple *Simple
+	var nilSimple Simple
 	assert.True(t, nilSimple.IsNil())
 
-	fSimple := NewSimple("false", false)
+	fSimple := MakeSimple("false", false)
 	assert.False(t, fSimple.IsNil())
 }
 
 func TestSimple_GetTypedValue(t *testing.T) {
-	var nilSimple *Simple
+	var nilSimple Simple
 	assert.False(t, nilSimple.GetTypedValue())
 
-	tSimple := NewSimple("true", true)
+	tSimple := MakeSimple("true", true)
 	assert.True(t, tSimple.GetTypedValue())
 
-	fSimple := NewSimple("false", false)
+	fSimple := MakeSimple("false", false)
 	assert.False(t, fSimple.GetTypedValue())
 }
 
 func TestSimple_GetToSyntaxOperand(t *testing.T) {
-	defer func(original func(s *Simple, nextOp acal.Op) *acal.SyntaxOperand) {
+	defer func(original func(s Simple, nextOp acal.Op) *acal.SyntaxOperand) {
 		toBaseSyntaxOperand = original
 	}(toBaseSyntaxOperand)
 
@@ -40,9 +40,9 @@ func TestSimple_GetToSyntaxOperand(t *testing.T) {
 				dummyOp := acal.OpTransparent
 				dummySyntaxOperand := &acal.SyntaxOperand{}
 
-				simple := NewSimple("Simple", true)
+				simple := MakeSimple("Simple", true)
 
-				toBaseSyntaxOperand = func(s *Simple, nextOp acal.Op) *acal.SyntaxOperand {
+				toBaseSyntaxOperand = func(s Simple, nextOp acal.Op) *acal.SyntaxOperand {
 					assert.Equal(t, simple, s)
 					assert.Equal(t, dummyOp, nextOp)
 					return dummySyntaxOperand
@@ -58,11 +58,11 @@ func TestSimple_GetToSyntaxOperand(t *testing.T) {
 				dummyOp := acal.OpTransparent
 				dummySyntaxNode := &acal.SyntaxNode{}
 
-				simple := &Simple{
+				simple := Simple{
 					Simple: acal.NewSimpleWithFormula[bool](true, dummySyntaxNode),
 				}
 
-				toBaseSyntaxOperand = func(s *Simple, nextOp acal.Op) *acal.SyntaxOperand {
+				toBaseSyntaxOperand = func(s Simple, nextOp acal.Op) *acal.SyntaxOperand {
 					assert.Equal(t, simple, s)
 					assert.Equal(t, dummyOp, nextOp)
 					return nil
@@ -80,11 +80,11 @@ func TestSimple_GetToSyntaxOperand(t *testing.T) {
 				dummyOp := opAnd
 				dummySyntaxNode := acal.NewSyntaxNode(acal.OpCategoryFunctionCall, opOr, "OR", nil)
 
-				simple := &Simple{
+				simple := Simple{
 					Simple: acal.NewSimpleWithFormula[bool](true, dummySyntaxNode),
 				}
 
-				toBaseSyntaxOperand = func(s *Simple, nextOp acal.Op) *acal.SyntaxOperand {
+				toBaseSyntaxOperand = func(s Simple, nextOp acal.Op) *acal.SyntaxOperand {
 					assert.Equal(t, simple, s)
 					assert.Equal(t, dummyOp, nextOp)
 					return nil
@@ -104,21 +104,21 @@ func TestSimple_GetToSyntaxOperand(t *testing.T) {
 }
 
 func TestSimple_SelfReplaceIfNil(t *testing.T) {
-	var nilSimple *Simple
+	var nilSimple Simple
 	assert.Equal(t, NilBool, nilSimple.SelfReplaceIfNil())
 
-	simple := NewSimple("Simple", true)
+	simple := MakeSimple("Simple", true)
 	assert.Equal(t, simple, simple.SelfReplaceIfNil())
 }
 
 func TestSimple_Bool(t *testing.T) {
-	var nilSimple *Simple
+	var nilSimple Simple
 	assert.False(t, nilSimple.Bool())
 
-	tSimple := NewSimple("True", true)
+	tSimple := MakeSimple("True", true)
 	assert.True(t, tSimple.Bool())
 
-	fSimple := NewSimple("False", false)
+	fSimple := MakeSimple("False", false)
 	assert.False(t, fSimple.Bool())
 }
 
@@ -130,7 +130,7 @@ func TestSimple_Anchor(t *testing.T) {
 		{
 			desc: "nil Simple",
 			test: func(t *testing.T) {
-				var nilSimple *Simple
+				var nilSimple Simple
 
 				actual := nilSimple.Anchor("Something")
 
@@ -141,7 +141,7 @@ func TestSimple_Anchor(t *testing.T) {
 		{
 			desc: "same Simple",
 			test: func(t *testing.T) {
-				simple := NewSimpleFrom(acal.NewConstant(true))
+				simple := MakeSimpleFrom(acal.NewConstant(true))
 
 				actual := simple.Anchor("Something")
 
@@ -153,7 +153,7 @@ func TestSimple_Anchor(t *testing.T) {
 		{
 			desc: "new Simple",
 			test: func(t *testing.T) {
-				simple := NewSimple("AlreadyAnchored", true)
+				simple := MakeSimple("AlreadyAnchored", true)
 
 				actual := simple.Anchor("Something")
 

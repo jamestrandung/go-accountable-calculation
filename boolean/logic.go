@@ -10,12 +10,12 @@ func PerformUnaryLogicOp[T any](
 	tv acal.TypedValue[T],
 	fnName string,
 	unaryOpFn func(v T) bool,
-) *Simple {
+) Simple {
 	if acal.IsNilValue(tv) {
-		return nil
+		return NilBool
 	}
 
-	return NewSimpleWithFormula(unaryOpFn(tv.GetTypedValue()), acal.FormulaBuilder.NewFormulaFunctionCall(fnName, tv))
+	return MakeSimpleWithFormula(unaryOpFn(tv.GetTypedValue()), acal.FormulaBuilder.NewFormulaFunctionCall(fnName, tv))
 }
 
 // PerformBinaryLogicOp returns a boolean.Simple to represent the result of
@@ -26,13 +26,13 @@ func PerformBinaryLogicOp[T any](
 	op acal.Op,
 	opDesc string,
 	binaryOpFn func(a, b T) bool,
-) *Simple {
+) Simple {
 	if acal.IsNilValue(tv1) && acal.IsNilValue(tv2) {
-		return nil
+		return NilBool
 	}
 
-	return NewSimpleWithFormula(
-		binaryOpFn(tv1.GetTypedValue(), tv2.GetTypedValue()),
+	return MakeSimpleWithFormula(
+		binaryOpFn(acal.ExtractTypedValue(tv1), acal.ExtractTypedValue(tv2)),
 		acal.FormulaBuilder.NewFormulaTwoValMiddleOp(tv1, tv2, op, opDesc),
 	)
 }

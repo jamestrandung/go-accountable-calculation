@@ -67,6 +67,10 @@ func (f *valueFormatter[T]) formatValue(v T) string {
 	return f.formatFn(v)
 }
 
+func (f *valueFormatter[T]) GetFormatFn() func(T) string {
+	return f.formatFn
+}
+
 func (f *valueFormatter[T]) WithFormatFn(formatFn func(T) string) {
 	f.formatFn = formatFn
 }

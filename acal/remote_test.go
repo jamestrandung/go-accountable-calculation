@@ -15,16 +15,6 @@ func TestRemote_IsNil(t *testing.T) {
 	assert.False(t, remote.IsNil())
 }
 
-func TestRemote_GetTypedValue(t *testing.T) {
-	var nilRemote *Remote[int]
-
-	assert.Equal(t, 0, nilRemote.GetTypedValue())
-
-	remote := NewRemote("Remote", 2, "RemoteName", "LogKey")
-
-	assert.Equal(t, 2, remote.GetTypedValue())
-}
-
 func TestRemote_ToSyntaxOperand(t *testing.T) {
 	remote := NewRemote("Remote", 2, "RemoteName", "LogKey")
 

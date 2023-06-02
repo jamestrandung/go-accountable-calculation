@@ -14,33 +14,43 @@ type MockInterface[T interface{}] struct {
 	mock.Mock
 }
 
+// Comparable provides a mock function with given fields:
+func (_m *MockInterface[T]) Comparable() T {
+	ret := _m.Called()
+
+	var r0 T
+	if rf, ok := ret.Get(0).(func() T); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(T)
+	}
+
+	return r0
+}
+
 // Equals provides a mock function with given fields: _a0
-func (_m *MockInterface[T]) Equals(_a0 T) *boolean.Simple {
+func (_m *MockInterface[T]) Equals(_a0 T) boolean.Simple {
 	ret := _m.Called(_a0)
 
-	var r0 *boolean.Simple
-	if rf, ok := ret.Get(0).(func(T) *boolean.Simple); ok {
+	var r0 boolean.Simple
+	if rf, ok := ret.Get(0).(func(T) boolean.Simple); ok {
 		r0 = rf(_a0)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*boolean.Simple)
-		}
+		r0 = ret.Get(0).(boolean.Simple)
 	}
 
 	return r0
 }
 
 // EqualsRaw provides a mock function with given fields: v
-func (_m *MockInterface[T]) EqualsRaw(v T) *boolean.Simple {
+func (_m *MockInterface[T]) EqualsRaw(v T) boolean.Simple {
 	ret := _m.Called(v)
 
-	var r0 *boolean.Simple
-	if rf, ok := ret.Get(0).(func(T) *boolean.Simple); ok {
+	var r0 boolean.Simple
+	if rf, ok := ret.Get(0).(func(T) boolean.Simple); ok {
 		r0 = rf(v)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*boolean.Simple)
-		}
+		r0 = ret.Get(0).(boolean.Simple)
 	}
 
 	return r0
@@ -149,32 +159,28 @@ func (_m *MockInterface[T]) IsNil() bool {
 }
 
 // NotEquals provides a mock function with given fields: _a0
-func (_m *MockInterface[T]) NotEquals(_a0 T) *boolean.Simple {
+func (_m *MockInterface[T]) NotEquals(_a0 T) boolean.Simple {
 	ret := _m.Called(_a0)
 
-	var r0 *boolean.Simple
-	if rf, ok := ret.Get(0).(func(T) *boolean.Simple); ok {
+	var r0 boolean.Simple
+	if rf, ok := ret.Get(0).(func(T) boolean.Simple); ok {
 		r0 = rf(_a0)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*boolean.Simple)
-		}
+		r0 = ret.Get(0).(boolean.Simple)
 	}
 
 	return r0
 }
 
 // NotEqualsRaw provides a mock function with given fields: v
-func (_m *MockInterface[T]) NotEqualsRaw(v T) *boolean.Simple {
+func (_m *MockInterface[T]) NotEqualsRaw(v T) boolean.Simple {
 	ret := _m.Called(v)
 
-	var r0 *boolean.Simple
-	if rf, ok := ret.Get(0).(func(T) *boolean.Simple); ok {
+	var r0 boolean.Simple
+	if rf, ok := ret.Get(0).(func(T) boolean.Simple); ok {
 		r0 = rf(v)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*boolean.Simple)
-		}
+		r0 = ret.Get(0).(boolean.Simple)
 	}
 
 	return r0

@@ -38,7 +38,7 @@ func NewSimpleWithFormula[T any](value T, formula *SyntaxNode) *Simple[T] {
 // NewSimpleFrom returns a new Simple using the given value as formula.
 func NewSimpleFrom[T any](value TypedValue[T]) *Simple[T] {
 	return &Simple[T]{
-		value:   value.GetTypedValue(),
+		value:   ExtractTypedValue(value),
 		formula: DescribeValueAsFormula(value),
 	}
 }
@@ -62,11 +62,6 @@ func (s *Simple[T]) IsNil() bool {
 
 // GetTypedValue returns the typed value this Simple contains.
 func (s *Simple[T]) GetTypedValue() T {
-	if s.IsNil() {
-		var temp T
-		return temp
-	}
-
 	return s.value
 }
 

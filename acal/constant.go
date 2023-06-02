@@ -5,14 +5,31 @@ type Constant[T any] struct {
 	namedValue
 	valueFormatter[T]
 
-	value T
+	value   T
+	formula *SyntaxNode
 }
 
 // NewConstant ...
 func NewConstant[T any](value T) *Constant[T] {
-	return &Constant[T]{
+	c := &Constant[T]{
 		value: value,
 	}
+
+	c.formula = NewSyntaxNode(OpCategoryAssignStatic, OpTransparent, c.Stringify(), nil)
+
+	return c
+}
+
+// NewConstantWithFormat ...
+func NewConstantWithFormat[T any](value T, formatFn func(T) string) *Constant[T] {
+	c := &Constant[T]{
+		value: value,
+	}
+
+	c.WithFormatFn(formatFn)
+	c.formula = NewSyntaxNode(OpCategoryAssignStatic, OpTransparent, c.Stringify(), nil)
+
+	return c
 }
 
 // IsNil returns whether this Constant is nil.
@@ -27,11 +44,6 @@ func (c *Constant[T]) SetAlias(alias string) {
 
 // GetTypedValue returns the typed value this Constant contains.
 func (c *Constant[T]) GetTypedValue() T {
-	if c.IsNil() {
-		var temp T
-		return temp
-	}
-
 	return c.value
 }
 
@@ -52,7 +64,7 @@ func (c *Constant[T]) HasFormula() bool {
 
 // GetFormula returns the formula provided by this Constant.
 func (c *Constant[T]) GetFormula() *SyntaxNode {
-	return NewSyntaxNode(OpCategoryAssignStatic, OpTransparent, c.Stringify(), nil)
+	return c.formula
 }
 
 // ExtractValues does nothing for Constant as it's a constant.

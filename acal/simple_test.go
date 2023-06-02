@@ -15,16 +15,6 @@ func TestSimple_IsNil(t *testing.T) {
 	assert.False(t, simple.IsNil())
 }
 
-func TestSimple_GetTypedValue(t *testing.T) {
-	var nilSimple *Simple[int]
-
-	assert.Equal(t, 0, nilSimple.GetTypedValue())
-
-	simple := NewSimple("Simple", 2)
-
-	assert.Equal(t, 2, simple.GetTypedValue())
-}
-
 func TestSimple_ToSyntaxOperand(t *testing.T) {
 	scenarios := []struct {
 		desc string

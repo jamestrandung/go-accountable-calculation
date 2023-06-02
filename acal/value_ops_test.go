@@ -187,6 +187,55 @@ func TestValueOpsImpl_Identify(t *testing.T) {
 	}
 }
 
+func TestValueOpsImpl_Stringify(t *testing.T) {
+	scenarios := []struct {
+		desc string
+		test func(t *testing.T)
+	}{
+		{
+			desc: "nil Value",
+			test: func(t *testing.T) {
+				aValMock := newMockValueWithFormula(t)
+
+				valueOpsMock, cleanup := MockValueOps(t)
+				defer cleanup()
+
+				valueOpsMock.On("IsNilValue", aValMock).
+					Return(true).
+					Once()
+
+				ops := valueOpsImpl{}
+
+				actual := ops.Stringify(aValMock)
+				assert.Equal(t, "", actual)
+			},
+		},
+		{
+			desc: "non-nil Value",
+			test: func(t *testing.T) {
+				aValMock := newMockValueWithFormula(t)
+				aValMock.On("Stringify").Return("5").Once()
+
+				valueOpsMock, cleanup := MockValueOps(t)
+				defer cleanup()
+
+				valueOpsMock.On("IsNilValue", aValMock).
+					Return(false).
+					Once()
+
+				ops := valueOpsImpl{}
+
+				actual := ops.Stringify(aValMock)
+				assert.Equal(t, "5", actual)
+			},
+		},
+	}
+
+	for _, sc := range scenarios {
+		t.Run(sc.desc, sc.test)
+	}
+}
+
 func TestValueOpsImpl_Describe(t *testing.T) {
 	scenarios := []struct {
 		desc string
@@ -335,5 +384,54 @@ func TestValueOpsImpl_DescribeValueAsFormula(t *testing.T) {
 				assert.Equal(t, sc.want, actual)
 			},
 		)
+	}
+}
+
+func TestExtractTypedValue(t *testing.T) {
+	scenarios := []struct {
+		desc string
+		test func(t *testing.T)
+	}{
+		{
+			desc: "nil TypedValue",
+			test: func(t *testing.T) {
+				mockValue := NewMockTypedValue[int](t)
+
+				valueOpsMock, cleanup := MockValueOps(t)
+				defer cleanup()
+
+				valueOpsMock.On("IsNilValue", mockValue).
+					Return(true).
+					Once()
+
+				actual := ExtractTypedValue[int](mockValue)
+
+				assert.Equal(t, 0, actual)
+			},
+		},
+		{
+			desc: "non-nil TypedValue",
+			test: func(t *testing.T) {
+				mockValue := NewMockTypedValue[int](t)
+				mockValue.On("GetTypedValue").
+					Return(1).
+					Once()
+
+				valueOpsMock, cleanup := MockValueOps(t)
+				defer cleanup()
+
+				valueOpsMock.On("IsNilValue", mockValue).
+					Return(false).
+					Once()
+
+				actual := ExtractTypedValue[int](mockValue)
+
+				assert.Equal(t, 1, actual)
+			},
+		},
+	}
+
+	for _, sc := range scenarios {
+		t.Run(sc.desc, sc.test)
 	}
 }

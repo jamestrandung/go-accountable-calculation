@@ -35,11 +35,6 @@ func (r *Remote[T]) IsNil() bool {
 
 // GetTypedValue returns the typed value this Remote contains.
 func (r *Remote[T]) GetTypedValue() T {
-	if r.IsNil() {
-		var temp T
-		return temp
-	}
-
 	return r.value
 }
 

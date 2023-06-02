@@ -16,10 +16,6 @@ func TestProgressive_IsNil(t *testing.T) {
 }
 
 func TestProgressive_GetTypedValue(t *testing.T) {
-	var nilProgressive *Progressive[int]
-
-	assert.Equal(t, 0, nilProgressive.GetTypedValue())
-
 	progressive := NewProgressive[int]("Progressive")
 
 	assert.Equal(t, 0, progressive.GetTypedValue())
@@ -120,6 +116,16 @@ func TestProgressive_ExtractValues(t *testing.T) {
 					Once()
 				mockTag.On("ExtractValues", mockCache).
 					Return(mockCache).
+					Once()
+
+				mockValueOps, cleanup := MockValueOps(t)
+				defer cleanup()
+
+				mockValueOps.On("IsNilValue", mockValue1).
+					Return(false).
+					Once()
+				mockValueOps.On("IsNilValue", mockValue2).
+					Return(false).
 					Once()
 
 				progressive := NewProgressive[int]("Progressive")
@@ -228,24 +234,41 @@ func TestProgressive_DoAnchor(t *testing.T) {
 }
 
 func TestProgressive_Update(t *testing.T) {
-	otherProgressive := NewProgressive[int]("Other")
+	progressive := NewProgressive[int]("Progressive")
+
+	var otherProgressive *Progressive[int]
+
+	progressive.Update(otherProgressive)
+
+	assert.Equal(
+		t, &Stage[int]{
+			self:      progressive,
+			idx:       0,
+			prevStage: nil,
+			value:     0,
+			source:    ZeroSimple[int]("NilProgressiveUpdate"),
+		}, progressive.curStage,
+	)
+
+	prevStage := progressive.curStage
+
+	otherProgressive = NewProgressive[int]("Other")
 	otherProgressive.Update(NewConstant(1))
 
-	progressive := NewProgressive[int]("Progressive")
 	progressive.Update(otherProgressive)
 
 	assert.Equal(
 		t, &Stage[int]{
 			self:           progressive,
-			idx:            0,
-			prevStage:      nil,
+			idx:            1,
+			prevStage:      prevStage,
 			value:          1,
 			sourceStageIdx: 0,
 			source:         otherProgressive,
 		}, progressive.curStage,
 	)
 
-	prevStage := progressive.curStage
+	prevStage = progressive.curStage
 
 	otherProgressive.Update(NewConstant(2))
 	progressive.Update(otherProgressive)
@@ -253,7 +276,7 @@ func TestProgressive_Update(t *testing.T) {
 	assert.Equal(
 		t, &Stage[int]{
 			self:           progressive,
-			idx:            1,
+			idx:            2,
 			prevStage:      prevStage,
 			value:          2,
 			sourceStageIdx: 1,
@@ -269,7 +292,7 @@ func TestProgressive_Update(t *testing.T) {
 	assert.Equal(
 		t, &Stage[int]{
 			self:      progressive,
-			idx:       2,
+			idx:       3,
 			prevStage: prevStage,
 			value:     3,
 			source:    simple,

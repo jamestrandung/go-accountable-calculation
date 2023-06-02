@@ -15,16 +15,6 @@ func TestLocal_IsNil(t *testing.T) {
 	assert.False(t, local.IsNil())
 }
 
-func TestLocal_GetTypedValue(t *testing.T) {
-	var nilLocal *Local[int]
-
-	assert.Equal(t, 0, nilLocal.GetTypedValue())
-
-	local := NewLocal[int]("Local", NewSimple("Something", 2))
-
-	assert.Equal(t, 2, local.GetTypedValue())
-}
-
 func TestLocal_ToSyntaxOperand(t *testing.T) {
 	local := NewLocal[int]("Local", NewSimple("Something", 2))
 

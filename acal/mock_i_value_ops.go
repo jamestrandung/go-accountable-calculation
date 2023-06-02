@@ -81,6 +81,20 @@ func (_m *MockIValueOps) IsNilValue(v Value) bool {
 	return r0
 }
 
+// Stringify provides a mock function with given fields: v
+func (_m *MockIValueOps) Stringify(v Value) string {
+	ret := _m.Called(v)
+
+	var r0 string
+	if rf, ok := ret.Get(0).(func(Value) string); ok {
+		r0 = rf(v)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	return r0
+}
+
 type mockConstructorTestingTNewMockIValueOps interface {
 	mock.TestingT
 	Cleanup(func())
