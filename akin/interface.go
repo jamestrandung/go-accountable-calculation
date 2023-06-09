@@ -1,4 +1,4 @@
-package comparable
+package akin
 
 import (
 	"github.com/jamestrandung/go-accountable-calculation/acal"
@@ -9,7 +9,7 @@ import (
 //
 //go:generate mockery --name=Interface --case underscore --inpackage
 type Interface[T any] interface {
-	acal.Value
+	acal.TypedValue[T]
 	// Comparable returns the comparable value this Interface contains.
 	Comparable() T
 	// EqualsRaw returns whether the value of this Interface equals to the raw input value.

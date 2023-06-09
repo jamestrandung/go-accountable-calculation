@@ -1,6 +1,9 @@
 package acal
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 // FormulaBuilder helps create formulas in different categories.
 var FormulaBuilder IFormulaBuilder = formulaBuilderImpl{}
@@ -9,9 +12,13 @@ var FormulaBuilder IFormulaBuilder = formulaBuilderImpl{}
 //
 //go:generate mockery --name=IFormulaBuilder --case underscore --inpackage
 type IFormulaBuilder interface {
-	// NewFormulaFunctionCall returns a new SyntaxNode representing a function call taking in the provided arguments.
+	// NewFormulaFunctionCall returns a new SyntaxNode representing a function call taking in
+	// the provided arguments. Clients must make sure to call ReplaceIfNil on all arguments of
+	// Value type before sending them into this method.
 	NewFormulaFunctionCall(fnName string, arguments ...any) *SyntaxNode
-	// NewFormulaTwoValMiddleOp returns a new SyntaxNode representing a binary operation that has an operator in the middle of two operands.
+	// NewFormulaTwoValMiddleOp returns a new SyntaxNode representing a binary operation that
+	// has an operator lied in the middle of two operands. Clients must make sure that to call
+	// ReplaceIfNil on both v1 and v2 before sending them into this method.
 	NewFormulaTwoValMiddleOp(v1 Value, v2 Value, op Op, opDesc string) *SyntaxNode
 }
 
@@ -30,17 +37,16 @@ type formulaBuilderImpl struct{}
 
 // NewFormulaFunctionCall ...
 func (b formulaBuilderImpl) NewFormulaFunctionCall(fnName string, arguments ...any) *SyntaxNode {
-	operands := make([]any, 0, len(arguments))
+	operands := make([]*SyntaxOperand, 0, len(arguments))
 
 	for _, arg := range arguments {
 		v, ok := arg.(Value)
 		if !ok {
-			operands = append(operands, arg)
+			operands = append(operands, NewSyntaxOperandWithStaticValue(fmt.Sprintf("%v", arg)))
 			continue
 		}
 
-		v = replaceNilFromConcreteImplementation(v)
-		operands = append(operands, v)
+		operands = append(operands, v.ToSyntaxOperand(OpTransparent))
 	}
 
 	return NewSyntaxNode(
@@ -53,16 +59,5 @@ func (b formulaBuilderImpl) NewFormulaFunctionCall(fnName string, arguments ...a
 
 // NewFormulaTwoValMiddleOp ...
 func (b formulaBuilderImpl) NewFormulaTwoValMiddleOp(v1 Value, v2 Value, op Op, opDesc string) *SyntaxNode {
-	v1 = replaceNilFromConcreteImplementation(v1)
-	v2 = replaceNilFromConcreteImplementation(v2)
-
-	return NewSyntaxNode(OpCategoryTwoValMiddleOp, op, opDesc, []any{v1, v2})
-}
-
-func replaceNilFromConcreteImplementation(v Value) Value {
-	if v != nil {
-		return v.SelfReplaceIfNil()
-	}
-
-	return v
+	return NewSyntaxNode(OpCategoryTwoValMiddleOp, op, opDesc, []*SyntaxOperand{v1.ToSyntaxOperand(op), v2.ToSyntaxOperand(op)})
 }

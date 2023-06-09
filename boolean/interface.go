@@ -6,7 +6,7 @@ import "github.com/jamestrandung/go-accountable-calculation/acal"
 //
 //go:generate mockery --name=Value --case underscore --inpackage
 type Value interface {
-	acal.Value
+	acal.TypedValue[bool]
 	// Bool returns the value of this Value as a bool.
 	// If it's nil, false is returned.
 	Bool() bool
@@ -23,7 +23,4 @@ type Interface interface {
 	Or(acal.TypedValue[bool]) Simple
 	// Not returns the inverse value of this Interface.
 	Not() Simple
-	// Then does nothing and returns this Interface as-is. It's meant for separating code
-	// into more readable chunk.
-	Then() Interface
 }

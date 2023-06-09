@@ -34,6 +34,7 @@ func TestProgressive_ToSyntaxOperand(t *testing.T) {
 		t, &SyntaxOperand{
 			Name:     "Progressive",
 			StageIdx: -1,
+			value:    progressive,
 		}, actual,
 	)
 
@@ -45,6 +46,7 @@ func TestProgressive_ToSyntaxOperand(t *testing.T) {
 		t, &SyntaxOperand{
 			Name:     "Progressive",
 			StageIdx: 0,
+			value:    progressive,
 		}, actual,
 	)
 }

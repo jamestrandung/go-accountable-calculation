@@ -22,7 +22,8 @@ func TestLocal_ToSyntaxOperand(t *testing.T) {
 
 	assert.Equal(
 		t, &SyntaxOperand{
-			Name: "Local",
+			Name:  "Local",
+			value: local,
 		}, actual,
 	)
 }

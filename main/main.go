@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/jamestrandung/go-accountable-calculation/acal"
+	"github.com/jamestrandung/go-accountable-calculation/float"
 )
 
 type RawInterface interface {
@@ -56,7 +57,18 @@ func main() {
 	fmt.Println(acal.IsNilValue(t1))
 	fmt.Println(acal.IsNilValue(t2))
 
-	var p *acal.Progressive[int]
-	fare := acal.NewProgressive[int]("something")
-	fare.Update(p)
+	f1 := float.MakeSimpleFromFloat("f1", 1)
+	//f2 := float.MakeSimpleFromFloat("f2", 2)
+	//
+	//f1.LargerThan(f2).Anchor("b1")
+
+	p1 := float.MakeProgressive("p1")
+
+	p1.Update(float.Zero)
+
+	b2 := f1.LargerThan(p1).Anchor("b2")
+
+	p1.Update(float.One)
+
+	fmt.Println(acal.ToString(b2))
 }

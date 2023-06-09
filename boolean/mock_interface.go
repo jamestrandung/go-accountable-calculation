@@ -84,6 +84,20 @@ func (_m *MockInterface) GetName() string {
 	return r0
 }
 
+// GetTypedValue provides a mock function with given fields:
+func (_m *MockInterface) GetTypedValue() bool {
+	ret := _m.Called()
+
+	var r0 bool
+	if rf, ok := ret.Get(0).(func() bool); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	return r0
+}
+
 // GetValue provides a mock function with given fields:
 func (_m *MockInterface) GetValue() interface{} {
 	ret := _m.Called()
@@ -200,22 +214,6 @@ func (_m *MockInterface) Stringify() string {
 		r0 = rf()
 	} else {
 		r0 = ret.Get(0).(string)
-	}
-
-	return r0
-}
-
-// Then provides a mock function with given fields:
-func (_m *MockInterface) Then() Interface {
-	ret := _m.Called()
-
-	var r0 Interface
-	if rf, ok := ret.Get(0).(func() Interface); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(Interface)
-		}
 	}
 
 	return r0

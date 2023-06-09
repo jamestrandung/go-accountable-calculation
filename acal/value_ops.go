@@ -72,8 +72,8 @@ func (valueOpsImpl) DescribeValueAsFormula(v Value) *SyntaxNode {
 		return &SyntaxNode{
 			category: OpCategoryAssignVariable,
 			op:       OpTransparent,
-			operands: []any{
-				v,
+			operands: []*SyntaxOperand{
+				v.ToSyntaxOperand(OpTransparent),
 			},
 		}
 	}
@@ -133,4 +133,13 @@ func ExtractTypedValue[T any](tv TypedValue[T]) T {
 	}
 
 	return tv.GetTypedValue()
+}
+
+// ReplaceIfNil returns a replacement for the input value if it's nil.
+func ReplaceIfNil[T any](tv TypedValue[T]) TypedValue[T] {
+	if IsNilValue(tv) {
+		return ZeroSimple[T]("NilReplacement")
+	}
+
+	return tv
 }

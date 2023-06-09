@@ -31,8 +31,8 @@ func (s Simple) Not() Simple {
 	)
 }
 
-// Then does nothing and returns this Simple as-is. It's meant for separating code
-// into more readable chunk.
-func (s Simple) Then() Interface {
+// Then does nothing and returns this Simple as-is. It's meant
+// for separating code into more readable chunk.
+func (s Simple) Then() Simple {
 	return s
 }

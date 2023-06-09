@@ -37,8 +37,8 @@ var PerformStandardValueExtraction = func(v Value, cache IValueCache) IValueCach
 	formula := fp.GetFormula()
 
 	for _, operand := range formula.GetOperands() {
-		if aVal, ok := operand.(Value); ok {
-			aVal.ExtractValues(cache)
+		if !IsNilValue(operand.value) {
+			operand.value.ExtractValues(cache)
 		}
 	}
 

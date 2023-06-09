@@ -8,13 +8,23 @@ import (
 // Local ...
 type Local struct {
 	*acal.Local[decimal.Decimal]
+	opProvider
 }
 
 // MakeLocal returns a new Local with the provided fields.
 func MakeLocal(name string, original acal.TypedValue[decimal.Decimal]) Local {
-	return Local{
-		Local: acal.NewLocal(name, original),
+	core := acal.NewLocal(name, original)
+
+	l := Local{
+		Local: core,
+		opProvider: opProvider{
+			tv: core,
+		},
 	}
+
+	l.WithFormatFn(FormatFn)
+
+	return l
 }
 
 // GetTypedValue returns the typed value this Local contains.

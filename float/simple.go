@@ -8,81 +8,53 @@ import (
 // Simple ...
 type Simple struct {
 	*acal.Simple[decimal.Decimal]
+	opProvider
 }
 
 // MakeSimpleFromFloat ...
 func MakeSimpleFromFloat(name string, value float64) Simple {
-	s := Simple{
-		Simple: acal.NewSimple(name, decimal.NewFromFloat(value)),
-	}
-
-	s.WithFormatFn(floatFormatFn)
-
-	return s
+	return makeSimple(acal.NewSimple(name, decimal.NewFromFloat(value)))
 }
 
 // MakeSimpleFromFloat32 ...
 func MakeSimpleFromFloat32(name string, value float32) Simple {
-	s := Simple{
-		Simple: acal.NewSimple(name, decimal.NewFromFloat32(value)),
-	}
-
-	s.WithFormatFn(floatFormatFn)
-
-	return s
+	return makeSimple(acal.NewSimple(name, decimal.NewFromFloat32(value)))
 }
 
 // MakeSimpleFromInt ...
 func MakeSimpleFromInt(name string, value int64) Simple {
-	s := Simple{
-		Simple: acal.NewSimple(name, decimal.NewFromInt(value)),
-	}
-
-	s.WithFormatFn(floatFormatFn)
-
-	return s
+	return makeSimple(acal.NewSimple(name, decimal.NewFromInt(value)))
 }
 
 // MakeSimpleFromInt32 ...
 func MakeSimpleFromInt32(name string, value int32) Simple {
-	s := Simple{
-		Simple: acal.NewSimple(name, decimal.NewFromInt32(value)),
-	}
-
-	s.WithFormatFn(floatFormatFn)
-
-	return s
+	return makeSimple(acal.NewSimple(name, decimal.NewFromInt32(value)))
 }
 
 // MakeSimpleFromDecimal ...
 func MakeSimpleFromDecimal(name string, value decimal.Decimal) Simple {
-	s := Simple{
-		Simple: acal.NewSimple(name, value),
-	}
-
-	s.WithFormatFn(floatFormatFn)
-
-	return s
+	return makeSimple(acal.NewSimple(name, value))
 }
 
 // MakeSimpleWithFormula returns a new Simple with the given value and formula.
 func MakeSimpleWithFormula(value decimal.Decimal, formula *acal.SyntaxNode) Simple {
-	s := Simple{
-		Simple: acal.NewSimpleWithFormula(value, formula),
-	}
-
-	s.WithFormatFn(floatFormatFn)
-
-	return s
+	return makeSimple(acal.NewSimpleWithFormula(value, formula))
 }
 
 // MakeSimpleFrom returns a new Simple using the given value as formula.
 func MakeSimpleFrom(value acal.TypedValue[decimal.Decimal]) Simple {
+	return makeSimple(acal.NewSimpleFrom(value))
+}
+
+func makeSimple(core *acal.Simple[decimal.Decimal]) Simple {
 	s := Simple{
-		Simple: acal.NewSimpleFrom(value),
+		Simple: core,
+		opProvider: opProvider{
+			tv: core,
+		},
 	}
 
-	s.WithFormatFn(floatFormatFn)
+	s.WithFormatFn(FormatFn)
 
 	return s
 }
@@ -146,4 +118,10 @@ func (s Simple) Decimal() decimal.Decimal {
 // If it's nil, 0 is returned.
 func (s Simple) Float() float64 {
 	return s.Decimal().InexactFloat64()
+}
+
+// Then does nothing and returns this Simple as-is. It's meant
+// for separating code into more readable chunk.
+func (s Simple) Then() Simple {
+	return s
 }

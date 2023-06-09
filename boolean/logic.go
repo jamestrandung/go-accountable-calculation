@@ -4,21 +4,22 @@ import (
 	"github.com/jamestrandung/go-accountable-calculation/acal"
 )
 
-// PerformUnaryLogicOp returns a boolean.Simple to represent the result of
+// PerformUnaryLogicOp returns a Simple to represent the result of
 // performing unaryOpFn on the values of the provided acal.TypedValue.
 func PerformUnaryLogicOp[T any](
 	tv acal.TypedValue[T],
 	fnName string,
 	unaryOpFn func(v T) bool,
 ) Simple {
-	if acal.IsNilValue(tv) {
-		return NilBool
-	}
+	tv = acal.ReplaceIfNil(tv)
 
-	return MakeSimpleWithFormula(unaryOpFn(tv.GetTypedValue()), acal.FormulaBuilder.NewFormulaFunctionCall(fnName, tv))
+	return MakeSimpleWithFormula(
+		unaryOpFn(tv.GetTypedValue()),
+		acal.FormulaBuilder.NewFormulaFunctionCall(fnName, tv),
+	)
 }
 
-// PerformBinaryLogicOp returns a boolean.Simple to represent the result of
+// PerformBinaryLogicOp returns a Simple to represent the result of
 // performing binaryOpFn on the values of the provided acal.TypedValue.
 func PerformBinaryLogicOp[T any](
 	tv1 acal.TypedValue[T],
@@ -27,12 +28,11 @@ func PerformBinaryLogicOp[T any](
 	opDesc string,
 	binaryOpFn func(a, b T) bool,
 ) Simple {
-	if acal.IsNilValue(tv1) && acal.IsNilValue(tv2) {
-		return NilBool
-	}
+	tv1 = acal.ReplaceIfNil(tv1)
+	tv2 = acal.ReplaceIfNil(tv2)
 
 	return MakeSimpleWithFormula(
-		binaryOpFn(acal.ExtractTypedValue(tv1), acal.ExtractTypedValue(tv2)),
+		binaryOpFn(tv1.GetTypedValue(), tv2.GetTypedValue()),
 		acal.FormulaBuilder.NewFormulaTwoValMiddleOp(tv1, tv2, op, opDesc),
 	)
 }

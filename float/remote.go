@@ -8,13 +8,23 @@ import (
 // Remote ...
 type Remote struct {
 	*acal.Remote[decimal.Decimal]
+	opProvider
 }
 
 // MakeRemote ...
 func MakeRemote(name string, value decimal.Decimal, remoteFieldName string, remoteLogKey string) Remote {
-	return Remote{
-		Remote: acal.NewRemote(name, value, remoteFieldName, remoteLogKey),
+	core := acal.NewRemote(name, value, remoteFieldName, remoteLogKey)
+
+	r := Remote{
+		Remote: core,
+		opProvider: opProvider{
+			tv: core,
+		},
 	}
+
+	r.WithFormatFn(FormatFn)
+
+	return r
 }
 
 // GetTypedValue returns the typed value this Remote contains.

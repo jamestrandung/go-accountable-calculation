@@ -22,7 +22,8 @@ func TestRemote_ToSyntaxOperand(t *testing.T) {
 
 	assert.Equal(
 		t, &SyntaxOperand{
-			Name: "Remote",
+			Name:  "Remote",
+			value: remote,
 		}, actual,
 	)
 }

@@ -28,6 +28,7 @@ func TestStage_ToSyntaxOperand(t *testing.T) {
 		t, &SyntaxOperand{
 			Name:     "Something",
 			StageIdx: 3,
+			value:    stage,
 		}, actual,
 	)
 }

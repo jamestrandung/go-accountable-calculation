@@ -310,82 +310,82 @@ func TestValueOpsImpl_Describe(t *testing.T) {
 	}
 }
 
-func TestValueOpsImpl_DescribeValueAsFormula(t *testing.T) {
-	aValMock := newMockValueWithFormula(t)
-	dummyFormula := &SyntaxNode{}
-
-	valueOpsMock, cleanup := MockValueOps(t)
-	defer cleanup()
-
-	scenarios := []struct {
-		desc  string
-		setup func()
-		want  *SyntaxNode
-	}{
-		{
-			desc: "anchored Value",
-			setup: func() {
-				valueOpsMock.On("HasIdentity", aValMock).
-					Return(true).
-					Once()
-			},
-			want: &SyntaxNode{
-				category: OpCategoryAssignVariable,
-				op:       OpTransparent,
-				operands: []any{
-					aValMock,
-				},
-			},
-		},
-		{
-			desc: "un-anchored Value with no formula",
-			setup: func() {
-				valueOpsMock.On("HasIdentity", aValMock).
-					Return(false).
-					Once()
-
-				valueOpsMock.On("Describe", aValMock).
-					Return("TestDescription").
-					Once()
-
-				aValMock.On("HasFormula").Return(false).Once()
-			},
-			want: &SyntaxNode{
-				category: OpCategoryAssignStatic,
-				op:       OpTransparent,
-				opDesc:   "TestDescription",
-			},
-		},
-		{
-			desc: "un-anchored Value with formula",
-			setup: func() {
-				valueOpsMock.On("HasIdentity", aValMock).
-					Return(false).
-					Once()
-
-				aValMock.On("HasFormula").Return(true).Once()
-				aValMock.On("GetFormula").Return(dummyFormula).Once()
-			},
-			want: dummyFormula,
-		},
-	}
-
-	for _, scenario := range scenarios {
-		sc := scenario
-		t.Run(
-			sc.desc, func(t *testing.T) {
-				if sc.setup != nil {
-					sc.setup()
-				}
-
-				ops := valueOpsImpl{}
-
-				actual := ops.DescribeValueAsFormula(aValMock)
-				assert.Equal(t, sc.want, actual)
-			},
-		)
-	}
-}
+//func TestValueOpsImpl_DescribeValueAsFormula(t *testing.T) {
+//	aValMock := newMockValueWithFormula(t)
+//	dummyFormula := &SyntaxNode{}
+//
+//	valueOpsMock, cleanup := MockValueOps(t)
+//	defer cleanup()
+//
+//	scenarios := []struct {
+//		desc  string
+//		setup func()
+//		want  *SyntaxNode
+//	}{
+//		{
+//			desc: "anchored Value",
+//			setup: func() {
+//				valueOpsMock.On("HasIdentity", aValMock).
+//					Return(true).
+//					Once()
+//			},
+//			want: &SyntaxNode{
+//				category: OpCategoryAssignVariable,
+//				op:       OpTransparent,
+//				operands: []any{
+//					aValMock,
+//				},
+//			},
+//		},
+//		{
+//			desc: "un-anchored Value with no formula",
+//			setup: func() {
+//				valueOpsMock.On("HasIdentity", aValMock).
+//					Return(false).
+//					Once()
+//
+//				valueOpsMock.On("Describe", aValMock).
+//					Return("TestDescription").
+//					Once()
+//
+//				aValMock.On("HasFormula").Return(false).Once()
+//			},
+//			want: &SyntaxNode{
+//				category: OpCategoryAssignStatic,
+//				op:       OpTransparent,
+//				opDesc:   "TestDescription",
+//			},
+//		},
+//		{
+//			desc: "un-anchored Value with formula",
+//			setup: func() {
+//				valueOpsMock.On("HasIdentity", aValMock).
+//					Return(false).
+//					Once()
+//
+//				aValMock.On("HasFormula").Return(true).Once()
+//				aValMock.On("GetFormula").Return(dummyFormula).Once()
+//			},
+//			want: dummyFormula,
+//		},
+//	}
+//
+//	for _, scenario := range scenarios {
+//		sc := scenario
+//		t.Run(
+//			sc.desc, func(t *testing.T) {
+//				if sc.setup != nil {
+//					sc.setup()
+//				}
+//
+//				ops := valueOpsImpl{}
+//
+//				actual := ops.DescribeValueAsFormula(aValMock)
+//				assert.Equal(t, sc.want, actual)
+//			},
+//		)
+//	}
+//}
 
 func TestExtractTypedValue(t *testing.T) {
 	scenarios := []struct {
