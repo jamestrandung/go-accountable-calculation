@@ -5,13 +5,13 @@ package acal
 //go:generate mockery --name=valueWithFormula --case underscore --inpackage
 type valueWithFormula interface {
 	Value
-	FormulaProvider
+	formulaProvider
 }
 
 //go:generate mockery --name=valueWithAllFeatures --case underscore --inpackage
 type valueWithAllFeatures interface {
 	Value
-	FormulaProvider
+	formulaProvider
 	ITagger
 	StaticConditionalValue
 }

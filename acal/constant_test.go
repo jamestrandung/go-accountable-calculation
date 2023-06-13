@@ -30,7 +30,7 @@ func TestConstant_ToSyntaxOperand(t *testing.T) {
 func TestConstant_GetFormula(t *testing.T) {
 	constant := NewConstant(2)
 
-	actual := constant.GetFormula()
+	actual := constant.GetFormulaFn()()
 
 	assert.Equal(
 		t, &SyntaxNode{
@@ -40,12 +40,4 @@ func TestConstant_GetFormula(t *testing.T) {
 			operands: nil,
 		}, actual,
 	)
-}
-
-func TestConstant_SelfReplaceIfNil(t *testing.T) {
-	var nilConstant *Constant[int]
-	assert.Equal(t, ZeroSimple[int]("NilConstant"), nilConstant.SelfReplaceIfNil())
-
-	constant := NewConstant(2)
-	assert.Equal(t, constant, constant.SelfReplaceIfNil())
 }

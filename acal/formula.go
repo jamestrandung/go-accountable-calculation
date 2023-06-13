@@ -2,15 +2,23 @@ package acal
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
-// FormulaProvider is the interface concrete Value needs to
+// formulaProvider is the interface concrete Value needs to
 // implement if they provide SyntaxNode.
-type FormulaProvider interface {
-	// HasFormula returns whether this FormulaProvider has a formula.
+type formulaProvider interface {
+	// HasFormula returns whether this formulaProvider has a formula.
 	HasFormula() bool
-	// GetFormula returns the formula provided by this FormulaProvider.
-	GetFormula() *SyntaxNode
+	// GetFormulaFn returns the function to build a formula of this FormulaProvider.
+	GetFormulaFn() func() *SyntaxNode
+}
+
+// syntaxOperandProvider is the interface concrete Value needs to
+// implement if they can be converted into a SyntaxOperand.
+type syntaxOperandProvider interface {
+	// ToSyntaxOperand returns the SyntaxOperand representation of this Value.
+	ToSyntaxOperand(nextOp Op) *SyntaxOperand
 }
 
 // SyntaxNode is the representation of an operation performed on Value.
@@ -18,11 +26,11 @@ type SyntaxNode struct {
 	category OpCategory
 	op       Op
 	opDesc   string
-	operands []*SyntaxOperand
+	operands []any
 }
 
 // NewSyntaxNode returns a new SyntaxNode with the provided fields.
-func NewSyntaxNode(category OpCategory, op Op, opDesc string, operands []*SyntaxOperand) *SyntaxNode {
+func NewSyntaxNode(category OpCategory, op Op, opDesc string, operands []any) *SyntaxNode {
 	return &SyntaxNode{
 		category: category,
 		op:       op,
@@ -47,12 +55,22 @@ func (n *SyntaxNode) GetOpDesc() string {
 }
 
 // GetOperands returns the operands of this SyntaxNode.
-func (n *SyntaxNode) GetOperands() []*SyntaxOperand {
+func (n *SyntaxNode) GetOperands() []any {
 	return n.operands
 }
 
 // MarshalJSON returns the JSON encoding of this SyntaxNode.
 func (n *SyntaxNode) MarshalJSON() ([]byte, error) {
+	operands := make([]*SyntaxOperand, 0, len(n.operands))
+	for _, operand := range n.operands {
+		if sop, ok := operand.(Value); ok {
+			operands = append(operands, sop.ToSyntaxOperand(n.op))
+			continue
+		}
+
+		operands = append(operands, NewSyntaxOperandWithStaticValue(fmt.Sprintf("%v", operand)))
+	}
+
 	return json.Marshal(
 		&struct {
 			Category  string
@@ -61,7 +79,7 @@ func (n *SyntaxNode) MarshalJSON() ([]byte, error) {
 		}{
 			Category:  n.category.toString(),
 			Operation: n.opDesc,
-			Operands:  n.operands,
+			Operands:  operands,
 		},
 	)
 }
@@ -74,15 +92,13 @@ type SyntaxOperand struct {
 	StaticValue       string      `json:",omitempty"`
 	Node              *SyntaxNode `json:",omitempty"`
 	WrapInParentheses bool        `json:",omitempty"`
-	value             Value
 }
 
 // NewSyntaxOperand returns a new SyntaxOperand for those Value
 // that come without stageIdx.
 func NewSyntaxOperand(v Value) *SyntaxOperand {
 	return &SyntaxOperand{
-		Name:  Identify(v),
-		value: v,
+		Name: Identify(v),
 	}
 }
 
@@ -92,7 +108,6 @@ func NewSyntaxOperandWithStageIdx(v Value, stageIdx int) *SyntaxOperand {
 	return &SyntaxOperand{
 		Name:     Identify(v),
 		StageIdx: stageIdx,
-		value:    v,
 	}
 }
 

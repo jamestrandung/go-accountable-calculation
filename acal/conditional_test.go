@@ -55,15 +55,21 @@ func TestCondition_MarshalJSON(t *testing.T) {
 		{
 			desc: "simple condition",
 			test: func(t *testing.T) {
-				valueOpsMock, cleanup := MockValueOps(t)
+				criteria := NewMockTypedValue[bool](t)
+
+				mockValueOps, cleanup := MockValueOps(t)
 				defer cleanup()
 
-				criteria := NewMockTypedValue[bool](t)
-				valueOpsMock.On("DescribeValueAsFormula", criteria).
+				mockValueOps.On("IsNilValue", criteria).
+					Return(false).
+					Once()
+				mockValueOps.On("DescribeValueAsFormula", criteria).
 					Return(
-						&SyntaxNode{
-							category: OpCategoryAssignVariable,
-							opDesc:   "ABC",
+						func() *SyntaxNode {
+							return &SyntaxNode{
+								category: OpCategoryAssignVariable,
+								opDesc:   "ABC",
+							}
 						},
 					).
 					Once()
@@ -80,15 +86,21 @@ func TestCondition_MarshalJSON(t *testing.T) {
 		{
 			desc: "progressive condition",
 			test: func(t *testing.T) {
-				valueOpsMock, cleanup := MockValueOps(t)
+				criteria := NewMockTypedValue[bool](t)
+
+				mockValueOps, cleanup := MockValueOps(t)
 				defer cleanup()
 
-				criteria := NewMockTypedValue[bool](t)
-				valueOpsMock.On("DescribeValueAsFormula", criteria).
+				mockValueOps.On("IsNilValue", criteria).
+					Return(false).
+					Once()
+				mockValueOps.On("DescribeValueAsFormula", criteria).
 					Return(
-						&SyntaxNode{
-							category: OpCategoryAssignVariable,
-							opDesc:   "ABC",
+						func() *SyntaxNode {
+							return &SyntaxNode{
+								category: OpCategoryAssignVariable,
+								opDesc:   "ABC",
+							}
 						},
 					).
 					Once()

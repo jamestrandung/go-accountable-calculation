@@ -22,8 +22,7 @@ func TestLocal_ToSyntaxOperand(t *testing.T) {
 
 	assert.Equal(
 		t, &SyntaxOperand{
-			Name:  "Local",
-			value: local,
+			Name: "Local",
 		}, actual,
 	)
 }
@@ -46,14 +45,6 @@ func TestLocal_ExtractValues(t *testing.T) {
 	actual := local.ExtractValues(mockCache)
 
 	assert.Equal(t, mockCache, actual)
-}
-
-func TestLocal_SelfReplaceIfNil(t *testing.T) {
-	var nilLocal *Local[int]
-	assert.Equal(t, ZeroSimple[int]("NilLocal"), nilLocal.SelfReplaceIfNil())
-
-	local := NewLocal[int]("Local", NewSimple("Something", 2))
-	assert.Equal(t, local, local.SelfReplaceIfNil())
 }
 
 func TestLocal_DoAnchor(t *testing.T) {

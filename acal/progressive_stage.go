@@ -1,15 +1,18 @@
 package acal
 
+type snapshooter[T any] interface {
+	// getSnapshot returns the current Stage of this snapshooter as a snapshot.
+	getSnapshot() *Stage[T]
+}
+
 // Stage ...
 type Stage[T any] struct {
 	self      *Progressive[T]
 	idx       int
 	prevStage *Stage[T]
 
-	value T
-
-	sourceStageIdx int
-	source         TypedValue[T]
+	value  T
+	source TypedValue[T]
 }
 
 // IsNil returns whether this Stage is nil.
@@ -60,15 +63,6 @@ func (s *Stage[T]) ToSyntaxOperand(nextOp Op) *SyntaxOperand {
 // ExtractValues extracts this Stage and all Value that were used to calculate it.
 func (s *Stage[T]) ExtractValues(cache IValueCache) IValueCache {
 	return s.self.ExtractValues(cache)
-}
-
-// SelfReplaceIfNil returns the replacement to represent this Stage if it is nil.
-func (s *Stage[T]) SelfReplaceIfNil() Value {
-	if s.IsNil() {
-		return ZeroSimple[T]("NilStage")
-	}
-
-	return s
 }
 
 // Stringify returns the value this Stage contains as a string.

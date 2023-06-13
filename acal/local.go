@@ -53,15 +53,6 @@ func (l *Local[T]) ExtractValues(cache IValueCache) IValueCache {
 	return PerformStandardValueExtraction(l, cache)
 }
 
-// SelfReplaceIfNil returns the replacement to represent this Local if it is nil.
-func (l *Local[T]) SelfReplaceIfNil() Value {
-	if l.IsNil() {
-		return ZeroSimple[T]("NilLocal")
-	}
-
-	return l
-}
-
 // DoAnchor returns a new Simple initialized to the value of this
 // Local and anchored with the given name.
 func (l *Local[T]) DoAnchor(name string) *Simple[T] {

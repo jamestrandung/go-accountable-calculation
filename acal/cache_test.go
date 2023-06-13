@@ -15,70 +15,70 @@ func TestValueCache_Take(t *testing.T) {
 	}{
 		{
 			desc: "Cache is empty OR doesn't contain other variables with the same name",
-			expect: func(t *testing.T, aValMock *mockValueWithFormula, cache valueCache) {
-				assert.Equal(t, cache.values[aValMock.GetName()], []Value{aValMock}, "cache should contain the newly added value")
+			expect: func(t *testing.T, mockValue *mockValueWithFormula, cache valueCache) {
+				assert.Equal(t, cache.values[mockValue.GetName()], []Value{mockValue}, "cache should contain the newly added value")
 			},
 			taken: true,
 		},
 		{
 			desc: "Cache already contains the value",
-			setup: func(aValMock *mockValueWithFormula, cache valueCache) {
-				cache.Take(aValMock)
+			setup: func(mockValue *mockValueWithFormula, cache valueCache) {
+				cache.Take(mockValue)
 			},
-			expect: func(t *testing.T, aValMock *mockValueWithFormula, cache valueCache) {
-				assert.Equal(t, cache.values[aValMock.GetName()], []Value{aValMock}, "cache should contain the newly added value")
+			expect: func(t *testing.T, mockValue *mockValueWithFormula, cache valueCache) {
+				assert.Equal(t, cache.values[mockValue.GetName()], []Value{mockValue}, "cache should contain the newly added value")
 			},
 			taken: false,
 		},
 		{
 			desc: "Duplicate value has no alias, 1 duplicate",
-			setup: func(aValMock *mockValueWithFormula, cache valueCache) {
-				aValMock.On("GetAlias").Return("").Once()
-				aValMock.On("SetAlias", "TestName2").Once()
+			setup: func(mockValue *mockValueWithFormula, cache valueCache) {
+				mockValue.On("GetAlias").Return("").Once()
+				mockValue.On("SetAlias", "TestName2").Once()
 
-				duplicateMock := newMockValueWithFormula(t)
-				duplicateMock.On("GetName").Return("TestName").Maybe()
-				cache.Take(duplicateMock)
+				mockDuplicate := newMockValueWithFormula(t)
+				mockDuplicate.On("GetName").Return("TestName").Maybe()
+				cache.Take(mockDuplicate)
 			},
-			expect: func(t *testing.T, aValMock *mockValueWithFormula, cache valueCache) {
-				assert.Equal(t, len(cache.values[aValMock.GetName()]), 2, "cache should contain 2 values under TestName")
+			expect: func(t *testing.T, mockValue *mockValueWithFormula, cache valueCache) {
+				assert.Equal(t, len(cache.values[mockValue.GetName()]), 2, "cache should contain 2 values under TestName")
 			},
 			taken: true,
 		},
 		{
 			desc: "Duplicate value has no alias, 2 duplicates",
-			setup: func(aValMock *mockValueWithFormula, cache valueCache) {
-				aValMock.On("GetAlias").Return("").Once()
-				aValMock.On("SetAlias", "TestName3").Once()
+			setup: func(mockValue *mockValueWithFormula, cache valueCache) {
+				mockValue.On("GetAlias").Return("").Once()
+				mockValue.On("SetAlias", "TestName3").Once()
 
-				duplicateMock := newMockValueWithFormula(t)
-				duplicateMock.On("GetName").Return("TestName").Maybe()
-				cache.Take(duplicateMock)
+				mockDuplicate := newMockValueWithFormula(t)
+				mockDuplicate.On("GetName").Return("TestName").Maybe()
+				cache.Take(mockDuplicate)
 
-				duplicateMock2 := newMockValueWithFormula(t)
-				duplicateMock2.On("GetName").Return("TestName").Maybe()
-				duplicateMock2.On("GetAlias").Return("").Once()
-				duplicateMock2.On("SetAlias", "TestName2").Once()
-				cache.Take(duplicateMock2)
+				mockDuplicate2 := newMockValueWithFormula(t)
+				mockDuplicate2.On("GetName").Return("TestName").Maybe()
+				mockDuplicate2.On("GetAlias").Return("").Once()
+				mockDuplicate2.On("SetAlias", "TestName2").Once()
+				cache.Take(mockDuplicate2)
 			},
-			expect: func(t *testing.T, aValMock *mockValueWithFormula, cache valueCache) {
-				assert.Equal(t, len(cache.values[aValMock.GetName()]), 3, "cache should contain 3 values under TestName")
+			expect: func(t *testing.T, mockValue *mockValueWithFormula, cache valueCache) {
+				assert.Equal(t, len(cache.values[mockValue.GetName()]), 3, "cache should contain 3 values under TestName")
 			},
 			taken: true,
 		},
 		{
 			desc: "Duplicate value has alias",
-			setup: func(aValMock *mockValueWithFormula, cache valueCache) {
-				aValMock.On("GetAlias").Return("TestAlias").Once()
-				aValMock.On("SetAlias", "TestName2").Maybe()
+			setup: func(mockValue *mockValueWithFormula, cache valueCache) {
+				mockValue.On("GetAlias").Return("TestAlias").Once()
+				mockValue.On("SetAlias", "TestName2").Maybe()
 
-				duplicateMock := newMockValueWithFormula(t)
-				duplicateMock.On("GetName").Return("TestName").Maybe()
-				cache.Take(duplicateMock)
+				mockDuplicate := newMockValueWithFormula(t)
+				mockDuplicate.On("GetName").Return("TestName").Maybe()
+				cache.Take(mockDuplicate)
 			},
-			expect: func(t *testing.T, aValMock *mockValueWithFormula, cache valueCache) {
-				aValMock.AssertNotCalled(t, "SetAlias", "TestName2")
-				assert.Equal(t, len(cache.values[aValMock.GetName()]), 2, "cache should contain 2 values under TestName")
+			expect: func(t *testing.T, mockValue *mockValueWithFormula, cache valueCache) {
+				mockValue.AssertNotCalled(t, "SetAlias", "TestName2")
+				assert.Equal(t, len(cache.values[mockValue.GetName()]), 2, "cache should contain 2 values under TestName")
 			},
 			taken: true,
 		},
@@ -90,16 +90,16 @@ func TestValueCache_Take(t *testing.T) {
 			sc.desc, func(t *testing.T) {
 				cache := NewValueCache()
 
-				aValMock := newMockValueWithFormula(t)
-				aValMock.On("GetName").Return("TestName").Maybe()
+				mockValue := newMockValueWithFormula(t)
+				mockValue.On("GetName").Return("TestName").Maybe()
 
 				if sc.setup != nil {
-					sc.setup(aValMock, cache.(valueCache))
+					sc.setup(mockValue, cache.(valueCache))
 				}
 
-				taken := cache.Take(aValMock)
+				taken := cache.Take(mockValue)
 				assert.Equal(t, sc.taken, taken, "value should be taken, expectation: %v", sc.taken)
-				sc.expect(t, aValMock, cache.(valueCache))
+				sc.expect(t, mockValue, cache.(valueCache))
 			},
 		)
 	}
@@ -113,25 +113,25 @@ func TestValueCache_Flatten(t *testing.T) {
 		{
 			desc: "Unique identities",
 			test: func(t *testing.T) {
-				valueOpsMock, cleanup := MockValueOps(t)
+				mockValueOps, cleanup := MockValueOps(t)
 				defer cleanup()
 
-				aValMock1 := newMockValueWithFormula(t)
-				aValMock2 := newMockValueWithFormula(t)
+				mockValue1 := newMockValueWithFormula(t)
+				mockValue2 := newMockValueWithFormula(t)
 
-				valueOpsMock.On("Identify", aValMock1).Return("TestIdentity1").Once()
-				valueOpsMock.On("Identify", aValMock2).Return("TestIdentity2").Once()
+				mockValueOps.On("Identify", mockValue1).Return("TestIdentity1").Once()
+				mockValueOps.On("Identify", mockValue2).Return("TestIdentity2").Once()
 
 				cache := &valueCache{
 					values: map[string][]Value{
-						"TestName1": {aValMock1},
-						"TestName2": {aValMock2},
+						"TestName1": {mockValue1},
+						"TestName2": {mockValue2},
 					},
 				}
 
 				want := map[string]Value{
-					"TestIdentity1": aValMock1,
-					"TestIdentity2": aValMock2,
+					"TestIdentity1": mockValue1,
+					"TestIdentity2": mockValue2,
 				}
 
 				actual := cache.Flatten()
@@ -142,58 +142,56 @@ func TestValueCache_Flatten(t *testing.T) {
 		{
 			desc: "Duplicated identities, different names",
 			test: func(t *testing.T) {
-				valueOpsMock, cleanup := MockValueOps(t)
+				mockValueOps, cleanup := MockValueOps(t)
 				defer cleanup()
 
-				aValMock1 := newMockValueWithFormula(t)
-				aValMock1.On("GetName").Return("TestName1").Once()
+				mockValue1 := newMockValueWithFormula(t)
+				mockValue1.On("GetName").Return("TestName1").Once()
+				mockValue1.On("SetAlias", "TestIdentity_2").Maybe()
 
-				aValMock2 := newMockValueWithFormula(t)
-				aValMock2.On("GetName").Return("TestName2").Once()
-				aValMock2.On("SetAlias", "TestIdentity_2").Once()
+				mockValue2 := newMockValueWithFormula(t)
+				mockValue2.On("GetName").Return("TestName2").Once()
+				mockValue2.On("SetAlias", "TestIdentity_2").Maybe()
 
-				valueOpsMock.On("Identify", mock.Anything).Return("TestIdentity").Twice()
+				mockValueOps.On("Identify", mock.Anything).Return("TestIdentity").Twice()
 
 				cache := &valueCache{
 					values: map[string][]Value{
-						"TestName1": {aValMock1},
-						"TestName2": {aValMock2},
+						"TestName1": {mockValue1},
+						"TestName2": {mockValue2},
 					},
-				}
-
-				want := map[string]Value{
-					"TestIdentity":   aValMock1,
-					"TestIdentity_2": aValMock2,
 				}
 
 				actual := cache.Flatten()
 
-				assert.Equal(t, want, actual, "flatten map should meet expectation")
+				case1 := actual["TestIdentity"] == mockValue1 && actual["TestIdentity_2"] == mockValue2
+				case2 := actual["TestIdentity"] == mockValue2 && actual["TestIdentity_2"] == mockValue1
+				assert.True(t, case1 || case2)
 			},
 		},
 		{
 			desc: "Duplicated identities, same name",
 			test: func(t *testing.T) {
-				valueOpsMock, cleanup := MockValueOps(t)
+				mockValueOps, cleanup := MockValueOps(t)
 				defer cleanup()
 
-				aValMock1 := newMockValueWithFormula(t)
-				aValMock1.On("GetName").Return("TestName").Once()
+				mockValue1 := newMockValueWithFormula(t)
+				mockValue1.On("GetName").Return("TestName").Once()
 
-				aValMock2 := newMockValueWithFormula(t)
-				aValMock2.On("GetName").Return("TestName").Once()
+				mockValue2 := newMockValueWithFormula(t)
+				mockValue2.On("GetName").Return("TestName").Once()
 
-				valueOpsMock.On("Identify", mock.Anything).Return("TestIdentity").Twice()
+				mockValueOps.On("Identify", mock.Anything).Return("TestIdentity").Twice()
 
 				cache := &valueCache{
 					values: map[string][]Value{
-						"TestName1": {aValMock1},
-						"TestName2": {aValMock2},
+						"TestName1": {mockValue1},
+						"TestName2": {mockValue2},
 					},
 				}
 
 				want := map[string]Value{
-					"TestIdentity": aValMock1,
+					"TestIdentity": mockValue1,
 				}
 
 				actual := cache.Flatten()

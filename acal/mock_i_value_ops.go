@@ -24,15 +24,15 @@ func (_m *MockIValueOps) Describe(v Value) string {
 }
 
 // DescribeValueAsFormula provides a mock function with given fields: v
-func (_m *MockIValueOps) DescribeValueAsFormula(v Value) *SyntaxNode {
+func (_m *MockIValueOps) DescribeValueAsFormula(v Value) func() *SyntaxNode {
 	ret := _m.Called(v)
 
-	var r0 *SyntaxNode
-	if rf, ok := ret.Get(0).(func(Value) *SyntaxNode); ok {
+	var r0 func() *SyntaxNode
+	if rf, ok := ret.Get(0).(func(Value) func() *SyntaxNode); ok {
 		r0 = rf(v)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*SyntaxNode)
+			r0 = ret.Get(0).(func() *SyntaxNode)
 		}
 	}
 

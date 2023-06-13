@@ -14,14 +14,6 @@ func TestSimple_IsNil(t *testing.T) {
 	assert.False(t, fSimple.IsNil())
 }
 
-func TestSimple_SelfReplaceIfNil(t *testing.T) {
-	var nilSimple Simple[int]
-	assert.Equal(t, acal.ZeroSimple[int]("NilComparable"), nilSimple.SelfReplaceIfNil())
-
-	simple := MakeSimple("Simple", 1)
-	assert.Equal(t, simple, simple.SelfReplaceIfNil())
-}
-
 func TestSimple_Anchor(t *testing.T) {
 	scenarios := []struct {
 		desc string

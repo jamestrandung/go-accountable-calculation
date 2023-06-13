@@ -28,15 +28,6 @@ func TestStage_ToSyntaxOperand(t *testing.T) {
 		t, &SyntaxOperand{
 			Name:     "Something",
 			StageIdx: 3,
-			value:    stage,
 		}, actual,
 	)
-}
-
-func TestStage_SelfReplaceIfNil(t *testing.T) {
-	var nilStage *Stage[int]
-	assert.Equal(t, ZeroSimple[int]("NilStage"), nilStage.SelfReplaceIfNil())
-
-	stage := &Stage[int]{}
-	assert.Equal(t, stage, stage.SelfReplaceIfNil())
 }

@@ -77,15 +77,6 @@ func (p *Progressive[T]) ExtractValues(cache IValueCache) IValueCache {
 	return cache
 }
 
-// SelfReplaceIfNil returns the replacement to represent this Progressive if it is nil.
-func (p *Progressive[T]) SelfReplaceIfNil() Value {
-	if p.IsNil() {
-		return ZeroSimple[T]("NilProgressive")
-	}
-
-	return p
-}
-
 // AsTag returns a Tag represented by this Progressive.
 func (p *Progressive[T]) AsTag() Tag {
 	return NewTagFrom(p)
@@ -120,16 +111,7 @@ func (p *Progressive[T]) Update(value TypedValue[T]) {
 	}
 
 	if fp, ok := value.(*Progressive[T]); ok {
-		p.curStage = &Stage[T]{
-			self:           p,
-			idx:            p.getCurrentStageIdx() + 1,
-			prevStage:      p.curStage,
-			value:          value.GetTypedValue(),
-			sourceStageIdx: fp.getCurrentStageIdx(),
-			source:         fp,
-		}
-
-		return
+		value = fp.getSnapshot()
 	}
 
 	p.curStage = &Stage[T]{
@@ -141,8 +123,17 @@ func (p *Progressive[T]) Update(value TypedValue[T]) {
 	}
 }
 
-// GetSnapshot returns the current Stage as a snapshot of this Progressive.
-func (p *Progressive[T]) GetSnapshot() *Stage[T] {
+// getCurrentStageIdx returns the index of the current Stage.
+func (p *Progressive[T]) getCurrentStageIdx() int {
+	if p.curStage == nil {
+		return -1
+	}
+
+	return p.curStage.idx
+}
+
+// getSnapshot returns the current Stage as a snapshot of this Progressive.
+func (p *Progressive[T]) getSnapshot() *Stage[T] {
 	if p.IsNil() {
 		return nil
 	}
@@ -154,19 +145,9 @@ func (p *Progressive[T]) GetSnapshot() *Stage[T] {
 	return p.curStage
 }
 
-// getSnapshotIdx returns the index of the current Stage.
-func (p *Progressive[T]) getSnapshotIdx() int {
-	snapshot := p.GetSnapshot()
-	if snapshot == nil {
-		return -1
-	}
-
-	return snapshot.idx
-}
-
 // getStage returns the Stage at the given index.
 func (p *Progressive[T]) getStage(stageIdx int) *Stage[T] {
-	if p.curStage == nil || stageIdx > p.curStage.idx {
+	if stageIdx < 0 || p.curStage == nil || stageIdx > p.curStage.idx {
 		return nil
 	}
 
@@ -180,15 +161,6 @@ func (p *Progressive[T]) getStage(stageIdx int) *Stage[T] {
 	}
 
 	return nil
-}
-
-// getCurrentStageIdx returns the index of the current Stage.
-func (p *Progressive[T]) getCurrentStageIdx() int {
-	if p.curStage == nil {
-		return -1
-	}
-
-	return p.curStage.idx
 }
 
 type jsonStage struct {
@@ -206,20 +178,9 @@ func (p *Progressive[T]) MarshalJSON() ([]byte, error) {
 
 	curStage := p.curStage
 	for curStage != nil {
-		if fp, ok := curStage.source.(*Progressive[T]); ok {
-			stages[curStage.idx] = jsonStage{
-				Value:   curStage.Stringify(),
-				Formula: DescribeValueAsFormula(fp.getStage(curStage.sourceStageIdx)),
-			}
-
-			curStage = curStage.prevStage
-
-			continue
-		}
-
 		stages[curStage.idx] = jsonStage{
 			Value:   curStage.Stringify(),
-			Formula: DescribeValueAsFormula(curStage.source),
+			Formula: DescribeValueAsFormula(curStage.source)(),
 		}
 
 		curStage = curStage.prevStage

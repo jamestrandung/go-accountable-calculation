@@ -17,9 +17,10 @@ func MakeRemote(name string, value decimal.Decimal, remoteFieldName string, remo
 
 	r := Remote{
 		Remote: core,
-		opProvider: opProvider{
-			tv: core,
-		},
+	}
+
+	r.opProvider = opProvider{
+		tv: r,
 	}
 
 	r.WithFormatFn(FormatFn)
@@ -30,15 +31,6 @@ func MakeRemote(name string, value decimal.Decimal, remoteFieldName string, remo
 // GetTypedValue returns the typed value this Remote contains.
 func (r Remote) GetTypedValue() decimal.Decimal {
 	return acal.ExtractTypedValue[decimal.Decimal](r.Remote)
-}
-
-// SelfReplaceIfNil returns the replacement to represent this Remote if it is nil.
-func (r Remote) SelfReplaceIfNil() acal.Value {
-	if r.IsNil() {
-		return NilFloat
-	}
-
-	return r
 }
 
 // Anchor returns a new Simple initialized to the value of this

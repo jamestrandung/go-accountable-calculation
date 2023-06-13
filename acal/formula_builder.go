@@ -1,9 +1,6 @@
 package acal
 
-import (
-	"fmt"
-	"testing"
-)
+import "testing"
 
 // FormulaBuilder helps create formulas in different categories.
 var FormulaBuilder IFormulaBuilder = formulaBuilderImpl{}
@@ -13,12 +10,12 @@ var FormulaBuilder IFormulaBuilder = formulaBuilderImpl{}
 //go:generate mockery --name=IFormulaBuilder --case underscore --inpackage
 type IFormulaBuilder interface {
 	// NewFormulaFunctionCall returns a new SyntaxNode representing a function call taking in
-	// the provided arguments. Clients must make sure to call ReplaceIfNil on all arguments of
+	// the provided arguments. Clients must make sure to call PreProcessOperand on all args of
 	// Value type before sending them into this method.
 	NewFormulaFunctionCall(fnName string, arguments ...any) *SyntaxNode
 	// NewFormulaTwoValMiddleOp returns a new SyntaxNode representing a binary operation that
 	// has an operator lied in the middle of two operands. Clients must make sure that to call
-	// ReplaceIfNil on both v1 and v2 before sending them into this method.
+	// PreProcessOperand on both v1 and v2 before sending them into this method.
 	NewFormulaTwoValMiddleOp(v1 Value, v2 Value, op Op, opDesc string) *SyntaxNode
 }
 
@@ -37,16 +34,15 @@ type formulaBuilderImpl struct{}
 
 // NewFormulaFunctionCall ...
 func (b formulaBuilderImpl) NewFormulaFunctionCall(fnName string, arguments ...any) *SyntaxNode {
-	operands := make([]*SyntaxOperand, 0, len(arguments))
+	operands := make([]any, 0, len(arguments))
 
 	for _, arg := range arguments {
-		v, ok := arg.(Value)
-		if !ok {
-			operands = append(operands, NewSyntaxOperandWithStaticValue(fmt.Sprintf("%v", arg)))
+		if v, ok := arg.(Value); ok {
+			operands = append(operands, v)
 			continue
 		}
 
-		operands = append(operands, v.ToSyntaxOperand(OpTransparent))
+		operands = append(operands, arg)
 	}
 
 	return NewSyntaxNode(
@@ -59,5 +55,18 @@ func (b formulaBuilderImpl) NewFormulaFunctionCall(fnName string, arguments ...a
 
 // NewFormulaTwoValMiddleOp ...
 func (b formulaBuilderImpl) NewFormulaTwoValMiddleOp(v1 Value, v2 Value, op Op, opDesc string) *SyntaxNode {
-	return NewSyntaxNode(OpCategoryTwoValMiddleOp, op, opDesc, []*SyntaxOperand{v1.ToSyntaxOperand(op), v2.ToSyntaxOperand(op)})
+	return NewSyntaxNode(OpCategoryTwoValMiddleOp, op, opDesc, []any{v1, v2})
+}
+
+// PreProcessOperand returns a replacement for the input value if it's nil.
+func PreProcessOperand[T any](tv TypedValue[T]) TypedValue[T] {
+	if IsNilValue(tv) {
+		return ZeroSimple[T]("NilReplacement")
+	}
+
+	if ss, ok := tv.(snapshooter[T]); ok {
+		return ss.getSnapshot()
+	}
+
+	return tv
 }

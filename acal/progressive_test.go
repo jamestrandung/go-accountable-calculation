@@ -34,7 +34,6 @@ func TestProgressive_ToSyntaxOperand(t *testing.T) {
 		t, &SyntaxOperand{
 			Name:     "Progressive",
 			StageIdx: -1,
-			value:    progressive,
 		}, actual,
 	)
 
@@ -46,7 +45,6 @@ func TestProgressive_ToSyntaxOperand(t *testing.T) {
 		t, &SyntaxOperand{
 			Name:     "Progressive",
 			StageIdx: 0,
-			value:    progressive,
 		}, actual,
 	)
 }
@@ -151,14 +149,6 @@ func TestProgressive_ExtractValues(t *testing.T) {
 	}
 }
 
-func TestProgressive_SelfReplaceIfNil(t *testing.T) {
-	var nilProgressive *Progressive[int]
-	assert.Equal(t, ZeroSimple[int]("NilProgressive"), nilProgressive.SelfReplaceIfNil())
-
-	progressive := NewProgressive[int]("Progressive")
-	assert.Equal(t, progressive, progressive.SelfReplaceIfNil())
-}
-
 func TestProgressive_AsTag(t *testing.T) {
 	progressive := NewProgressive[int]("Progressive")
 
@@ -261,12 +251,11 @@ func TestProgressive_Update(t *testing.T) {
 
 	assert.Equal(
 		t, &Stage[int]{
-			self:           progressive,
-			idx:            1,
-			prevStage:      prevStage,
-			value:          1,
-			sourceStageIdx: 0,
-			source:         otherProgressive,
+			self:      progressive,
+			idx:       1,
+			prevStage: prevStage,
+			value:     1,
+			source:    otherProgressive.getStage(0),
 		}, progressive.curStage,
 	)
 
@@ -277,12 +266,11 @@ func TestProgressive_Update(t *testing.T) {
 
 	assert.Equal(
 		t, &Stage[int]{
-			self:           progressive,
-			idx:            2,
-			prevStage:      prevStage,
-			value:          2,
-			sourceStageIdx: 1,
-			source:         otherProgressive,
+			self:      progressive,
+			idx:       2,
+			prevStage: prevStage,
+			value:     2,
+			source:    otherProgressive.getStage(1),
 		}, progressive.curStage,
 	)
 
@@ -305,13 +293,13 @@ func TestProgressive_Update(t *testing.T) {
 func TestProgressive_GetSnapshot(t *testing.T) {
 	var progressive *Progressive[int]
 
-	actual := progressive.GetSnapshot()
+	actual := progressive.getSnapshot()
 
 	assert.Nil(t, actual)
 
 	progressive = NewProgressive[int]("Progressive")
 
-	actual = progressive.GetSnapshot()
+	actual = progressive.getSnapshot()
 
 	assert.Equal(t, "DefaultProgressive", actual.source.GetName())
 	assert.Equal(t, 0, actual.value)
@@ -319,7 +307,7 @@ func TestProgressive_GetSnapshot(t *testing.T) {
 	simple := NewSimple("Something", 3)
 	progressive.Update(simple)
 
-	actual = progressive.GetSnapshot()
+	actual = progressive.getSnapshot()
 
 	assert.Equal(t, "Something", actual.source.GetName())
 	assert.Equal(t, 3, actual.value)

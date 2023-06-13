@@ -23,15 +23,6 @@ func MakeSimpleFrom[T comparable](value acal.TypedValue[T]) Simple[T] {
 	}
 }
 
-// SelfReplaceIfNil returns the replacement to represent this Simple if it is nil.
-func (s Simple[T]) SelfReplaceIfNil() acal.Value {
-	if s.IsNil() {
-		return acal.ZeroSimple[T]("NilComparable")
-	}
-
-	return s
-}
-
 // Anchor updates the name of this Simple to the provided string.
 func (s Simple[T]) Anchor(name string) Simple[T] {
 	if s.IsNil() {

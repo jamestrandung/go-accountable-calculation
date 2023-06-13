@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/jamestrandung/go-accountable-calculation/acal"
 	"github.com/jamestrandung/go-accountable-calculation/boolean"
 	"github.com/jamestrandung/go-accountable-calculation/float"
@@ -8,20 +9,20 @@ import (
 )
 
 type fare struct {
-	numPickUp           float64
-	perPickUpPrice      float64
-	numDropOff          float64
-	perDropOffPrice     float64
-	numStopSurcharge    float64
-	baseFare            float64
-	distanceCoefficient float64
-	distance            float64
-	timeCoefficient     float64
-	duration            float64
-	nsnsFare            float64
-	platformFee         float64
-	weightBasedFee      float64
-	finalFare           float64
+	numPickUp              float64
+	perPickUpPrice         float64
+	numDropOff             float64
+	perDropOffPrice        float64
+	numStopSurcharge       float64
+	startingFare           float64
+	loudMouthSurcharge     float64
+	loudMouthCount         float64
+	smellyShoeSurcharge    float64
+	smellyShoeCount        float64
+	inconvenienceSurcharge float64
+	platformFee            float64
+	weightBasedFee         float64
+	totalFare              float64
 }
 
 func bareCalculation() *fare {
@@ -35,36 +36,36 @@ func bareCalculation() *fare {
 
 	f.numStopSurcharge = f.numPickUp*f.perPickUpPrice + f.numDropOff*f.perDropOffPrice
 
-	f.baseFare = 1.0
-	f.distanceCoefficient = 2.0
-	f.distance = 2.0
-	f.timeCoefficient = 1.0
-	f.duration = 1.0
+	f.startingFare = 1.0
+	f.loudMouthSurcharge = 2.0
+	f.loudMouthCount = 2.0
+	f.smellyShoeSurcharge = 1.0
+	f.smellyShoeCount = 1.0
 
-	f.nsnsFare = f.baseFare + f.distanceCoefficient*f.distance + f.timeCoefficient*f.duration
+	f.inconvenienceSurcharge = f.startingFare + f.loudMouthSurcharge*f.loudMouthCount + f.smellyShoeSurcharge*f.smellyShoeCount
 
 	f.platformFee = 2.0
 	f.weightBasedFee = 2.0
 
-	f.finalFare = f.nsnsFare + f.platformFee + f.weightBasedFee + f.numStopSurcharge
+	f.totalFare = f.inconvenienceSurcharge + f.platformFee + f.weightBasedFee + f.numStopSurcharge
 	return f
 }
 
 type fareWithFormula struct {
-	numPickUp           float.Simple
-	perPickUpPrice      float.Simple
-	numDropOff          float.Simple
-	perDropOffPrice     float.Simple
-	numStopSurcharge    float.Simple
-	baseFare            float.Simple
-	distanceCoefficient float.Simple
-	distance            float.Simple
-	timeCoefficient     float.Simple
-	duration            float.Simple
-	nsnsFare            float.Simple
-	platformFee         float.Simple
-	weightBasedFee      float.Simple
-	finalFare           float.Simple
+	numPickUp              float.Simple
+	perPickUpPrice         float.Simple
+	numDropOff             float.Simple
+	perDropOffPrice        float.Simple
+	numStopSurcharge       float.Simple
+	startingFare           float.Simple
+	loudMouthSurcharge     float.Simple
+	loudMouthCount         float.Simple
+	smellyShoeSurcharge    float.Simple
+	smellyShoeCount        float.Simple
+	inconvenienceSurcharge float.Simple
+	platformFee            float.Simple
+	weightBasedFee         float.Simple
+	totalFare              float.Simple
 }
 
 func formulaCalculation() fareWithFormula {
@@ -78,140 +79,145 @@ func formulaCalculation() fareWithFormula {
 	acal.SourceRequest.Apply(f.numPickUp, f.numDropOff)
 	acal.SourceHardcode.Apply(f.perPickUpPrice, f.perDropOffPrice)
 
-	f.numStopSurcharge = f.numPickUp.Multiply(f.perPickUpPrice).Plus(f.numDropOff.Multiply(f.perDropOffPrice)).Anchor("numStopSurcharge")
+	f.numStopSurcharge = f.numPickUp.Multiply(f.perPickUpPrice).Plus(f.numDropOff.Multiply(f.perDropOffPrice)).Anchor("NumStopSurcharge")
 
-	f.baseFare = float.MakeSimpleFromFloat("BaseFare", 1)
-	f.distanceCoefficient = float.MakeSimpleFromFloat("DistanceCoefficient", 2)
-	f.distance = float.MakeSimpleFromFloat("Distance", 2)
-	f.timeCoefficient = float.MakeSimpleFromFloat("TimeCoefficient", 1)
-	f.duration = float.MakeSimpleFromFloat("Duration", 1)
+	f.startingFare = float.MakeSimpleFromFloat("StartingFare", 1)
+	f.loudMouthSurcharge = float.MakeSimpleFromFloat("LoudMouthSurcharge", 2)
+	f.loudMouthCount = float.MakeSimpleFromFloat("LoudMouthCount", 2)
+	f.smellyShoeSurcharge = float.MakeSimpleFromFloat("SmellyShoeSurcharge", 1)
+	f.smellyShoeCount = float.MakeSimpleFromFloat("SmellyShoeCount", 1)
 
-	acal.SourceRequest.Apply(f.distance, f.duration)
-	acal.SourceHardcode.Apply(f.baseFare, f.distanceCoefficient, f.timeCoefficient)
+	acal.SourceRequest.Apply(f.loudMouthCount, f.smellyShoeCount)
+	acal.SourceHardcode.Apply(f.startingFare, f.loudMouthSurcharge, f.smellyShoeSurcharge)
 
-	f.nsnsFare = f.baseFare.Plus(f.distanceCoefficient.Multiply(f.distance)).Plus(f.timeCoefficient.Multiply(f.duration)).Anchor("nsnsFare")
+	f.inconvenienceSurcharge = f.startingFare.Plus(f.loudMouthSurcharge.Multiply(f.loudMouthCount)).Plus(f.smellyShoeSurcharge.Multiply(f.smellyShoeCount)).Anchor("InconvenienceSurcharge")
 
 	f.platformFee = float.MakeSimpleFromFloat("PlatformFee", 2)
 	f.weightBasedFee = float.MakeSimpleFromFloat("WeightBasedFee", 2)
 	acal.SourceHardcode.Apply(f.platformFee, f.weightBasedFee)
 
-	f.finalFare = f.nsnsFare.Plus(f.platformFee).Plus(f.weightBasedFee).Plus(f.numStopSurcharge).Anchor("finalFare")
+	f.totalFare = f.inconvenienceSurcharge.Plus(f.platformFee).Plus(f.weightBasedFee).Plus(f.numStopSurcharge).Anchor("TotalFare")
 	return f
 }
 
 type complexFareWithFormula struct {
-	NumPickUp           float.Simple
-	PerPickUpPrice      float.Simple
-	NumDropOff          float.Simple
-	PerDropOffPrice     float.Simple
-	NumStopSurcharge    float.Simple
-	BaseFare            float.Simple
-	DistanceCoefficient float.Simple
-	Distance            float.Simple
-	TimeCoefficient     float.Simple
-	Duration            float.Simple
-	NsnsFare            float.Simple
-	PlatformFee         float.Simple
-	WeightBasedFee      float.Simple
-	FinalFare           float.Progressive
+	numPickUp              float.Simple
+	perPickUpPrice         float.Simple
+	numDropOff             float.Simple
+	perDropOffPrice        float.Simple
+	numStopSurcharge       float.Simple
+	startingFare           float.Simple
+	loudMouthSurcharge     float.Simple
+	loudMouthCount         float.Simple
+	smellyShoeSurcharge    float.Simple
+	smellyShoeCount        float.Simple
+	inconvenienceSurcharge float.Simple
+	platformFee            float.Simple
+	weightBasedFee         float.Simple
+	totalFare              float.Progressive
+}
+
+func Test_Something(t *testing.T) {
+	c := complexFareCalculation()
+	fmt.Println(acal.ToString(c.totalFare))
 }
 
 func complexFareCalculation() complexFareWithFormula {
 	f := complexFareWithFormula{}
 
-	f.NumPickUp = float.MakeSimpleFromFloat("NumPickUp", 1)
-	f.PerPickUpPrice = float.MakeSimpleFromFloat("PerPickUpPrice", 3)
-	f.NumDropOff = float.MakeSimpleFromFloat("NumDropOff", 3)
-	f.PerDropOffPrice = float.MakeSimpleFromFloat("PerDropOffPrice", 2)
+	f.numPickUp = float.MakeSimpleFromFloat("NumPickUp", 1)
+	f.perPickUpPrice = float.MakeSimpleFromFloat("PerPickUpPrice", 3)
+	f.numDropOff = float.MakeSimpleFromFloat("NumDropOff", 3)
+	f.perDropOffPrice = float.MakeSimpleFromFloat("PerDropOffPrice", 2)
 
-	acal.SourceRequest.Apply(f.NumPickUp, f.NumDropOff)
-	acal.SourceHardcode.Apply(f.PerPickUpPrice, f.PerDropOffPrice)
+	acal.SourceRequest.Apply(f.numPickUp, f.numDropOff)
+	acal.SourceHardcode.Apply(f.perPickUpPrice, f.perDropOffPrice)
 
-	f.NumStopSurcharge = f.NumPickUp.Multiply(f.PerPickUpPrice).Plus(f.NumDropOff.Multiply(f.PerDropOffPrice)).Anchor("NumStopSurcharge")
+	f.numStopSurcharge = f.numPickUp.Multiply(f.perPickUpPrice).Plus(f.numDropOff.Multiply(f.perDropOffPrice)).Anchor("NumStopSurcharge")
 
-	f.BaseFare = float.MakeSimpleFromFloat("BaseFare", 1)
-	f.DistanceCoefficient = float.MakeSimpleFromFloat("DistanceCoefficient", 2)
-	f.Distance = float.MakeSimpleFromFloat("Distance", 2)
-	f.TimeCoefficient = float.MakeSimpleFromFloat("TimeCoefficient", 1)
-	f.Duration = float.MakeSimpleFromFloat("Duration", 1)
+	f.startingFare = float.MakeSimpleFromFloat("StartingFare", 1)
+	f.loudMouthSurcharge = float.MakeSimpleFromFloat("LoudMouthSurcharge", 2)
+	f.loudMouthCount = float.MakeSimpleFromFloat("LoudMouthCount", 2)
+	f.smellyShoeSurcharge = float.MakeSimpleFromFloat("SmellyShoeSurcharge", 1)
+	f.smellyShoeCount = float.MakeSimpleFromFloat("SmellyShoeCount", 1)
 
-	acal.SourceRequest.Apply(f.Distance, f.Duration)
-	acal.SourceHardcode.Apply(f.BaseFare, f.DistanceCoefficient, f.TimeCoefficient)
+	acal.SourceRequest.Apply(f.loudMouthCount, f.smellyShoeCount)
+	acal.SourceHardcode.Apply(f.startingFare, f.loudMouthSurcharge, f.smellyShoeSurcharge)
 
-	f.NsnsFare = f.BaseFare.Plus(f.DistanceCoefficient.Multiply(f.Distance)).Plus(f.TimeCoefficient.Multiply(f.Duration)).Anchor("NsnsFare")
+	f.inconvenienceSurcharge = f.startingFare.Plus(f.loudMouthSurcharge.Multiply(f.loudMouthCount)).Plus(f.smellyShoeSurcharge.Multiply(f.smellyShoeCount)).Anchor("InconvenienceSurcharge")
 
-	f.FinalFare = float.MakeProgressive("FinalFare")
+	f.totalFare = float.MakeProgressive("TotalFare")
 
-	f.FinalFare.Update(f.NsnsFare.Plus(f.NumStopSurcharge))
+	f.totalFare.Update(f.inconvenienceSurcharge.Plus(f.numStopSurcharge))
 
 	boolean.If(
 		boolean.MakeSimple("IsPlatformFeeEnabled", true), func(criteria boolean.Interface) {
-			defer acal.ApplyProgressiveCondition(criteria, f.FinalFare)()
+			defer acal.ApplyProgressiveCondition(criteria, f.totalFare)()
 
-			PlatformFee := float.MakeSimpleFromFloat("PlatformFee", 2)
-			PlatformFee.From(acal.SourceHardcode)
+			platformFee := float.MakeSimpleFromFloat("PlatformFee", 2)
+			platformFee.From(acal.SourceHardcode)
 
-			f.FinalFare.Update(f.FinalFare.Plus(PlatformFee))
+			f.totalFare.Update(f.totalFare.Plus(platformFee))
 
-			acal.ApplyStaticCondition(criteria, PlatformFee)
+			acal.ApplyStaticCondition(criteria, platformFee)
 		},
 	)
 
-	f.WeightBasedFee = float.MakeSimpleFromFloat("WeightBasedFee", 2)
-	f.WeightBasedFee.From(acal.SourceHardcode)
+	f.weightBasedFee = float.MakeSimpleFromFloat("WeightBasedFee", 2)
+	f.weightBasedFee.From(acal.SourceHardcode)
 
-	f.FinalFare.Update(f.FinalFare.Plus(f.WeightBasedFee))
+	f.totalFare.Update(f.totalFare.Plus(f.weightBasedFee))
 
 	return f
 }
 
 func simpleCalculation() {
-	BaseFare := float.MakeSimpleFromFloat("BaseFare", 1)
+	startingFare := float.MakeSimpleFromFloat("StartingFare", 1)
 
-	FinalFare := float.MakeProgressive("FinalFare")
+	totalFare := float.MakeProgressive("TotalFare")
 
-	FinalFare.Update(BaseFare)
+	totalFare.Update(startingFare)
 
 	boolean.If(
 		boolean.MakeSimple("IsPlatformFeeEnabled", true), func(criteria boolean.Interface) {
-			defer acal.ApplyProgressiveCondition(criteria, FinalFare)()
+			defer acal.ApplyProgressiveCondition(criteria, totalFare)()
 
-			PlatformFee := float.MakeSimpleFromFloat("PlatformFee", 2)
-			PlatformFee.From(acal.SourceHardcode)
+			platformFee := float.MakeSimpleFromFloat("PlatformFee", 2)
+			platformFee.From(acal.SourceHardcode)
 
-			FinalFare.Update(FinalFare.Plus(PlatformFee))
+			totalFare.Update(totalFare.Plus(platformFee))
 
-			acal.ApplyStaticCondition(criteria, PlatformFee)
+			acal.ApplyStaticCondition(criteria, platformFee)
 		},
 	)
 }
 
 func testCondition() {
-	BaseFare := float.MakeSimpleFromFloat("BaseFare", 1)
+	startingFare := float.MakeSimpleFromFloat("StartingFare", 1)
 
-	FinalFare := float.MakeProgressive("FinalFare")
+	totalFare := float.MakeProgressive("TotalFare")
 
-	FinalFare.Update(BaseFare)
+	totalFare.Update(startingFare)
 
 	boolean.If(
 		boolean.MakeSimple("IsPlatformFeeEnabled", true), func(criteria boolean.Interface) {
-			defer acal.ApplyProgressiveCondition(criteria, FinalFare)()
+			defer acal.ApplyProgressiveCondition(criteria, totalFare)()
 
-			PlatformFee := float.MakeSimpleFromFloat("PlatformFee", 2)
-			PlatformFee.From(acal.SourceHardcode)
+			platformFee := float.MakeSimpleFromFloat("PlatformFee", 2)
+			platformFee.From(acal.SourceHardcode)
 
-			FinalFare.Update(FinalFare.Plus(PlatformFee))
+			totalFare.Update(totalFare.Plus(platformFee))
 		},
 	)
 
 	boolean.If(
 		boolean.MakeSimple("WeightBaseFeeEnabled", true), func(criteria boolean.Interface) {
-			defer acal.ApplyProgressiveCondition(criteria, FinalFare, FinalFare)()
+			defer acal.ApplyProgressiveCondition(criteria, totalFare)()
 
-			WeightBaseFee := float.MakeSimpleFromFloat("WeightBaseFee", 2)
-			WeightBaseFee.From(acal.SourceHardcode)
+			weightBaseFee := float.MakeSimpleFromFloat("WeightBaseFee", 2)
+			weightBaseFee.From(acal.SourceHardcode)
 
-			FinalFare.Update(FinalFare.Plus(WeightBaseFee))
+			totalFare.Update(totalFare.Plus(weightBaseFee))
 		},
 	)
 }
@@ -222,15 +228,24 @@ func BenchmarkCondition(b *testing.B) {
 	}
 }
 
-func Test_doFormulaCalculation(t *testing.T) {
-	testCondition()
-}
-
 func BenchmarkCalculationUsingPrimitive(b *testing.B) {
 	b.ReportAllocs()
 
 	for n := 0; n < b.N; n++ {
 		bareCalculation()
+	}
+}
+
+func BenchmarkOneCalculation(b *testing.B) {
+	b.ReportAllocs()
+
+	for n := 0; n < b.N; n++ {
+		numPickUp := float.MakeSimpleFromFloat("NumPickUp", 1)
+		numPickUp.GetName()
+		//perPickUpPrice := float.MakeSimpleFromFloat("PerPickUpPrice", 3)
+		//
+		//numStopSurcharge := numPickUp.Multiply(perPickUpPrice)
+		//numStopSurcharge.Anchor("NumStopSurcharge")
 	}
 }
 

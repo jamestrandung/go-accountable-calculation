@@ -18,6 +18,8 @@ type TypedValue[T any] interface {
 //go:generate mockery --name=Value --case underscore --inpackage
 type Value interface {
 	iNamedValue
+	syntaxOperandProvider
+	extractableValue
 
 	// IsNil returns whether this Value is nil.
 	IsNil() bool
@@ -25,12 +27,6 @@ type Value interface {
 	GetValue() any
 	// Stringify returns the value this Value contains as a string.
 	Stringify() string
-	// ToSyntaxOperand returns the SyntaxOperand representation of this Value.
-	ToSyntaxOperand(nextOp Op) *SyntaxOperand
-	// ExtractValues extracts this Value and all Value that were used to calculate it.
-	ExtractValues(cache IValueCache) IValueCache
-	// SelfReplaceIfNil returns the replacement to represent this Value if it is nil.
-	SelfReplaceIfNil() Value
 }
 
 type iNamedValue interface {

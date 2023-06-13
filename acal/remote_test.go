@@ -22,8 +22,7 @@ func TestRemote_ToSyntaxOperand(t *testing.T) {
 
 	assert.Equal(
 		t, &SyntaxOperand{
-			Name:  "Remote",
-			value: remote,
+			Name: "Remote",
 		}, actual,
 	)
 }
@@ -46,14 +45,6 @@ func TestRemote_ExtractValues(t *testing.T) {
 	actual := remote.ExtractValues(mockCache)
 
 	assert.Equal(t, mockCache, actual)
-}
-
-func TestRemote_SelfReplaceIfNil(t *testing.T) {
-	var nilRemote *Remote[int]
-	assert.Equal(t, ZeroSimple[int]("NilRemote"), nilRemote.SelfReplaceIfNil())
-
-	remote := NewRemote("Remote", 2, "RemoteName", "LogKey")
-	assert.Equal(t, remote, remote.SelfReplaceIfNil())
 }
 
 func TestRemote_DoAnchor(t *testing.T) {

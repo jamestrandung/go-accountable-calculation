@@ -5,19 +5,14 @@ type Constant[T any] struct {
 	namedValue
 	valueFormatter[T]
 
-	value   T
-	formula *SyntaxNode
+	value T
 }
 
 // NewConstant ...
 func NewConstant[T any](value T) *Constant[T] {
-	c := &Constant[T]{
+	return &Constant[T]{
 		value: value,
 	}
-
-	c.formula = NewSyntaxNode(OpCategoryAssignStatic, OpTransparent, c.Stringify(), nil)
-
-	return c
 }
 
 // NewConstantWithFormat ...
@@ -27,7 +22,6 @@ func NewConstantWithFormat[T any](value T, formatFn func(T) string) *Constant[T]
 	}
 
 	c.WithFormatFn(formatFn)
-	c.formula = NewSyntaxNode(OpCategoryAssignStatic, OpTransparent, c.Stringify(), nil)
 
 	return c
 }
@@ -62,23 +56,16 @@ func (c *Constant[T]) HasFormula() bool {
 	return true
 }
 
-// GetFormula returns the formula provided by this Constant.
-func (c *Constant[T]) GetFormula() *SyntaxNode {
-	return c.formula
+// GetFormulaFn returns the function to build a formula of this Constant.
+func (c *Constant[T]) GetFormulaFn() func() *SyntaxNode {
+	return func() *SyntaxNode {
+		return NewSyntaxNode(OpCategoryAssignStatic, OpTransparent, c.Stringify(), nil)
+	}
 }
 
 // ExtractValues does nothing for Constant as it's a constant.
 func (c *Constant[T]) ExtractValues(cache IValueCache) IValueCache {
 	return cache
-}
-
-// SelfReplaceIfNil returns the replacement to represent this Constant if it is nil.
-func (c *Constant[T]) SelfReplaceIfNil() Value {
-	if c.IsNil() {
-		return ZeroSimple[T]("NilConstant")
-	}
-
-	return c
 }
 
 // Stringify returns the value this Constant contains as a string.

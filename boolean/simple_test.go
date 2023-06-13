@@ -59,7 +59,11 @@ func TestSimple_GetToSyntaxOperand(t *testing.T) {
 				dummySyntaxNode := &acal.SyntaxNode{}
 
 				simple := Simple{
-					Simple: acal.NewSimpleWithFormula[bool](true, dummySyntaxNode),
+					Simple: acal.NewSimpleWithFormula[bool](
+						true, func() *acal.SyntaxNode {
+							return dummySyntaxNode
+						},
+					),
 				}
 
 				toBaseSyntaxOperand = func(s Simple, nextOp acal.Op) *acal.SyntaxOperand {
@@ -81,7 +85,11 @@ func TestSimple_GetToSyntaxOperand(t *testing.T) {
 				dummySyntaxNode := acal.NewSyntaxNode(acal.OpCategoryFunctionCall, opOr, "OR", nil)
 
 				simple := Simple{
-					Simple: acal.NewSimpleWithFormula[bool](true, dummySyntaxNode),
+					Simple: acal.NewSimpleWithFormula[bool](
+						true, func() *acal.SyntaxNode {
+							return dummySyntaxNode
+						},
+					),
 				}
 
 				toBaseSyntaxOperand = func(s Simple, nextOp acal.Op) *acal.SyntaxOperand {
@@ -101,14 +109,6 @@ func TestSimple_GetToSyntaxOperand(t *testing.T) {
 	for _, sc := range scenarios {
 		t.Run(sc.desc, sc.test)
 	}
-}
-
-func TestSimple_SelfReplaceIfNil(t *testing.T) {
-	var nilSimple Simple
-	assert.Equal(t, NilBool, nilSimple.SelfReplaceIfNil())
-
-	simple := MakeSimple("Simple", true)
-	assert.Equal(t, simple, simple.SelfReplaceIfNil())
 }
 
 func TestSimple_Bool(t *testing.T) {

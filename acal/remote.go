@@ -53,15 +53,6 @@ func (r *Remote[T]) ExtractValues(cache IValueCache) IValueCache {
 	return PerformStandardValueExtraction(r, cache)
 }
 
-// SelfReplaceIfNil returns the replacement to represent this Remote if it is nil.
-func (r *Remote[T]) SelfReplaceIfNil() Value {
-	if r.IsNil() {
-		return ZeroSimple[T]("NilRemote")
-	}
-
-	return r
-}
-
 // DoAnchor returns a new Simple initialized to the value of this
 // Remote and anchored with the given name.
 func (r *Remote[T]) DoAnchor(name string) *Simple[T] {

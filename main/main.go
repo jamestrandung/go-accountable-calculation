@@ -71,4 +71,12 @@ func main() {
 	p1.Update(float.One)
 
 	fmt.Println(acal.ToString(b2))
+
+	var f2 float.Simple
+	fmt.Println(f2.Float())
+	fmt.Println(f2.Decimal())
+
+	f3 := f1.Plus(f2).Anchor("f3")
+	fmt.Println(acal.ToString(f3))
+
 }

@@ -17,9 +17,10 @@ func MakeLocal(name string, original acal.TypedValue[decimal.Decimal]) Local {
 
 	l := Local{
 		Local: core,
-		opProvider: opProvider{
-			tv: core,
-		},
+	}
+
+	l.opProvider = opProvider{
+		tv: l,
 	}
 
 	l.WithFormatFn(FormatFn)
@@ -30,15 +31,6 @@ func MakeLocal(name string, original acal.TypedValue[decimal.Decimal]) Local {
 // GetTypedValue returns the typed value this Local contains.
 func (l Local) GetTypedValue() decimal.Decimal {
 	return acal.ExtractTypedValue[decimal.Decimal](l.Local)
-}
-
-// SelfReplaceIfNil returns the replacement to represent this Local if it is nil.
-func (l Local) SelfReplaceIfNil() acal.Value {
-	if l.IsNil() {
-		return NilFloat
-	}
-
-	return l
 }
 
 // Anchor returns a new Simple initialized to the value of this

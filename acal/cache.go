@@ -2,9 +2,15 @@ package acal
 
 import "strconv"
 
+type extractableValue interface {
+	// ExtractValues extracts this Value and all Value that were used to calculate it.
+	ExtractValues(cache IValueCache) IValueCache
+}
+
 // IValueCache keeps extracted values during marshalling so that we can
 // build a complete JSON structure containing all calculated variables
 // from a small set of input variables.
+//
 //go:generate mockery --name=IValueCache --case underscore --inpackage
 type IValueCache interface {
 	// Take accepts a Value to put into ValueCache. It will automatically de-duplicate

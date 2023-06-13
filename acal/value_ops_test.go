@@ -17,7 +17,7 @@ func MockValueOps(t *testing.T) (*MockIValueOps, func()) {
 }
 
 func TestValueOpsImpl_IsNilValue(t *testing.T) {
-	aValMock := newMockValueWithFormula(t)
+	mockValue := newMockValueWithFormula(t)
 
 	scenarios := []struct {
 		desc  string
@@ -32,17 +32,17 @@ func TestValueOpsImpl_IsNilValue(t *testing.T) {
 		},
 		{
 			desc: "Value with nil value",
-			aVal: aValMock,
+			aVal: mockValue,
 			setup: func() {
-				aValMock.On("IsNil").Return(true).Once()
+				mockValue.On("IsNil").Return(true).Once()
 			},
 			want: true,
 		},
 		{
 			desc: "Value with non-nil value",
-			aVal: aValMock,
+			aVal: mockValue,
 			setup: func() {
-				aValMock.On("IsNil").Return(false).Once()
+				mockValue.On("IsNil").Return(false).Once()
 			},
 			want: false,
 		},
@@ -66,9 +66,9 @@ func TestValueOpsImpl_IsNilValue(t *testing.T) {
 }
 
 func TestValueOpsImpl_HasIdentity(t *testing.T) {
-	aValMock := newMockValueWithFormula(t)
+	mockValue := newMockValueWithFormula(t)
 
-	valueOpsMock, cleanup := MockValueOps(t)
+	mockValueOps, cleanup := MockValueOps(t)
 	defer cleanup()
 
 	scenarios := []struct {
@@ -79,7 +79,7 @@ func TestValueOpsImpl_HasIdentity(t *testing.T) {
 		{
 			desc: "nil Value",
 			setup: func() {
-				valueOpsMock.On("IsNilValue", aValMock).
+				mockValueOps.On("IsNilValue", mockValue).
 					Return(true).
 					Once()
 			},
@@ -88,22 +88,22 @@ func TestValueOpsImpl_HasIdentity(t *testing.T) {
 		{
 			desc: "Value with no identity",
 			setup: func() {
-				valueOpsMock.On("IsNilValue", aValMock).
+				mockValueOps.On("IsNilValue", mockValue).
 					Return(false).
 					Once()
 
-				aValMock.On("HasIdentity").Return(false).Once()
+				mockValue.On("HasIdentity").Return(false).Once()
 			},
 			want: false,
 		},
 		{
 			desc: "Value with identity",
 			setup: func() {
-				valueOpsMock.On("IsNilValue", aValMock).
+				mockValueOps.On("IsNilValue", mockValue).
 					Return(false).
 					Once()
 
-				aValMock.On("HasIdentity").Return(true).Once()
+				mockValue.On("HasIdentity").Return(true).Once()
 			},
 			want: true,
 		},
@@ -119,7 +119,7 @@ func TestValueOpsImpl_HasIdentity(t *testing.T) {
 
 				ops := valueOpsImpl{}
 
-				actual := ops.HasIdentity(aValMock)
+				actual := ops.HasIdentity(mockValue)
 				assert.Equal(t, sc.want, actual)
 			},
 		)
@@ -127,9 +127,9 @@ func TestValueOpsImpl_HasIdentity(t *testing.T) {
 }
 
 func TestValueOpsImpl_Identify(t *testing.T) {
-	aValMock := newMockValueWithFormula(t)
+	mockValue := newMockValueWithFormula(t)
 
-	valueOpsMock, cleanup := MockValueOps(t)
+	mockValueOps, cleanup := MockValueOps(t)
 	defer cleanup()
 
 	scenarios := []struct {
@@ -140,7 +140,7 @@ func TestValueOpsImpl_Identify(t *testing.T) {
 		{
 			desc: "nil Value",
 			setup: func() {
-				valueOpsMock.On("IsNilValue", aValMock).
+				mockValueOps.On("IsNilValue", mockValue).
 					Return(true).
 					Once()
 			},
@@ -149,22 +149,22 @@ func TestValueOpsImpl_Identify(t *testing.T) {
 		{
 			desc: "Value with no identity",
 			setup: func() {
-				valueOpsMock.On("IsNilValue", aValMock).
+				mockValueOps.On("IsNilValue", mockValue).
 					Return(false).
 					Once()
 
-				aValMock.On("Identify").Return("").Once()
+				mockValue.On("Identify").Return("").Once()
 			},
 			want: "",
 		},
 		{
 			desc: "Value with identity",
 			setup: func() {
-				valueOpsMock.On("IsNilValue", aValMock).
+				mockValueOps.On("IsNilValue", mockValue).
 					Return(false).
 					Once()
 
-				aValMock.On("Identify").Return("identity").Once()
+				mockValue.On("Identify").Return("identity").Once()
 			},
 			want: "identity",
 		},
@@ -180,7 +180,7 @@ func TestValueOpsImpl_Identify(t *testing.T) {
 
 				ops := valueOpsImpl{}
 
-				actual := ops.Identify(aValMock)
+				actual := ops.Identify(mockValue)
 				assert.Equal(t, sc.want, actual)
 			},
 		)
@@ -195,37 +195,37 @@ func TestValueOpsImpl_Stringify(t *testing.T) {
 		{
 			desc: "nil Value",
 			test: func(t *testing.T) {
-				aValMock := newMockValueWithFormula(t)
+				mockValue := newMockValueWithFormula(t)
 
-				valueOpsMock, cleanup := MockValueOps(t)
+				mockValueOps, cleanup := MockValueOps(t)
 				defer cleanup()
 
-				valueOpsMock.On("IsNilValue", aValMock).
+				mockValueOps.On("IsNilValue", mockValue).
 					Return(true).
 					Once()
 
 				ops := valueOpsImpl{}
 
-				actual := ops.Stringify(aValMock)
+				actual := ops.Stringify(mockValue)
 				assert.Equal(t, "", actual)
 			},
 		},
 		{
 			desc: "non-nil Value",
 			test: func(t *testing.T) {
-				aValMock := newMockValueWithFormula(t)
-				aValMock.On("Stringify").Return("5").Once()
+				mockValue := newMockValueWithFormula(t)
+				mockValue.On("Stringify").Return("5").Once()
 
-				valueOpsMock, cleanup := MockValueOps(t)
+				mockValueOps, cleanup := MockValueOps(t)
 				defer cleanup()
 
-				valueOpsMock.On("IsNilValue", aValMock).
+				mockValueOps.On("IsNilValue", mockValue).
 					Return(false).
 					Once()
 
 				ops := valueOpsImpl{}
 
-				actual := ops.Stringify(aValMock)
+				actual := ops.Stringify(mockValue)
 				assert.Equal(t, "5", actual)
 			},
 		},
@@ -244,62 +244,62 @@ func TestValueOpsImpl_Describe(t *testing.T) {
 		{
 			desc: "nil Value",
 			test: func(t *testing.T) {
-				aValMock := newMockValueWithFormula(t)
+				mockValue := newMockValueWithFormula(t)
 
-				valueOpsMock, cleanup := MockValueOps(t)
+				mockValueOps, cleanup := MockValueOps(t)
 				defer cleanup()
 
-				valueOpsMock.On("IsNilValue", aValMock).
+				mockValueOps.On("IsNilValue", mockValue).
 					Return(true).
 					Once()
 
 				ops := valueOpsImpl{}
 
-				actual := ops.Describe(aValMock)
+				actual := ops.Describe(mockValue)
 				assert.Equal(t, "?[?]", actual)
 			},
 		},
 		{
 			desc: "Value with empty identity",
 			test: func(t *testing.T) {
-				aValMock := newMockValueWithFormula(t)
-				aValMock.On("Stringify").Return("5").Once()
+				mockValue := newMockValueWithFormula(t)
+				mockValue.On("Stringify").Return("5").Once()
 
-				valueOpsMock, cleanup := MockValueOps(t)
+				mockValueOps, cleanup := MockValueOps(t)
 				defer cleanup()
 
-				valueOpsMock.On("IsNilValue", aValMock).
+				mockValueOps.On("IsNilValue", mockValue).
 					Return(false).
 					Once()
-				valueOpsMock.On("Identify", aValMock).
+				mockValueOps.On("Identify", mockValue).
 					Return("").
 					Once()
 
 				ops := valueOpsImpl{}
 
-				actual := ops.Describe(aValMock)
+				actual := ops.Describe(mockValue)
 				assert.Equal(t, "?[5]", actual)
 			},
 		},
 		{
 			desc: "Value with non-empty identity",
 			test: func(t *testing.T) {
-				aValMock := newMockValueWithFormula(t)
-				aValMock.On("Stringify").Return("true").Once()
+				mockValue := newMockValueWithFormula(t)
+				mockValue.On("Stringify").Return("true").Once()
 
-				valueOpsMock, cleanup := MockValueOps(t)
+				mockValueOps, cleanup := MockValueOps(t)
 				defer cleanup()
 
-				valueOpsMock.On("IsNilValue", aValMock).
+				mockValueOps.On("IsNilValue", mockValue).
 					Return(false).
 					Once()
-				valueOpsMock.On("Identify", aValMock).
+				mockValueOps.On("Identify", mockValue).
 					Return("TestIdentity").
 					Once()
 
 				ops := valueOpsImpl{}
 
-				actual := ops.Describe(aValMock)
+				actual := ops.Describe(mockValue)
 				assert.Equal(t, "TestIdentity[true]", actual)
 			},
 		},
@@ -310,82 +310,86 @@ func TestValueOpsImpl_Describe(t *testing.T) {
 	}
 }
 
-//func TestValueOpsImpl_DescribeValueAsFormula(t *testing.T) {
-//	aValMock := newMockValueWithFormula(t)
-//	dummyFormula := &SyntaxNode{}
-//
-//	valueOpsMock, cleanup := MockValueOps(t)
-//	defer cleanup()
-//
-//	scenarios := []struct {
-//		desc  string
-//		setup func()
-//		want  *SyntaxNode
-//	}{
-//		{
-//			desc: "anchored Value",
-//			setup: func() {
-//				valueOpsMock.On("HasIdentity", aValMock).
-//					Return(true).
-//					Once()
-//			},
-//			want: &SyntaxNode{
-//				category: OpCategoryAssignVariable,
-//				op:       OpTransparent,
-//				operands: []any{
-//					aValMock,
-//				},
-//			},
-//		},
-//		{
-//			desc: "un-anchored Value with no formula",
-//			setup: func() {
-//				valueOpsMock.On("HasIdentity", aValMock).
-//					Return(false).
-//					Once()
-//
-//				valueOpsMock.On("Describe", aValMock).
-//					Return("TestDescription").
-//					Once()
-//
-//				aValMock.On("HasFormula").Return(false).Once()
-//			},
-//			want: &SyntaxNode{
-//				category: OpCategoryAssignStatic,
-//				op:       OpTransparent,
-//				opDesc:   "TestDescription",
-//			},
-//		},
-//		{
-//			desc: "un-anchored Value with formula",
-//			setup: func() {
-//				valueOpsMock.On("HasIdentity", aValMock).
-//					Return(false).
-//					Once()
-//
-//				aValMock.On("HasFormula").Return(true).Once()
-//				aValMock.On("GetFormula").Return(dummyFormula).Once()
-//			},
-//			want: dummyFormula,
-//		},
-//	}
-//
-//	for _, scenario := range scenarios {
-//		sc := scenario
-//		t.Run(
-//			sc.desc, func(t *testing.T) {
-//				if sc.setup != nil {
-//					sc.setup()
-//				}
-//
-//				ops := valueOpsImpl{}
-//
-//				actual := ops.DescribeValueAsFormula(aValMock)
-//				assert.Equal(t, sc.want, actual)
-//			},
-//		)
-//	}
-//}
+func TestValueOpsImpl_DescribeValueAsFormula(t *testing.T) {
+	mockValue := newMockValueWithFormula(t)
+	dummyFormula := &SyntaxNode{}
+
+	mockValueOps, cleanup := MockValueOps(t)
+	defer cleanup()
+
+	scenarios := []struct {
+		desc  string
+		setup func()
+		want  *SyntaxNode
+	}{
+		{
+			desc: "anchored Value",
+			setup: func() {
+				mockValueOps.On("HasIdentity", mockValue).
+					Return(true).
+					Once()
+			},
+			want: &SyntaxNode{
+				category: OpCategoryAssignVariable,
+				op:       OpTransparent,
+				operands: []any{
+					mockValue,
+				},
+			},
+		},
+		{
+			desc: "un-anchored Value with no formula",
+			setup: func() {
+				mockValueOps.On("HasIdentity", mockValue).
+					Return(false).
+					Once()
+
+				mockValueOps.On("Describe", mockValue).
+					Return("TestDescription").
+					Once()
+
+				mockValue.On("HasFormula").Return(false).Once()
+			},
+			want: &SyntaxNode{
+				category: OpCategoryAssignStatic,
+				op:       OpTransparent,
+				opDesc:   "TestDescription",
+			},
+		},
+		{
+			desc: "un-anchored Value with formula",
+			setup: func() {
+				mockValueOps.On("HasIdentity", mockValue).
+					Return(false).
+					Once()
+
+				mockValue.On("HasFormula").Return(true).Once()
+				mockValue.On("GetFormulaFn").Return(
+					func() *SyntaxNode {
+						return dummyFormula
+					},
+				).Once()
+			},
+			want: dummyFormula,
+		},
+	}
+
+	for _, scenario := range scenarios {
+		sc := scenario
+		t.Run(
+			sc.desc, func(t *testing.T) {
+				if sc.setup != nil {
+					sc.setup()
+				}
+
+				ops := valueOpsImpl{}
+
+				actual := ops.DescribeValueAsFormula(mockValue)()
+				assert.Equal(t, sc.want, actual)
+			},
+		)
+	}
+}
 
 func TestExtractTypedValue(t *testing.T) {
 	scenarios := []struct {
@@ -397,10 +401,10 @@ func TestExtractTypedValue(t *testing.T) {
 			test: func(t *testing.T) {
 				mockValue := NewMockTypedValue[int](t)
 
-				valueOpsMock, cleanup := MockValueOps(t)
+				mockValueOps, cleanup := MockValueOps(t)
 				defer cleanup()
 
-				valueOpsMock.On("IsNilValue", mockValue).
+				mockValueOps.On("IsNilValue", mockValue).
 					Return(true).
 					Once()
 
@@ -417,10 +421,10 @@ func TestExtractTypedValue(t *testing.T) {
 					Return(1).
 					Once()
 
-				valueOpsMock, cleanup := MockValueOps(t)
+				mockValueOps, cleanup := MockValueOps(t)
 				defer cleanup()
 
-				valueOpsMock.On("IsNilValue", mockValue).
+				mockValueOps.On("IsNilValue", mockValue).
 					Return(false).
 					Once()
 

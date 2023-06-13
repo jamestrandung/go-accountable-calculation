@@ -11,11 +11,13 @@ func PerformUnaryLogicOp[T any](
 	fnName string,
 	unaryOpFn func(v T) bool,
 ) Simple {
-	tv = acal.ReplaceIfNil(tv)
+	tv = acal.PreProcessOperand(tv)
 
 	return MakeSimpleWithFormula(
 		unaryOpFn(tv.GetTypedValue()),
-		acal.FormulaBuilder.NewFormulaFunctionCall(fnName, tv),
+		func() *acal.SyntaxNode {
+			return acal.FormulaBuilder.NewFormulaFunctionCall(fnName, tv)
+		},
 	)
 }
 
@@ -28,11 +30,13 @@ func PerformBinaryLogicOp[T any](
 	opDesc string,
 	binaryOpFn func(a, b T) bool,
 ) Simple {
-	tv1 = acal.ReplaceIfNil(tv1)
-	tv2 = acal.ReplaceIfNil(tv2)
+	tv1 = acal.PreProcessOperand(tv1)
+	tv2 = acal.PreProcessOperand(tv2)
 
 	return MakeSimpleWithFormula(
 		binaryOpFn(tv1.GetTypedValue(), tv2.GetTypedValue()),
-		acal.FormulaBuilder.NewFormulaTwoValMiddleOp(tv1, tv2, op, opDesc),
+		func() *acal.SyntaxNode {
+			return acal.FormulaBuilder.NewFormulaTwoValMiddleOp(tv1, tv2, op, opDesc)
+		},
 	)
 }

@@ -37,8 +37,8 @@ func MakeSimpleFromDecimal(name string, value decimal.Decimal) Simple {
 }
 
 // MakeSimpleWithFormula returns a new Simple with the given value and formula.
-func MakeSimpleWithFormula(value decimal.Decimal, formula *acal.SyntaxNode) Simple {
-	return makeSimple(acal.NewSimpleWithFormula(value, formula))
+func MakeSimpleWithFormula(value decimal.Decimal, formulaFn func() *acal.SyntaxNode) Simple {
+	return makeSimple(acal.NewSimpleWithFormula(value, formulaFn))
 }
 
 // MakeSimpleFrom returns a new Simple using the given value as formula.
@@ -49,9 +49,10 @@ func MakeSimpleFrom(value acal.TypedValue[decimal.Decimal]) Simple {
 func makeSimple(core *acal.Simple[decimal.Decimal]) Simple {
 	s := Simple{
 		Simple: core,
-		opProvider: opProvider{
-			tv: core,
-		},
+	}
+
+	s.opProvider = opProvider{
+		tv: s,
 	}
 
 	s.WithFormatFn(FormatFn)
@@ -70,7 +71,7 @@ func (s Simple) ToSyntaxOperand(nextOp acal.Op) *acal.SyntaxOperand {
 		return result
 	}
 
-	formula := s.GetFormula()
+	formula := s.GetFormulaFn()()
 	lastOp := formula.GetOp()
 
 	return acal.NewSyntaxOperandWithFormula(
@@ -81,15 +82,6 @@ func (s Simple) ToSyntaxOperand(nextOp acal.Op) *acal.SyntaxOperand {
 
 var toBaseSyntaxOperand = func(s Simple, nextOp acal.Op) *acal.SyntaxOperand {
 	return s.Simple.ToSyntaxOperand(nextOp)
-}
-
-// SelfReplaceIfNil returns the replacement to represent this Simple if it is nil.
-func (s Simple) SelfReplaceIfNil() acal.Value {
-	if s.IsNil() {
-		return NilFloat
-	}
-
-	return s
 }
 
 // Anchor updates the name of this Simple to the provided string.

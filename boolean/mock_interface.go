@@ -184,22 +184,6 @@ func (_m *MockInterface) Or(_a0 acal.TypedValue[bool]) Simple {
 	return r0
 }
 
-// SelfReplaceIfNil provides a mock function with given fields:
-func (_m *MockInterface) SelfReplaceIfNil() acal.Value {
-	ret := _m.Called()
-
-	var r0 acal.Value
-	if rf, ok := ret.Get(0).(func() acal.Value); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(acal.Value)
-		}
-	}
-
-	return r0
-}
-
 // SetAlias provides a mock function with given fields: _a0
 func (_m *MockInterface) SetAlias(_a0 string) {
 	_m.Called(_a0)

@@ -111,22 +111,6 @@ func (_m *MockValue) IsNil() bool {
 	return r0
 }
 
-// SelfReplaceIfNil provides a mock function with given fields:
-func (_m *MockValue) SelfReplaceIfNil() Value {
-	ret := _m.Called()
-
-	var r0 Value
-	if rf, ok := ret.Get(0).(func() Value); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(Value)
-		}
-	}
-
-	return r0
-}
-
 // SetAlias provides a mock function with given fields: _a0
 func (_m *MockValue) SetAlias(_a0 string) {
 	_m.Called(_a0)

@@ -8,13 +8,13 @@ import (
 func TestSource_Apply(t *testing.T) {
 	var dummySource Source = "dummy"
 
-	sourcerMock1 := newMockSourcer(t)
-	sourcerMock1.On("From", dummySource).Once()
+	mockSourcer1 := newMockSourcer(t)
+	mockSourcer1.On("From", dummySource).Once()
 
-	sourcerMock2 := newMockSourcer(t)
-	sourcerMock2.On("From", dummySource).Once()
+	mockSourcer2 := newMockSourcer(t)
+	mockSourcer2.On("From", dummySource).Once()
 
-	dummySource.Apply(sourcerMock1, sourcerMock2)
+	dummySource.Apply(mockSourcer1, mockSourcer2)
 }
 
 func TestSource_String(t *testing.T) {

@@ -55,7 +55,11 @@ func TestSimple_ToSyntaxOperand(t *testing.T) {
 		{
 			desc: "value with formula",
 			test: func(t *testing.T) {
-				simple := NewSimpleWithFormula(1, &SyntaxNode{})
+				simple := NewSimpleWithFormula(
+					1, func() *SyntaxNode {
+						return &SyntaxNode{}
+					},
+				)
 
 				operand := simple.ToSyntaxOperand(OpTransparent)
 
@@ -87,14 +91,6 @@ func TestSimple_ExtractValues(t *testing.T) {
 	actual := simple.ExtractValues(mockCache)
 
 	assert.Equal(t, mockCache, actual)
-}
-
-func TestSimple_SelfReplaceIfNil(t *testing.T) {
-	var nilSimple *Simple[int]
-	assert.Equal(t, ZeroSimple[int]("NilSimple"), nilSimple.SelfReplaceIfNil())
-
-	simple := NewSimple("Simple", 1)
-	assert.Equal(t, simple, simple.SelfReplaceIfNil())
 }
 
 func TestSimple_DoAnchor(t *testing.T) {

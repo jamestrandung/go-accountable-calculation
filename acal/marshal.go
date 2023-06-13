@@ -29,16 +29,16 @@ var PerformStandardValueExtraction = func(v Value, cache IValueCache) IValueCach
 		}
 	}
 
-	fp, ok := v.(FormulaProvider)
+	fp, ok := v.(formulaProvider)
 	if !ok || !fp.HasFormula() {
 		return cache
 	}
 
-	formula := fp.GetFormula()
+	formula := fp.GetFormulaFn()()
 
 	for _, operand := range formula.GetOperands() {
-		if !IsNilValue(operand.value) {
-			operand.value.ExtractValues(cache)
+		if ev, ok := operand.(extractableValue); ok {
+			ev.ExtractValues(cache)
 		}
 	}
 

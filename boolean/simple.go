@@ -17,9 +17,9 @@ func MakeSimple(name string, value bool) Simple {
 }
 
 // MakeSimpleWithFormula returns a new Simple with the given value and formula.
-func MakeSimpleWithFormula(value bool, formula *acal.SyntaxNode) Simple {
+func MakeSimpleWithFormula(value bool, formulaFn func() *acal.SyntaxNode) Simple {
 	return Simple{
-		Simple: acal.NewSimpleWithFormula(value, formula),
+		Simple: acal.NewSimpleWithFormula(value, formulaFn),
 	}
 }
 
@@ -41,7 +41,7 @@ func (s Simple) ToSyntaxOperand(nextOp acal.Op) *acal.SyntaxOperand {
 		return result
 	}
 
-	formula := s.GetFormula()
+	formula := s.GetFormulaFn()()
 	lastOp := formula.GetOp()
 
 	return acal.NewSyntaxOperandWithFormula(
@@ -52,15 +52,6 @@ func (s Simple) ToSyntaxOperand(nextOp acal.Op) *acal.SyntaxOperand {
 
 var toBaseSyntaxOperand = func(s Simple, nextOp acal.Op) *acal.SyntaxOperand {
 	return s.Simple.ToSyntaxOperand(nextOp)
-}
-
-// SelfReplaceIfNil returns the replacement to represent this Simple if it is nil.
-func (s Simple) SelfReplaceIfNil() acal.Value {
-	if s.IsNil() {
-		return NilBool
-	}
-
-	return s
 }
 
 // Anchor updates the name of this Simple to the provided string.

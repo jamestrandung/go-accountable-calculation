@@ -74,7 +74,6 @@ func (marshalOpsImpl) MarshalJSONByFields(data any) ([]byte, error) {
 
 		v, ok := actualValue.(Value)
 		if !ok {
-			fmt.Println("HERE", v)
 			toMarshal[rtf.Name] = actualValue
 			continue
 		}

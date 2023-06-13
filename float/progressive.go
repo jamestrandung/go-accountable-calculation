@@ -17,9 +17,10 @@ func MakeProgressive(name string) Progressive {
 
 	p := Progressive{
 		Progressive: core,
-		opProvider: opProvider{
-			tv: core,
-		},
+	}
+
+	p.opProvider = opProvider{
+		tv: p,
 	}
 
 	p.WithFormatFn(FormatFn)
@@ -30,15 +31,6 @@ func MakeProgressive(name string) Progressive {
 // GetTypedValue returns the typed value this Progressive contains.
 func (p Progressive) GetTypedValue() decimal.Decimal {
 	return acal.ExtractTypedValue[decimal.Decimal](p.Progressive)
-}
-
-// SelfReplaceIfNil returns the replacement to represent this Progressive if it is nil.
-func (p Progressive) SelfReplaceIfNil() acal.Value {
-	if p.IsNil() {
-		return NilFloat
-	}
-
-	return p
 }
 
 // Anchor returns a new Simple initialized to the value of this

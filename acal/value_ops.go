@@ -15,7 +15,7 @@ type IValueOps interface {
 	// Describe ...
 	Describe(v Value) string
 	// DescribeValueAsFormula ...
-	DescribeValueAsFormula(v Value) *SyntaxNode
+	DescribeValueAsFormula(v Value) func() *SyntaxNode
 }
 
 type valueOpsImpl struct{}
@@ -67,26 +67,30 @@ func (valueOpsImpl) Describe(v Value) string {
 }
 
 // DescribeValueAsFormula ...
-func (valueOpsImpl) DescribeValueAsFormula(v Value) *SyntaxNode {
+func (valueOpsImpl) DescribeValueAsFormula(v Value) func() *SyntaxNode {
 	if HasIdentity(v) {
-		return &SyntaxNode{
-			category: OpCategoryAssignVariable,
-			op:       OpTransparent,
-			operands: []*SyntaxOperand{
-				v.ToSyntaxOperand(OpTransparent),
-			},
+		return func() *SyntaxNode {
+			return &SyntaxNode{
+				category: OpCategoryAssignVariable,
+				op:       OpTransparent,
+				operands: []any{
+					v,
+				},
+			}
 		}
 	}
 
-	fp, ok := v.(FormulaProvider)
+	fp, ok := v.(formulaProvider)
 	if ok && fp.HasFormula() {
-		return fp.GetFormula()
+		return fp.GetFormulaFn()
 	}
 
-	return &SyntaxNode{
-		category: OpCategoryAssignStatic,
-		op:       OpTransparent,
-		opDesc:   Describe(v),
+	return func() *SyntaxNode {
+		return &SyntaxNode{
+			category: OpCategoryAssignStatic,
+			op:       OpTransparent,
+			opDesc:   Describe(v),
+		}
 	}
 }
 
@@ -121,8 +125,8 @@ func Describe(v Value) string {
 
 // DescribeValueAsFormula returns a full description of the given Value,
 // in the form of a formula.
-func DescribeValueAsFormula(v Value) *SyntaxNode {
-	return valueOps.DescribeValueAsFormula(v)
+func DescribeValueAsFormula[T any](v TypedValue[T]) func() *SyntaxNode {
+	return valueOps.DescribeValueAsFormula(PreProcessOperand(v))
 }
 
 // ExtractTypedValue returns the typed value the given TypedValue contains.
@@ -133,13 +137,4 @@ func ExtractTypedValue[T any](tv TypedValue[T]) T {
 	}
 
 	return tv.GetTypedValue()
-}
-
-// ReplaceIfNil returns a replacement for the input value if it's nil.
-func ReplaceIfNil[T any](tv TypedValue[T]) TypedValue[T] {
-	if IsNilValue(tv) {
-		return ZeroSimple[T]("NilReplacement")
-	}
-
-	return tv
 }
