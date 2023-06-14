@@ -17,7 +17,7 @@ func PerformUnaryDecimalOp(
 	return MakeSimpleWithFormula(
 		unaryOpFn(tv.GetTypedValue()),
 		func() *acal.SyntaxNode {
-			return acal.FormulaBuilder.NewFormulaFunctionCall(fnName, tv)
+			return acal.NewFormulaForFunctionCall(fnName, tv)
 		},
 	)
 }
@@ -37,7 +37,7 @@ func PerformBinaryDecimalOp(
 	return MakeSimpleWithFormula(
 		binaryOpFn(tv1.GetTypedValue(), tv2.GetTypedValue()),
 		func() *acal.SyntaxNode {
-			return acal.FormulaBuilder.NewFormulaTwoValMiddleOp(tv1, tv2, op, opDesc)
+			return acal.NewFormulaForTwoValMiddleOp(tv1, tv2, op, opDesc)
 		},
 	)
 }
@@ -49,19 +49,20 @@ func PerformDecimalFunctionCall(
 	fn func(decimals ...decimal.Decimal) decimal.Decimal,
 	values ...acal.TypedValue[decimal.Decimal],
 ) Simple {
+	arguments := make([]any, len(values))
 	decimals := make([]decimal.Decimal, len(values))
 
 	for idx, value := range values {
 		value = acal.PreProcessOperand(value)
 
-		values[idx] = value
+		arguments[idx] = value
 		decimals[idx] = value.GetTypedValue()
 	}
 
 	return MakeSimpleWithFormula(
 		fn(decimals...),
 		func() *acal.SyntaxNode {
-			return acal.FormulaBuilder.NewFormulaFunctionCall(fnName, values)
+			return acal.NewFormulaForFunctionCall(fnName, arguments...)
 		},
 	)
 }

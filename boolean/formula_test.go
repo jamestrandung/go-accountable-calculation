@@ -17,15 +17,6 @@ func TestPerformUnaryLogicOp(t *testing.T) {
 		Return(1).
 		Once()
 
-	mockFormulaBuilder, cleanupFn := acal.MockFormulaBuilder(t)
-	defer cleanupFn()
-
-	dummyFormula := &acal.SyntaxNode{}
-
-	mockFormulaBuilder.On("NewFormulaFunctionCall", fnName, mockTypedValue).
-		Return(dummyFormula).
-		Once()
-
 	actual := PerformUnaryLogicOp[int](
 		mockTypedValue, fnName, func(v int) bool {
 			assert.Equal(t, 1, v)
@@ -37,10 +28,13 @@ func TestPerformUnaryLogicOp(t *testing.T) {
 
 	formula := actual.GetFormulaFn()()
 
-	assert.Equal(t, dummyFormula, formula)
+	assert.Equal(t, acal.NewSyntaxNode(acal.OpCategoryFunctionCall, acal.OpTransparent, fnName, []any{mockTypedValue}), formula)
 }
 
 func TestPerformBinaryLogicOp(t *testing.T) {
+	dummyOp := opOr
+	dummyOpDesc := "SomeOp"
+
 	mockTypedValue1 := acal.NewMockTypedValue[int](t)
 	mockTypedValue1.On("IsNil").
 		Return(false).
@@ -57,17 +51,8 @@ func TestPerformBinaryLogicOp(t *testing.T) {
 		Return(1).
 		Once()
 
-	mockFormulaBuilder, cleanupFn := acal.MockFormulaBuilder(t)
-	defer cleanupFn()
-
-	dummyFormula := &acal.SyntaxNode{}
-
-	mockFormulaBuilder.On("NewFormulaTwoValMiddleOp", mockTypedValue1, mockTypedValue2, acal.OpTransparent, "SomeOp").
-		Return(dummyFormula).
-		Once()
-
 	actual := PerformBinaryLogicOp[int](
-		mockTypedValue1, mockTypedValue2, acal.OpTransparent, "SomeOp", func(a, b int) bool {
+		mockTypedValue1, mockTypedValue2, dummyOp, dummyOpDesc, func(a, b int) bool {
 			assert.Equal(t, 0, a)
 			assert.Equal(t, 1, b)
 			return true
@@ -78,5 +63,5 @@ func TestPerformBinaryLogicOp(t *testing.T) {
 
 	formula := actual.GetFormulaFn()()
 
-	assert.Equal(t, dummyFormula, formula)
+	assert.Equal(t, acal.NewSyntaxNode(acal.OpCategoryTwoValMiddleOp, dummyOp, dummyOpDesc, []any{mockTypedValue1, mockTypedValue2}), formula)
 }

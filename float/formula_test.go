@@ -18,15 +18,6 @@ func TestPerformUnaryDecimalOp(t *testing.T) {
 		Return(decimal.NewFromInt(10)).
 		Once()
 
-	mockFormulaBuilder, cleanupFn := acal.MockFormulaBuilder(t)
-	defer cleanupFn()
-
-	dummyFormula := &acal.SyntaxNode{}
-
-	mockFormulaBuilder.On("NewFormulaFunctionCall", fnName, mockTypedValue).
-		Return(dummyFormula).
-		Once()
-
 	actual := PerformUnaryDecimalOp(
 		mockTypedValue, fnName, func(v decimal.Decimal) decimal.Decimal {
 			assert.Equal(t, decimal.NewFromInt(10), v)
@@ -38,7 +29,7 @@ func TestPerformUnaryDecimalOp(t *testing.T) {
 
 	formula := actual.GetFormulaFn()()
 
-	assert.Equal(t, dummyFormula, formula)
+	assert.Equal(t, acal.NewSyntaxNode(acal.OpCategoryFunctionCall, acal.OpTransparent, fnName, []any{mockTypedValue}), formula)
 }
 
 func TestPerformBinaryDecimalOp(t *testing.T) {
@@ -60,15 +51,6 @@ func TestPerformBinaryDecimalOp(t *testing.T) {
 		Return(decimal.NewFromInt(1)).
 		Once()
 
-	mockFormulaBuilder, cleanupFn := acal.MockFormulaBuilder(t)
-	defer cleanupFn()
-
-	dummyFormula := &acal.SyntaxNode{}
-
-	mockFormulaBuilder.On("NewFormulaTwoValMiddleOp", mockTypedValue1, mockTypedValue2, acal.OpTransparent, fnName).
-		Return(dummyFormula).
-		Once()
-
 	actual := PerformBinaryDecimalOp(
 		mockTypedValue1, mockTypedValue2, acal.OpTransparent, fnName, func(a, b decimal.Decimal) decimal.Decimal {
 			assert.Equal(t, decimal.NewFromInt(0), a)
@@ -81,7 +63,7 @@ func TestPerformBinaryDecimalOp(t *testing.T) {
 
 	formula := actual.GetFormulaFn()()
 
-	assert.Equal(t, dummyFormula, formula)
+	assert.Equal(t, acal.NewSyntaxNode(acal.OpCategoryTwoValMiddleOp, acal.OpTransparent, fnName, []any{mockTypedValue1, mockTypedValue2}), formula)
 }
 
 func TestPerformDecimalFunctionCall(t *testing.T) {
@@ -103,15 +85,6 @@ func TestPerformDecimalFunctionCall(t *testing.T) {
 		Return(decimal.NewFromInt(1)).
 		Once()
 
-	mockFormulaBuilder, cleanupFn := acal.MockFormulaBuilder(t)
-	defer cleanupFn()
-
-	dummyFormula := &acal.SyntaxNode{}
-
-	mockFormulaBuilder.On("NewFormulaFunctionCall", fnName, []acal.TypedValue[decimal.Decimal]{mockTypedValue1, mockTypedValue2}).
-		Return(dummyFormula).
-		Once()
-
 	actual := PerformDecimalFunctionCall(
 		fnName, func(decimals ...decimal.Decimal) decimal.Decimal {
 			assert.Equal(t, decimal.NewFromInt(0), decimals[0])
@@ -124,5 +97,5 @@ func TestPerformDecimalFunctionCall(t *testing.T) {
 
 	formula := actual.GetFormulaFn()()
 
-	assert.Equal(t, dummyFormula, formula)
+	assert.Equal(t, acal.NewSyntaxNode(acal.OpCategoryFunctionCall, acal.OpTransparent, fnName, []any{mockTypedValue1, mockTypedValue2}), formula)
 }

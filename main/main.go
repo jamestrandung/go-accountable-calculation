@@ -4,6 +4,7 @@ import (
     "fmt"
     "github.com/jamestrandung/go-accountable-calculation/acal"
     "github.com/jamestrandung/go-accountable-calculation/float"
+    "github.com/shopspring/decimal"
 )
 
 type RawInterface interface {
@@ -51,31 +52,38 @@ func (Bool) GetTypedValue() bool {
 }
 
 func main() {
-    var t1 acal.Value
-    var t2 acal.TypedValue[bool]
-
-    fmt.Println(acal.IsNilValue(t1))
-    fmt.Println(acal.IsNilValue(t2))
+    //var t1 acal.Value
+    //var t2 acal.TypedValue[bool]
+    //
+    //fmt.Println(acal.IsNilValue(t1))
+    //fmt.Println(acal.IsNilValue(t2))
 
     f1 := float.MakeSimpleFromFloat("f1", 1)
     //f2 := float.MakeSimpleFromFloat("f2", 2)
     //
     //f1.LargerThan(f2).Anchor("b1")
 
-    p1 := float.MakeProgressive("p1")
+    //p1 := float.MakeProgressive("p1")
+    //
+    //p1.Update(float.Zero)
+    //
+    //b2 := f1.LargerThan(p1).Anchor("b2")
+    //
+    //p1.Update(float.One)
+    //
+    //fmt.Println(acal.ToString(b2))
+    //
+    //var f2 float.Simple
+    //fmt.Println(f2.Float())
+    //fmt.Println(f2.Decimal())
+    //
+    //f3 := f1.Add(f2).Anchor("f3")
+    //fmt.Println(acal.ToString(f3))
 
-    p1.Update(float.Zero)
+    fmt.Println(f1)
 
-    b2 := f1.LargerThan(p1).Anchor("b2")
+    fmt.Println(acal.ToString(float.Max(f1)))
 
-    p1.Update(float.One)
-
-    fmt.Println(acal.ToString(b2))
-
-    var f2 float.Simple
-    fmt.Println(f2.Float())
-    fmt.Println(f2.Decimal())
-
-    f3 := f1.Add(f2).Anchor("f3")
-    fmt.Println(acal.ToString(f3))
+    arr := []decimal.Decimal{decimal.NewFromInt(10)}
+    fmt.Println(arr[1:])
 }

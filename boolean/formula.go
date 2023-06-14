@@ -16,7 +16,7 @@ func PerformUnaryLogicOp[T any](
 	return MakeSimpleWithFormula(
 		unaryOpFn(tv.GetTypedValue()),
 		func() *acal.SyntaxNode {
-			return acal.FormulaBuilder.NewFormulaFunctionCall(fnName, tv)
+			return acal.NewFormulaForFunctionCall(fnName, tv)
 		},
 	)
 }
@@ -36,7 +36,7 @@ func PerformBinaryLogicOp[T any](
 	return MakeSimpleWithFormula(
 		binaryOpFn(tv1.GetTypedValue(), tv2.GetTypedValue()),
 		func() *acal.SyntaxNode {
-			return acal.FormulaBuilder.NewFormulaTwoValMiddleOp(tv1, tv2, op, opDesc)
+			return acal.NewFormulaForTwoValMiddleOp(tv1, tv2, op, opDesc)
 		},
 	)
 }

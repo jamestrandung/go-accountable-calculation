@@ -53,3 +53,20 @@ func (p opProvider) Div(tv acal.TypedValue[decimal.Decimal]) Simple {
 		},
 	)
 }
+
+func Max(values ...acal.TypedValue[decimal.Decimal]) Simple {
+	if len(values) == 0 {
+		return NilFloat
+	}
+
+	return PerformDecimalFunctionCall(
+		"Max",
+		func(decimals ...decimal.Decimal) decimal.Decimal {
+			if len(decimals) == 0 {
+				return decimal.Zero
+			}
+
+			return decimal.Max(decimals[0], decimals[1:]...)
+		}, values...,
+	)
+}

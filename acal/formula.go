@@ -29,6 +29,20 @@ type SyntaxNode struct {
 	operands []any
 }
 
+// NewFormulaForFunctionCall returns a new SyntaxNode representing a function call taking in
+// the provided arguments. Clients must make sure to call PreProcessOperand on all args of
+// Value type before sending them into this method.
+func NewFormulaForFunctionCall(fnName string, arguments ...any) *SyntaxNode {
+	return NewSyntaxNode(OpCategoryFunctionCall, OpTransparent, fnName, arguments)
+}
+
+// NewFormulaForTwoValMiddleOp returns a new SyntaxNode representing a binary operation that
+// has an operator lied in the middle of two operands. Clients must make sure that to call
+// PreProcessOperand on both v1 and v2 before sending them into this method.
+func NewFormulaForTwoValMiddleOp(v1 Value, v2 Value, op Op, opDesc string) *SyntaxNode {
+	return NewSyntaxNode(OpCategoryTwoValMiddleOp, op, opDesc, []any{v1, v2})
+}
+
 // NewSyntaxNode returns a new SyntaxNode with the provided fields.
 func NewSyntaxNode(category OpCategory, op Op, opDesc string, operands []any) *SyntaxNode {
 	return &SyntaxNode{
@@ -63,7 +77,7 @@ func (n *SyntaxNode) GetOperands() []any {
 func (n *SyntaxNode) MarshalJSON() ([]byte, error) {
 	operands := make([]*SyntaxOperand, 0, len(n.operands))
 	for _, operand := range n.operands {
-		if sop, ok := operand.(Value); ok {
+		if sop, ok := operand.(syntaxOperandProvider); ok {
 			operands = append(operands, sop.ToSyntaxOperand(n.op))
 			continue
 		}
@@ -82,6 +96,19 @@ func (n *SyntaxNode) MarshalJSON() ([]byte, error) {
 			Operands:  operands,
 		},
 	)
+}
+
+// PreProcessOperand returns a replacement for the input value if it's nil.
+func PreProcessOperand[T any](tv TypedValue[T]) TypedValue[T] {
+	if IsNilValue(tv) {
+		return ZeroSimple[T]("NilReplacement")
+	}
+
+	if ss, ok := tv.(snapshooter[T]); ok {
+		return ss.getSnapshot()
+	}
+
+	return tv
 }
 
 // SyntaxOperand represents how an operand of a SyntaxNode should be
