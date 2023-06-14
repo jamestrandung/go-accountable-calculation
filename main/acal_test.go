@@ -5,49 +5,50 @@ import (
 	"github.com/jamestrandung/go-accountable-calculation/acal"
 	"github.com/jamestrandung/go-accountable-calculation/boolean"
 	"github.com/jamestrandung/go-accountable-calculation/float"
+	"github.com/shopspring/decimal"
 	"testing"
 )
 
 type fare struct {
-	numPickUp              float64
-	perPickUpPrice         float64
-	numDropOff             float64
-	perDropOffPrice        float64
-	numStopSurcharge       float64
-	startingFare           float64
-	loudMouthSurcharge     float64
-	loudMouthCount         float64
-	smellyShoeSurcharge    float64
-	smellyShoeCount        float64
-	inconvenienceSurcharge float64
-	platformFee            float64
-	weightBasedFee         float64
-	totalFare              float64
+	numPickUp              decimal.Decimal
+	perPickUpPrice         decimal.Decimal
+	numDropOff             decimal.Decimal
+	perDropOffPrice        decimal.Decimal
+	numStopSurcharge       decimal.Decimal
+	startingFare           decimal.Decimal
+	loudMouthSurcharge     decimal.Decimal
+	loudMouthCount         decimal.Decimal
+	smellyShoeSurcharge    decimal.Decimal
+	smellyShoeCount        decimal.Decimal
+	inconvenienceSurcharge decimal.Decimal
+	platformFee            decimal.Decimal
+	weightBasedFee         decimal.Decimal
+	totalFare              decimal.Decimal
 }
 
 func bareCalculation() *fare {
 	f := &fare{}
 
-	f.numPickUp = 1.0
-	f.perPickUpPrice = 3.0
+	f.numPickUp = decimal.NewFromFloat(1.0)
+	f.perPickUpPrice = decimal.NewFromFloat(3.0)
 
-	f.numDropOff = 3.0
-	f.perDropOffPrice = 2.0
+	f.numDropOff = decimal.NewFromFloat(3.0)
+	f.perDropOffPrice = decimal.NewFromFloat(2.0)
 
-	f.numStopSurcharge = f.numPickUp*f.perPickUpPrice + f.numDropOff*f.perDropOffPrice
+	f.numStopSurcharge = f.numPickUp.Mul(f.perPickUpPrice).Add(f.numDropOff.Mul(f.perDropOffPrice))
 
-	f.startingFare = 1.0
-	f.loudMouthSurcharge = 2.0
-	f.loudMouthCount = 2.0
-	f.smellyShoeSurcharge = 1.0
-	f.smellyShoeCount = 1.0
+	f.startingFare = decimal.NewFromFloat(1.0)
+	f.loudMouthSurcharge = decimal.NewFromFloat(2.0)
+	f.loudMouthCount = decimal.NewFromFloat(2.0)
+	f.smellyShoeSurcharge = decimal.NewFromFloat(1.0)
+	f.smellyShoeCount = decimal.NewFromFloat(1.0)
 
-	f.inconvenienceSurcharge = f.startingFare + f.loudMouthSurcharge*f.loudMouthCount + f.smellyShoeSurcharge*f.smellyShoeCount
+	f.inconvenienceSurcharge = f.startingFare.Add(f.loudMouthSurcharge.Mul(f.loudMouthCount)).Add(f.smellyShoeSurcharge.Mul(f.smellyShoeCount))
 
-	f.platformFee = 2.0
-	f.weightBasedFee = 2.0
+	f.platformFee = decimal.NewFromFloat(2.0)
+	f.weightBasedFee = decimal.NewFromFloat(2.0)
 
-	f.totalFare = f.inconvenienceSurcharge + f.platformFee + f.weightBasedFee + f.numStopSurcharge
+	f.totalFare = f.inconvenienceSurcharge.Add(f.platformFee).Add(f.weightBasedFee).Add(f.numStopSurcharge)
 	return f
 }
 
@@ -228,7 +229,7 @@ func BenchmarkCondition(b *testing.B) {
 	}
 }
 
-func BenchmarkCalculationUsingPrimitive(b *testing.B) {
+func BenchmarkCalculationUsingDecimal(b *testing.B) {
 	b.ReportAllocs()
 
 	for n := 0; n < b.N; n++ {
