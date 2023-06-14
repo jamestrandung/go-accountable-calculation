@@ -2,7 +2,7 @@ package acal
 
 import "strconv"
 
-type extractableValue interface {
+type extractable interface {
 	// ExtractValues extracts this Value and all Value that were used to calculate it.
 	ExtractValues(cache IValueCache) IValueCache
 }

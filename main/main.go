@@ -1,82 +1,81 @@
 package main
 
 import (
-	"fmt"
-	"github.com/jamestrandung/go-accountable-calculation/acal"
-	"github.com/jamestrandung/go-accountable-calculation/float"
+    "fmt"
+    "github.com/jamestrandung/go-accountable-calculation/acal"
+    "github.com/jamestrandung/go-accountable-calculation/float"
 )
 
 type RawInterface interface {
-	GetValue() any
+    GetValue() any
 }
 
 type TypedInterface[T any] interface {
-	RawInterface
-	GetTypedValue() T
+    RawInterface
+    GetTypedValue() T
 }
 
 type boolV struct {
 }
 
 func (boolV) GetValue() any {
-	return false
+    return false
 }
 
 func (boolV) GetTypedValue() bool {
-	return false
+    return false
 }
 
 func do(v TypedInterface[bool]) {
-	fmt.Println(v)
+    fmt.Println(v)
 }
 
 type Implementation[T any] struct {
-	value T
+    value T
 }
 
 func (i Implementation[T]) GetTypedValue() T {
-	return i.value
+    return i.value
 }
 
 func (i Implementation[T]) Print() {
-	fmt.Println(i.GetTypedValue())
+    fmt.Println(i.GetTypedValue())
 }
 
 type Bool struct {
-	Implementation[bool]
+    Implementation[bool]
 }
 
 func (Bool) GetTypedValue() bool {
-	return true
+    return true
 }
 
 func main() {
-	var t1 acal.Value
-	var t2 acal.TypedValue[bool]
+    var t1 acal.Value
+    var t2 acal.TypedValue[bool]
 
-	fmt.Println(acal.IsNilValue(t1))
-	fmt.Println(acal.IsNilValue(t2))
+    fmt.Println(acal.IsNilValue(t1))
+    fmt.Println(acal.IsNilValue(t2))
 
-	f1 := float.MakeSimpleFromFloat("f1", 1)
-	//f2 := float.MakeSimpleFromFloat("f2", 2)
-	//
-	//f1.LargerThan(f2).Anchor("b1")
+    f1 := float.MakeSimpleFromFloat("f1", 1)
+    //f2 := float.MakeSimpleFromFloat("f2", 2)
+    //
+    //f1.LargerThan(f2).Anchor("b1")
 
-	p1 := float.MakeProgressive("p1")
+    p1 := float.MakeProgressive("p1")
 
-	p1.Update(float.Zero)
+    p1.Update(float.Zero)
 
-	b2 := f1.LargerThan(p1).Anchor("b2")
+    b2 := f1.LargerThan(p1).Anchor("b2")
 
-	p1.Update(float.One)
+    p1.Update(float.One)
 
-	fmt.Println(acal.ToString(b2))
+    fmt.Println(acal.ToString(b2))
 
-	var f2 float.Simple
-	fmt.Println(f2.Float())
-	fmt.Println(f2.Decimal())
+    var f2 float.Simple
+    fmt.Println(f2.Float())
+    fmt.Println(f2.Decimal())
 
-	f3 := f1.Plus(f2).Anchor("f3")
-	fmt.Println(acal.ToString(f3))
-
+    f3 := f1.Add(f2).Anchor("f3")
+    fmt.Println(acal.ToString(f3))
 }

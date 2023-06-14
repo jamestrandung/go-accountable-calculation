@@ -1,5 +1,7 @@
 package acal
 
+import "fmt"
+
 const (
 	UnknownValueName = "Unknown"
 )
@@ -17,9 +19,9 @@ type TypedValue[T any] interface {
 //
 //go:generate mockery --name=Value --case underscore --inpackage
 type Value interface {
-	iNamedValue
+	identifiable
+	extractable
 	syntaxOperandProvider
-	extractableValue
 
 	// IsNil returns whether this Value is nil.
 	IsNil() bool
@@ -29,16 +31,16 @@ type Value interface {
 	Stringify() string
 }
 
-type iNamedValue interface {
-	// GetName return the name of this iNamedValue.
+type identifiable interface {
+	// GetName return the name of this identifiable.
 	GetName() string
-	// GetAlias return the alias of this iNamedValue.
+	// GetAlias return the alias of this identifiable.
 	GetAlias() string
-	// SetAlias updates the alias of this iNamedValue to the provided string.
+	// SetAlias updates the alias of this identifiable to the provided string.
 	SetAlias(string)
-	// HasIdentity returns whether this iNamedValue was given an identity.
+	// HasIdentity returns whether this identifiable was given an identity.
 	HasIdentity() bool
-	// Identify returns the identity that was given to this iNamedValue.
+	// Identify returns the identity that was given to this identifiable.
 	Identify() string
 }
 
@@ -74,4 +76,24 @@ func (v *namedValue) Identify() string {
 	}
 
 	return v.GetName()
+}
+
+type valueFormatter[T any] struct {
+	formatFn func(T) string
+}
+
+func (f *valueFormatter[T]) formatValue(v T) string {
+	if f.formatFn == nil {
+		return fmt.Sprintf("%v", v)
+	}
+
+	return f.formatFn(v)
+}
+
+func (f *valueFormatter[T]) GetFormatFn() func(T) string {
+	return f.formatFn
+}
+
+func (f *valueFormatter[T]) WithFormatFn(formatFn func(T) string) {
+	f.formatFn = formatFn
 }

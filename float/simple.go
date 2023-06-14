@@ -87,7 +87,7 @@ var toBaseSyntaxOperand = func(s Simple, nextOp acal.Op) *acal.SyntaxOperand {
 // Anchor updates the name of this Simple to the provided string.
 func (s Simple) Anchor(name string) Simple {
 	if s.IsNil() {
-		return MakeSimpleFromFloat(name, 0)
+		return MakeSimpleFromInt(name, 0)
 	}
 
 	anchored, isNew := s.Simple.DoAnchor(name)

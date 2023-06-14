@@ -11,6 +11,7 @@ import (
 //go:generate mockery --name=Value --case underscore --inpackage
 type Value interface {
 	acal.TypedValue[decimal.Decimal]
+
 	// Decimal returns the value of this Value as a decimal.Decimal.
 	// If it's nil, a decimal.Decimal value of 0 is returned.
 	Decimal() decimal.Decimal
@@ -24,10 +25,11 @@ type Value interface {
 //go:generate mockery --name=Interface --case underscore --inpackage
 type Interface interface {
 	Value
-	Plus(acal.TypedValue[decimal.Decimal]) Simple
-	Minus(acal.TypedValue[decimal.Decimal]) Simple
-	Multiply(acal.TypedValue[decimal.Decimal]) Simple
-	Divide(acal.TypedValue[decimal.Decimal]) Simple
+
+	Add(acal.TypedValue[decimal.Decimal]) Simple
+	Sub(acal.TypedValue[decimal.Decimal]) Simple
+	Mul(acal.TypedValue[decimal.Decimal]) Simple
+	Div(acal.TypedValue[decimal.Decimal]) Simple
 	Equals(acal.TypedValue[decimal.Decimal]) boolean.Simple
 	NotEquals(acal.TypedValue[decimal.Decimal]) boolean.Simple
 	LargerThan(acal.TypedValue[decimal.Decimal]) boolean.Simple

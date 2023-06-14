@@ -37,7 +37,7 @@ var PerformStandardValueExtraction = func(v Value, cache IValueCache) IValueCach
 	formula := fp.GetFormulaFn()()
 
 	for _, operand := range formula.GetOperands() {
-		if ev, ok := operand.(extractableValue); ok {
+		if ev, ok := operand.(extractable); ok {
 			ev.ExtractValues(cache)
 		}
 	}
@@ -53,24 +53,4 @@ func ToString(aVal ...Value) string {
 	}
 
 	return string(json)
-}
-
-type valueFormatter[T any] struct {
-	formatFn func(T) string
-}
-
-func (f *valueFormatter[T]) formatValue(v T) string {
-	if f.formatFn == nil {
-		return fmt.Sprintf("%v", v)
-	}
-
-	return f.formatFn(v)
-}
-
-func (f *valueFormatter[T]) GetFormatFn() func(T) string {
-	return f.formatFn
-}
-
-func (f *valueFormatter[T]) WithFormatFn(formatFn func(T) string) {
-	f.formatFn = formatFn
 }

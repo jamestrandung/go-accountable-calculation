@@ -9,7 +9,7 @@ import (
 // performing unaryOpFn on the value of the provided acal.TypedValue.
 func PerformUnaryDecimalOp(
 	tv acal.TypedValue[decimal.Decimal],
-	opDesc string,
+	fnName string,
 	unaryOpFn func(a decimal.Decimal) decimal.Decimal,
 ) Simple {
 	tv = acal.PreProcessOperand(tv)
@@ -17,7 +17,7 @@ func PerformUnaryDecimalOp(
 	return MakeSimpleWithFormula(
 		unaryOpFn(tv.GetTypedValue()),
 		func() *acal.SyntaxNode {
-			return acal.FormulaBuilder.NewFormulaFunctionCall(opDesc, tv)
+			return acal.FormulaBuilder.NewFormulaFunctionCall(fnName, tv)
 		},
 	)
 }
@@ -45,7 +45,7 @@ func PerformBinaryDecimalOp(
 // PerformDecimalFunctionCall returns a Simple to represent the result of
 // performing fn on the values of the provided acal.TypedValue.
 func PerformDecimalFunctionCall(
-	opDesc string,
+	fnName string,
 	fn func(decimals ...decimal.Decimal) decimal.Decimal,
 	values ...acal.TypedValue[decimal.Decimal],
 ) Simple {
@@ -61,7 +61,7 @@ func PerformDecimalFunctionCall(
 	return MakeSimpleWithFormula(
 		fn(decimals...),
 		func() *acal.SyntaxNode {
-			return acal.FormulaBuilder.NewFormulaFunctionCall(opDesc, values)
+			return acal.FormulaBuilder.NewFormulaFunctionCall(fnName, values)
 		},
 	)
 }
