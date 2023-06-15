@@ -19,7 +19,10 @@ unlike the fragmented nature of standard log messages where each message is reco
 
 ## Sample usage
 
-Clients can use this [GitHub page](https://jamestrandung.github.io/go-accountable-calculation-ui/) to view the output JSON below in a friendly UI.
+Clients can use this [GitHub page](https://jamestrandung.github.io/go-accountable-calculation-ui/) as 
+a starting point to view the output JSON below in a friendly UI. Depending on their needs, clients
+can develop their own UI with more powerful features to serve their end users (e.g. let business users
+in their organization to debug issues on their own).
 
 ```go
 price := float.MakeSimpleFromFloat("ProductPrice", 2.5)
