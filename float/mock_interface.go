@@ -16,6 +16,11 @@ type MockInterface struct {
 	mock.Mock
 }
 
+// Abs provides a mock function with given fields:
+func (_m *MockInterface) Abs() {
+	_m.Called()
+}
+
 // Add provides a mock function with given fields: _a0
 func (_m *MockInterface) Add(_a0 acal.TypedValue[decimal.Decimal]) Simple {
 	ret := _m.Called(_a0)
@@ -28,6 +33,11 @@ func (_m *MockInterface) Add(_a0 acal.TypedValue[decimal.Decimal]) Simple {
 	}
 
 	return r0
+}
+
+// Ceil provides a mock function with given fields:
+func (_m *MockInterface) Ceil() {
+	_m.Called()
 }
 
 // Decimal provides a mock function with given fields:
@@ -97,6 +107,20 @@ func (_m *MockInterface) Float() float64 {
 		r0 = rf()
 	} else {
 		r0 = ret.Get(0).(float64)
+	}
+
+	return r0
+}
+
+// Floor provides a mock function with given fields:
+func (_m *MockInterface) Floor() Simple {
+	ret := _m.Called()
+
+	var r0 Simple
+	if rf, ok := ret.Get(0).(func() Simple); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(Simple)
 	}
 
 	return r0
@@ -188,6 +212,34 @@ func (_m *MockInterface) Identify() string {
 	return r0
 }
 
+// Inv provides a mock function with given fields:
+func (_m *MockInterface) Inv() Simple {
+	ret := _m.Called()
+
+	var r0 Simple
+	if rf, ok := ret.Get(0).(func() Simple); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(Simple)
+	}
+
+	return r0
+}
+
+// IsNegative provides a mock function with given fields:
+func (_m *MockInterface) IsNegative() boolean.Simple {
+	ret := _m.Called()
+
+	var r0 boolean.Simple
+	if rf, ok := ret.Get(0).(func() boolean.Simple); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(boolean.Simple)
+	}
+
+	return r0
+}
+
 // IsNil provides a mock function with given fields:
 func (_m *MockInterface) IsNil() bool {
 	ret := _m.Called()
@@ -197,6 +249,34 @@ func (_m *MockInterface) IsNil() bool {
 		r0 = rf()
 	} else {
 		r0 = ret.Get(0).(bool)
+	}
+
+	return r0
+}
+
+// IsPositive provides a mock function with given fields:
+func (_m *MockInterface) IsPositive() boolean.Simple {
+	ret := _m.Called()
+
+	var r0 boolean.Simple
+	if rf, ok := ret.Get(0).(func() boolean.Simple); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(boolean.Simple)
+	}
+
+	return r0
+}
+
+// IsZero provides a mock function with given fields:
+func (_m *MockInterface) IsZero() boolean.Simple {
+	ret := _m.Called()
+
+	var r0 boolean.Simple
+	if rf, ok := ret.Get(0).(func() boolean.Simple); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(boolean.Simple)
 	}
 
 	return r0
@@ -244,6 +324,20 @@ func (_m *MockInterface) Mul(_a0 acal.TypedValue[decimal.Decimal]) Simple {
 	return r0
 }
 
+// Neg provides a mock function with given fields:
+func (_m *MockInterface) Neg() Simple {
+	ret := _m.Called()
+
+	var r0 Simple
+	if rf, ok := ret.Get(0).(func() Simple); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(Simple)
+	}
+
+	return r0
+}
+
 // NotEquals provides a mock function with given fields: _a0
 func (_m *MockInterface) NotEquals(_a0 acal.TypedValue[decimal.Decimal]) boolean.Simple {
 	ret := _m.Called(_a0)
@@ -253,6 +347,20 @@ func (_m *MockInterface) NotEquals(_a0 acal.TypedValue[decimal.Decimal]) boolean
 		r0 = rf(_a0)
 	} else {
 		r0 = ret.Get(0).(boolean.Simple)
+	}
+
+	return r0
+}
+
+// Round provides a mock function with given fields: decimalPlace
+func (_m *MockInterface) Round(decimalPlace acal.TypedValue[decimal.Decimal]) Simple {
+	ret := _m.Called(decimalPlace)
+
+	var r0 Simple
+	if rf, ok := ret.Get(0).(func(acal.TypedValue[decimal.Decimal]) Simple); ok {
+		r0 = rf(decimalPlace)
+	} else {
+		r0 = ret.Get(0).(Simple)
 	}
 
 	return r0

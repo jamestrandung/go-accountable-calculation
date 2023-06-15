@@ -5,12 +5,16 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+type opProvider struct {
+	tv acal.TypedValue[decimal.Decimal]
+}
+
 // PerformUnaryDecimalOp returns a Simple to represent the result of
 // performing unaryOpFn on the value of the provided acal.TypedValue.
-func PerformUnaryDecimalOp(
+var PerformUnaryDecimalOp = func(
 	tv acal.TypedValue[decimal.Decimal],
 	fnName string,
-	unaryOpFn func(a decimal.Decimal) decimal.Decimal,
+	unaryOpFn func(d decimal.Decimal) decimal.Decimal,
 ) Simple {
 	tv = acal.PreProcessOperand(tv)
 
@@ -24,7 +28,7 @@ func PerformUnaryDecimalOp(
 
 // PerformBinaryDecimalOp returns a Simple to represent the result of
 // performing binaryOpFn on the values of the provided acal.TypedValue.
-func PerformBinaryDecimalOp(
+var PerformBinaryDecimalOp = func(
 	tv1 acal.TypedValue[decimal.Decimal],
 	tv2 acal.TypedValue[decimal.Decimal],
 	op acal.Op,
@@ -44,7 +48,7 @@ func PerformBinaryDecimalOp(
 
 // PerformDecimalFunctionCall returns a Simple to represent the result of
 // performing fn on the values of the provided acal.TypedValue.
-func PerformDecimalFunctionCall(
+var PerformDecimalFunctionCall = func(
 	fnName string,
 	fn func(decimals ...decimal.Decimal) decimal.Decimal,
 	values ...acal.TypedValue[decimal.Decimal],

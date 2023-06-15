@@ -8,6 +8,7 @@ import (
 var (
 	NilFloat Simple
 
+	MinusOne   *acal.Constant[decimal.Decimal]
 	Zero       *acal.Constant[decimal.Decimal]
 	One        *acal.Constant[decimal.Decimal]
 	Two        *acal.Constant[decimal.Decimal]
@@ -30,6 +31,7 @@ func init() {
 	NilFloat = MakeSimpleFromFloat("NilFloat", 0)
 	NilFloat.From(acal.SourceHardcode)
 
+	MinusOne = acal.NewConstantWithFormat[decimal.Decimal](decimal.NewFromInt(-1), FormatFn)
 	Zero = acal.NewConstantWithFormat[decimal.Decimal](decimal.Zero, FormatFn)
 	One = acal.NewConstantWithFormat[decimal.Decimal](decimal.NewFromInt(1), FormatFn)
 	Two = acal.NewConstantWithFormat[decimal.Decimal](decimal.NewFromInt(2), FormatFn)
