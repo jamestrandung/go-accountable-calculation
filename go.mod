@@ -2,10 +2,8 @@ module github.com/jamestrandung/go-accountable-calculation
 
 go 1.20
 
-replace github.com/my-shopspring/decimal v1.0.0 => github.com/shopspring/decimal v1.3.1
-
 require (
-	github.com/my-shopspring/decimal v1.0.0
+	github.com/shopspring/decimal v1.3.1
 	github.com/stretchr/testify v1.8.1
 )
 

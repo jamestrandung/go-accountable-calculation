@@ -2,7 +2,7 @@ package float
 
 import (
 	"github.com/jamestrandung/go-accountable-calculation/acal"
-	"github.com/my-shopspring/decimal"
+	"github.com/shopspring/decimal"
 )
 
 type opProvider struct {

@@ -5,7 +5,7 @@ import (
 	"github.com/jamestrandung/go-accountable-calculation/acal"
 	"github.com/jamestrandung/go-accountable-calculation/boolean"
 	"github.com/jamestrandung/go-accountable-calculation/float"
-	"github.com/my-shopspring/decimal"
+	"github.com/shopspring/decimal"
 	"testing"
 )
 

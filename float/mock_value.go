@@ -4,7 +4,7 @@ package float
 
 import (
 	acal "github.com/jamestrandung/go-accountable-calculation/acal"
-	decimal "github.com/my-shopspring/decimal"
+	decimal "github.com/shopspring/decimal"
 
 	mock "github.com/stretchr/testify/mock"
 )
