@@ -3,7 +3,7 @@ package float
 import (
 	"github.com/jamestrandung/go-accountable-calculation/acal"
 	"github.com/jamestrandung/go-accountable-calculation/boolean"
-	"github.com/shopspring/decimal"
+	"github.com/my-shopspring/decimal"
 )
 
 const (

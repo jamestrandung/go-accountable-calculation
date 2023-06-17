@@ -6,7 +6,7 @@ import (
 	acal "github.com/jamestrandung/go-accountable-calculation/acal"
 	boolean "github.com/jamestrandung/go-accountable-calculation/boolean"
 
-	decimal "github.com/shopspring/decimal"
+	decimal "github.com/my-shopspring/decimal"
 
 	mock "github.com/stretchr/testify/mock"
 )

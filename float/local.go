@@ -2,7 +2,7 @@ package float
 
 import (
 	"github.com/jamestrandung/go-accountable-calculation/acal"
-	"github.com/shopspring/decimal"
+	"github.com/my-shopspring/decimal"
 )
 
 // Local ...

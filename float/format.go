@@ -1,7 +1,7 @@
 package float
 
 import (
-	"github.com/shopspring/decimal"
+	"github.com/my-shopspring/decimal"
 	"math"
 	"strconv"
 )

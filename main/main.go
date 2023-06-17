@@ -4,9 +4,12 @@ import (
     "fmt"
     "github.com/jamestrandung/go-accountable-calculation/acal"
     "github.com/jamestrandung/go-accountable-calculation/float"
+    "github.com/my-shopspring/decimal"
 )
 
 func main() {
+    decimal.NewFromInt(2)
+
     price := float.MakeSimpleFromFloat("ProductPrice", 2.5)
     quantity := float.MakeSimpleFromInt("Quantity", 3)
 
