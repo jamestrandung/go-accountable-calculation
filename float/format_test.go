@@ -1,7 +1,7 @@
 package float
 
 import (
-	"github.com/my-shopspring/decimal"
+	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

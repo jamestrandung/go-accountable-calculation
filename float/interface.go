@@ -3,7 +3,7 @@ package float
 import (
 	"github.com/jamestrandung/go-accountable-calculation/acal"
 	"github.com/jamestrandung/go-accountable-calculation/boolean"
-	"github.com/my-shopspring/decimal"
+	"github.com/shopspring/decimal"
 )
 
 // Value represents an acal.Value of float kind.
