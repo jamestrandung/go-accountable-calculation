@@ -118,7 +118,7 @@ func (p opProvider) Round(decimalPlace acal.TypedValue[decimal.Decimal]) Simple 
 				return decimal.Zero
 			}
 
-			return decimals[0].Round((int32)(decimalPlace.GetTypedValue().IntPart()))
+			return decimals[0].Round((int32)(decimals[1].IntPart()))
 		},
 		p.tv, decimalPlace,
 	)
@@ -193,16 +193,16 @@ func Median(values ...acal.TypedValue[decimal.Decimal]) Simple {
 			}
 
 			sort.Slice(
-				values, func(i, j int) bool {
-					return values[i].GetTypedValue().LessThan(values[j].GetTypedValue())
+				decimals, func(i, j int) bool {
+					return decimals[i].LessThan(decimals[j])
 				},
 			)
 
 			if count%2 == 0 {
-				return values[count/2-1].GetTypedValue().Add(values[count/2].GetTypedValue()).Div(decimal.NewFromInt(2))
+				return decimals[count/2-1].Add(decimals[count/2]).Div(decimal.NewFromInt(2))
 			}
 
-			return values[count/2].GetTypedValue()
+			return decimals[count/2]
 		}, values...,
 	)
 }
