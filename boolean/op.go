@@ -11,7 +11,7 @@ const (
 
 // If executes the provided doIfFn if the given Interface is true and
 // return whether the function was executed.
-func If(b Interface, doIfFn func(criteria Interface)) bool {
+func If(b Value, doIfFn func(criteria Value)) bool {
 	if b == nil || b.IsNil() {
 		b = NilBool
 	}
@@ -26,7 +26,7 @@ func If(b Interface, doIfFn func(criteria Interface)) bool {
 
 // IfNot executes the provided doIfNotFn if the given Interface is false
 // and return whether the function was executed.
-func IfNot(b Interface, doIfNotFn func(criteria Interface)) bool {
+func IfNot(b Value, doIfNotFn func(criteria Value)) bool {
 	if b == nil || b.IsNil() {
 		b = NilBool
 	}
@@ -42,9 +42,9 @@ func IfNot(b Interface, doIfNotFn func(criteria Interface)) bool {
 // IfElse executes the provided doIfFn if the given Interface is true. Otherwise,
 // doElseFn is executed instead. Finally, the value of Interface will be returned.
 func IfElse(
-	b Interface,
-	doIfFn func(criteria Interface),
-	doElseFn func(elseCriteria Interface),
+	b Value,
+	doIfFn func(criteria Value),
+	doElseFn func(elseCriteria Value),
 ) bool {
 	if b == nil || b.IsNil() {
 		b = NilBool

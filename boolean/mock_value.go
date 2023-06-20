@@ -12,6 +12,20 @@ type MockValue struct {
 	mock.Mock
 }
 
+// And provides a mock function with given fields: _a0
+func (_m *MockValue) And(_a0 acal.TypedValue[bool]) Simple {
+	ret := _m.Called(_a0)
+
+	var r0 Simple
+	if rf, ok := ret.Get(0).(func(acal.TypedValue[bool]) Simple); ok {
+		r0 = rf(_a0)
+	} else {
+		r0 = ret.Get(0).(Simple)
+	}
+
+	return r0
+}
+
 // Bool provides a mock function with given fields:
 func (_m *MockValue) Bool() bool {
 	ret := _m.Called()
@@ -137,6 +151,34 @@ func (_m *MockValue) IsNil() bool {
 		r0 = rf()
 	} else {
 		r0 = ret.Get(0).(bool)
+	}
+
+	return r0
+}
+
+// Not provides a mock function with given fields:
+func (_m *MockValue) Not() Simple {
+	ret := _m.Called()
+
+	var r0 Simple
+	if rf, ok := ret.Get(0).(func() Simple); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(Simple)
+	}
+
+	return r0
+}
+
+// Or provides a mock function with given fields: _a0
+func (_m *MockValue) Or(_a0 acal.TypedValue[bool]) Simple {
+	ret := _m.Called(_a0)
+
+	var r0 Simple
+	if rf, ok := ret.Get(0).(func(acal.TypedValue[bool]) Simple); ok {
+		r0 = rf(_a0)
+	} else {
+		r0 = ret.Get(0).(Simple)
 	}
 
 	return r0

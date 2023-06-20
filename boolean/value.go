@@ -10,13 +10,7 @@ type Value interface {
 	// Bool returns the value of this Value as a bool.
 	// If it's nil, false is returned.
 	Bool() bool
-}
 
-// Interface governs the methods that Value should provide.
-//
-//go:generate mockery --name=Interface --case underscore --inpackage
-type Interface interface {
-	Value
 	// And applies AND operation on the value of this Interface and the given acal.TypedValue.
 	And(acal.TypedValue[bool]) Simple
 	// Or applies OR operation on the value of this Interface and the given acal.TypedValue.

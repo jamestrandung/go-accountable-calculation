@@ -13,13 +13,13 @@ func TestIf(t *testing.T) {
 		{
 			desc: "nil value",
 			test: func(t *testing.T) {
-				mockBool := NewMockInterface(t)
+				mockBool := NewMockValue(t)
 				mockBool.On("IsNil").
 					Return(true).
 					Once()
 
 				var dummy int
-				doIfFn := func(b Interface) {
+				doIfFn := func(b Value) {
 					assert.Equal(t, NilBool, b)
 					dummy = 1
 				}
@@ -33,7 +33,7 @@ func TestIf(t *testing.T) {
 		{
 			desc: "false value",
 			test: func(t *testing.T) {
-				mockBool := NewMockInterface(t)
+				mockBool := NewMockValue(t)
 				mockBool.On("IsNil").
 					Return(false).
 					Once()
@@ -42,7 +42,7 @@ func TestIf(t *testing.T) {
 					Once()
 
 				var dummy int
-				doIfFn := func(b Interface) {
+				doIfFn := func(b Value) {
 					assert.Equal(t, mockBool, b)
 					dummy = 1
 				}
@@ -56,7 +56,7 @@ func TestIf(t *testing.T) {
 		{
 			desc: "true value",
 			test: func(t *testing.T) {
-				mockBool := NewMockInterface(t)
+				mockBool := NewMockValue(t)
 				mockBool.On("IsNil").
 					Return(false).
 					Once()
@@ -65,7 +65,7 @@ func TestIf(t *testing.T) {
 					Once()
 
 				var dummy int
-				doIfFn := func(b Interface) {
+				doIfFn := func(b Value) {
 					assert.Equal(t, mockBool, b)
 					dummy = 1
 				}
@@ -91,13 +91,13 @@ func TestIfNot(t *testing.T) {
 		{
 			desc: "nil value",
 			test: func(t *testing.T) {
-				mockBool := NewMockInterface(t)
+				mockBool := NewMockValue(t)
 				mockBool.On("IsNil").
 					Return(true).
 					Once()
 
 				var dummy int
-				doIfFn := func(b Interface) {
+				doIfFn := func(b Value) {
 					assert.True(t, b.Bool())
 					dummy = 1
 				}
@@ -113,7 +113,7 @@ func TestIfNot(t *testing.T) {
 			test: func(t *testing.T) {
 				dummyNot := MakeSimple("NotFalse", true)
 
-				mockBool := NewMockInterface(t)
+				mockBool := NewMockValue(t)
 				mockBool.On("IsNil").
 					Return(false).
 					Once()
@@ -125,7 +125,7 @@ func TestIfNot(t *testing.T) {
 					Once()
 
 				var dummy int
-				doIfFn := func(b Interface) {
+				doIfFn := func(b Value) {
 					assert.Equal(t, dummyNot, b)
 					dummy = 1
 				}
@@ -139,7 +139,7 @@ func TestIfNot(t *testing.T) {
 		{
 			desc: "true value",
 			test: func(t *testing.T) {
-				mockBool := NewMockInterface(t)
+				mockBool := NewMockValue(t)
 				mockBool.On("IsNil").
 					Return(false).
 					Once()
@@ -148,7 +148,7 @@ func TestIfNot(t *testing.T) {
 					Once()
 
 				var dummy int
-				doIfFn := func(b Interface) {
+				doIfFn := func(b Value) {
 					assert.Equal(t, mockBool, b)
 					dummy = 1
 				}
@@ -174,16 +174,16 @@ func TestIfElse(t *testing.T) {
 		{
 			desc: "nil value",
 			test: func(t *testing.T) {
-				mockBool := NewMockInterface(t)
+				mockBool := NewMockValue(t)
 				mockBool.On("IsNil").
 					Return(true).
 					Once()
 
 				var dummy int
-				doIfFn := func(b Interface) {
+				doIfFn := func(b Value) {
 					dummy = 1
 				}
-				doElseFn := func(b Interface) {
+				doElseFn := func(b Value) {
 					assert.True(t, b.Bool())
 					dummy = 2
 				}
@@ -199,7 +199,7 @@ func TestIfElse(t *testing.T) {
 			test: func(t *testing.T) {
 				dummyNot := MakeSimple("NotFalse", true)
 
-				mockBool := NewMockInterface(t)
+				mockBool := NewMockValue(t)
 				mockBool.On("IsNil").
 					Return(false).
 					Once()
@@ -211,10 +211,10 @@ func TestIfElse(t *testing.T) {
 					Once()
 
 				var dummy int
-				doIfFn := func(b Interface) {
+				doIfFn := func(b Value) {
 					dummy = 1
 				}
-				doElseFn := func(b Interface) {
+				doElseFn := func(b Value) {
 					assert.Equal(t, dummyNot, b)
 					dummy = 2
 				}
@@ -228,7 +228,7 @@ func TestIfElse(t *testing.T) {
 		{
 			desc: "true value",
 			test: func(t *testing.T) {
-				mockBool := NewMockInterface(t)
+				mockBool := NewMockValue(t)
 				mockBool.On("IsNil").
 					Return(false).
 					Once()
@@ -237,11 +237,11 @@ func TestIfElse(t *testing.T) {
 					Once()
 
 				var dummy int
-				doIfFn := func(b Interface) {
+				doIfFn := func(b Value) {
 					assert.Equal(t, mockBool, b)
 					dummy = 1
 				}
-				doElseFn := func(b Interface) {
+				doElseFn := func(b Value) {
 					dummy = 2
 				}
 
