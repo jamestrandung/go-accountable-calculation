@@ -17,8 +17,17 @@ type MockInterface struct {
 }
 
 // Abs provides a mock function with given fields:
-func (_m *MockInterface) Abs() {
-	_m.Called()
+func (_m *MockInterface) Abs() Simple {
+	ret := _m.Called()
+
+	var r0 Simple
+	if rf, ok := ret.Get(0).(func() Simple); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(Simple)
+	}
+
+	return r0
 }
 
 // Add provides a mock function with given fields: _a0
@@ -36,8 +45,17 @@ func (_m *MockInterface) Add(_a0 acal.TypedValue[decimal.Decimal]) Simple {
 }
 
 // Ceil provides a mock function with given fields:
-func (_m *MockInterface) Ceil() {
-	_m.Called()
+func (_m *MockInterface) Ceil() Simple {
+	ret := _m.Called()
+
+	var r0 Simple
+	if rf, ok := ret.Get(0).(func() Simple); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(Simple)
+	}
+
+	return r0
 }
 
 // Decimal provides a mock function with given fields:
