@@ -19,45 +19,12 @@ unlike the fragmented nature of standard log messages where each message is reco
 
 ## Sample usage
 
-Clients can use this [GitHub page](https://jamestrandung.github.io/go-accountable-calculation-ui/) as 
-a starting point to view the output JSON below in a friendly UI. Depending on their needs, clients
-can develop their own UI with more powerful features to serve their end users (e.g. let business users
-in their organization to debug issues on their own).
+For a demonstration, run the `sample.go` in the `main` package. You will get some JSON text in the 
+console. After that, you can use this [GitHub page](https://jamestrandung.github.io/go-accountable-calculation-ui/) as 
+a starting point to view the JSON output in a friendly UI. Depending on your needs, you can develop 
+your own UI with more powerful features to serve your end users (e.g. let business users in your 
+organization to debug issues on their own).
 
-```go
-price := float.MakeSimpleFromFloat("ProductPrice", 2.5)
-quantity := float.MakeSimpleFromInt("Quantity", 3)
+![img.png](main/sample.png)
 
-// Give the variable an identity by anchoring it with a fixed name
-orderValue := price.Mul(quantity).Anchor("OrderValue")
 
-fmt.Println(acal.ToString(orderValue))
-
-// output:
-//{
-//  "OrderValue": {
-//    "Value": "7.5",
-//    "Source": "static_calculation",
-//    "Formula": {
-//      "Category": "TwoValMiddleOp",
-//      "Operation": "*",
-//      "Operands": [
-//        {
-//          "Name": "ProductPrice"
-//        },
-//        {
-//          "Name": "Quantity"
-//        }
-//      ]
-//    }
-//  },
-//  "ProductPrice": {
-//    "Value": "2.5",
-//    "Source": "unknown"
-//  },
-//  "Quantity": {
-//    "Value": "3",
-//    "Source": "unknown"
-//  }
-//}
-```
